@@ -1,0 +1,5 @@
+# This file is used by gcl to get repository specific information.
+CODE_REVIEW_SERVER: codereview.appspot.com
+VIEW_VC: https://github.com/TracingTools/libtrace/commit/
+CC_LIST: etienne.bergeron@gmail.com, fdoray@chromium.org
+TRY_ON_UPLOAD: False
