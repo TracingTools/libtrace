@@ -61,6 +61,11 @@ add_library(base
     src/base/string_utils.h
     src/base/scoped_ptr.h
     )
+    
+add_custom_target(flyweight SOURCES
+    src/flyweight/flyweight.h
+    src/flyweight/flyweight_key.h
+    )
 
 ####################
 # Executables
@@ -77,6 +82,8 @@ add_executable(unittests
     src/base/logging_unittest.cc
     src/base/scoped_ptr_unittest.cc
     src/base/string_utils_unittest.cc
+    src/flyweight/flyweight_key_unittest.cc
+    src/flyweight/flyweight_unittest.cc
     ${GMOCK_ROOT}/gtest/src/gtest-all.cc
     ${GMOCK_ROOT}/src/gmock-all.cc
     ${GMOCK_ROOT}/src/gmock_main.cc
