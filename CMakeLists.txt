@@ -70,6 +70,8 @@ add_custom_target(flyweight SOURCES
 add_library(event
     src/event/event.cc
     src/event/event.h
+    src/event/utils.cc
+    src/event/utils.h
     src/event/value.cc
     src/event/value.h
     )
@@ -92,6 +94,7 @@ add_executable(unittests
     src/base/scoped_ptr_unittest.cc
     src/base/string_utils_unittest.cc
     src/event/event_unittest.cc
+    src/event/utils_unittest.cc
     src/event/value_unittest.cc
     src/flyweight/flyweight_key_unittest.cc
     src/flyweight/flyweight_unittest.cc
