@@ -79,8 +79,10 @@ target_link_libraries(event
     base)
 
 add_library(parser
-    src/parser/parser.h
+    src/parser/decoder.cc
+    src/parser/decoder.h
     src/parser/parser.cc
+    src/parser/parser.h
     )
 target_link_libraries(parser
     base
@@ -107,6 +109,7 @@ add_executable(unittests
     src/event/value_unittest.cc
     src/flyweight/flyweight_key_unittest.cc
     src/flyweight/flyweight_unittest.cc
+    src/parser/decoder_unittest.cc
     src/parser/parser_unittest.cc
     ${GMOCK_ROOT}/gtest/src/gtest-all.cc
     ${GMOCK_ROOT}/src/gmock-all.cc
