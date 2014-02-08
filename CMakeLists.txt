@@ -67,6 +67,15 @@ add_custom_target(flyweight SOURCES
     src/flyweight/flyweight_key.h
     )
 
+add_library(event
+    src/event/event.cc
+    src/event/event.h
+    src/event/value.cc
+    src/event/value.h
+    )
+target_link_libraries(event
+    base)
+
 ####################
 # Executables
 ####################
@@ -82,6 +91,8 @@ add_executable(unittests
     src/base/logging_unittest.cc
     src/base/scoped_ptr_unittest.cc
     src/base/string_utils_unittest.cc
+    src/event/event_unittest.cc
+    src/event/value_unittest.cc
     src/flyweight/flyweight_key_unittest.cc
     src/flyweight/flyweight_unittest.cc
     ${GMOCK_ROOT}/gtest/src/gtest-all.cc
@@ -91,5 +102,6 @@ add_executable(unittests
 
 target_link_libraries(unittests
     base
+    event
     ${PTHREAD_LIB}
     )
