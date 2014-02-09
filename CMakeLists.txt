@@ -83,6 +83,8 @@ add_library(parser
     src/parser/decoder.h
     src/parser/parser.cc
     src/parser/parser.h
+    src/parser/etw/etw_raw_payload_decoder_utils.cc
+    src/parser/etw/etw_raw_payload_decoder_utils.h
     )
 target_link_libraries(parser
     base
@@ -111,6 +113,7 @@ add_executable(unittests
     src/flyweight/flyweight_unittest.cc
     src/parser/decoder_unittest.cc
     src/parser/parser_unittest.cc
+    src/parser/etw/etw_raw_payload_decoder_utils_unittest.cc
     ${GMOCK_ROOT}/gtest/src/gtest-all.cc
     ${GMOCK_ROOT}/src/gmock-all.cc
     ${GMOCK_ROOT}/src/gmock_main.cc
