@@ -91,9 +91,9 @@ bool DecodeArray(const std::string& name,
 // @param fields the structure to receive the field.
 // @returns true on sucess, false otherwise.
 bool DecodeUInteger(const std::string& name,
-                   bool is_64_bit,
-                   Decoder* decoder,
-                   event::StructValue* fields);
+                    bool is_64_bit,
+                    Decoder* decoder,
+                    event::StructValue* fields);
 
 // Decode a string of 16-bit char and add it as a field into |fields|.
 // @param name the name of the field to be added.
@@ -103,6 +103,17 @@ bool DecodeUInteger(const std::string& name,
 bool DecodeW16String(const std::string& name,
                      Decoder* decoder,
                      event::StructValue* fields);
+
+// Decode a SID (Secure ID) structure.
+// @param name the name of the field to be added.
+// @param is_64_bit the flag to enable decoding of 64-bit integer.
+// @param decoder the decoder processing the payload.
+// @param fields the structure to receive the field.
+// @returns true on sucess, false otherwise.
+bool DecodeSID(const std::string& name,
+               bool is_64_bit,
+               Decoder* decoder,
+               event::StructValue* fields);
 
 }  // namespace etw
 }  // namespace parser

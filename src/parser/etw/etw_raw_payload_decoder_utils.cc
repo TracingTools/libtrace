@@ -28,22 +28,33 @@
 namespace parser {
 namespace etw {
 
+namespace {
+
+using event::UCharValue;
+using event::UIntValue;
+using event::ULongValue;
+using event::StructValue;
+using event::WStringValue;
+using event::Value;
+
+}  // namespace
+
 bool DecodeUInteger(const std::string& name,
                     bool is_64_bit,
                     Decoder* decoder,
-                    event::StructValue* fields) {
+                    StructValue* fields) {
   if (is_64_bit)
-    return Decode<event::ULongValue>(name, decoder, fields);
-  return Decode<event::UIntValue>(name, decoder, fields);
+    return Decode<ULongValue>(name, decoder, fields);
+  return Decode<UIntValue>(name, decoder, fields);
 }
 
 bool DecodeW16String(const std::string& name,
                      Decoder* decoder,
-                     event::StructValue* fields) {
+                     StructValue* fields) {
   DCHECK(decoder != NULL);
   DCHECK(fields != NULL);
 
-  scoped_ptr<event::WStringValue> decoded(decoder->DecodeW16String());
+  scoped_ptr<WStringValue> decoded(decoder->DecodeW16String());
 
   if (decoded.get() == NULL ||
       !fields->AddField(name, decoded.Pass())) {
@@ -51,6 +62,45 @@ bool DecodeW16String(const std::string& name,
   }
 
   return true;
+}
+
+bool DecodeSID(const std::string& name,
+               bool is_64_bit,
+               Decoder* decoder,
+               StructValue* fields) {
+
+  // Check the minimal SID length to avoid out-of-bound accesses.
+  if (decoder->RemainingBytes() < 3 * 8)
+    return false;
+
+  // Decode the TOKEN_USER structure.
+  scoped_ptr<StructValue> sid(new StructValue);
+  if (!DecodeUInteger("PSid", is_64_bit, decoder, sid.get()) ||
+      !Decode<UIntValue>("Attributes", decoder, sid.get())) {
+    return false;
+  }
+
+  // Skip padding.
+  if (is_64_bit) {
+    scoped_ptr<UIntValue> padding(decoder->Decode<UIntValue>());
+    if (padding.get() == NULL)
+      return false;
+  }
+
+  // Decode the SID structure.
+  unsigned char revision = decoder->lookup(0);
+  unsigned char subAuthorityCount = decoder->lookup(1);
+  const int kSID_REVISION = 1;
+  const int kSID_MAX_SUB_AUTHORITIES = 15;
+  DCHECK_EQ(revision, kSID_REVISION);
+  DCHECK_LE(subAuthorityCount, kSID_MAX_SUB_AUTHORITIES);
+
+  unsigned int length = 4 * subAuthorityCount + 8;
+  if (!DecodeArray<UCharValue>("Sid", length, decoder, sid.get()))
+    return false;
+
+  // Returns a struct containing all decoded fields.
+  return fields->AddField(name, sid.PassAs<Value>());
 }
 
 }  // namespace etw

@@ -70,12 +70,12 @@ TEST(EtwDecoderUtilsTest, DecodeArrayOfShort) {
   uint32 element4 = 0;
   EXPECT_TRUE(decoded->GetElementAsUInteger(0, &element1));
   EXPECT_TRUE(decoded->GetElementAsUInteger(1, &element2));
-  EXPECT_TRUE(decoded->GetElementAsUInteger(2, &element2));
-  EXPECT_TRUE(decoded->GetElementAsUInteger(3, &element3));
+  EXPECT_TRUE(decoded->GetElementAsUInteger(2, &element3));
+  EXPECT_TRUE(decoded->GetElementAsUInteger(3, &element4));
   EXPECT_EQ(element1, 0x0201);
   EXPECT_EQ(element2, 0x0403);
-  EXPECT_EQ(element1, 0x0605);
-  EXPECT_EQ(element2, 0x0807);
+  EXPECT_EQ(element3, 0x0605);
+  EXPECT_EQ(element4, 0x0807);
 
   // There is no element at offset 4.
   uint32 no_element = 0;
@@ -144,6 +144,31 @@ TEST(EtwDecoderUtilsTest, DecodeWString) {
 
   // Should not be able to decode an other value.
   EXPECT_FALSE(DecodeW16String("error", &decoder, &fields));
+}
+
+TEST(EtwDecoderUtilsTest, DecodeSID) {
+  const char original_sid[] = {
+      1, 2, 3, 4, 1, 2, 3, 4,
+      5, 4, 3, 2, 0, 0, 0, 0,
+      1, 5, 0, 0, 0, 0, 0, 5,
+      21, 0, 0, 0, 1, 2, 3, 4,
+      5, 6, 7, 8, 9, 10, 11, 12,
+      13, 3, 0, 0 };
+
+  Decoder decoder(&original_sid[0], sizeof(original_sid));
+  StructValue fields;
+  EXPECT_TRUE(DecodeSID("sid", true, &decoder, &fields));
+
+  const StructValue* sid = NULL;
+  EXPECT_TRUE(fields.GetFieldAs<StructValue>("sid", &sid));
+
+  uint64 psid = 0;
+  EXPECT_TRUE(sid->GetFieldAsULong("PSid", &psid));
+  EXPECT_EQ(0x0403020104030201ULL, psid);
+
+  uint32 attributes = 0;
+  EXPECT_TRUE(sid->GetFieldAsUInteger("Attributes", &attributes));
+  EXPECT_EQ(0x02030405, attributes);
 }
 
 }  // namespace etw
