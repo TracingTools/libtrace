@@ -13,6 +13,7 @@ The libtrace librarie aims to help development of tools to analyze traces.
 
 ```
 cd libtrace
+svn checkout http://googlemock.googlecode.com/svn/trunk/ third_party/gmock
 cmake .
 ```
 
