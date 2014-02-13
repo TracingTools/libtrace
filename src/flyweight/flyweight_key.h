@@ -26,6 +26,8 @@
 #ifndef FLYWEIGHT_FLYWEIGHT_KEY_H_
 #define FLYWEIGHT_FLYWEIGHT_KEY_H_
 
+#include <cstdlib>
+
 namespace flyweight {
 
 struct DefaultFlyweightTag {};

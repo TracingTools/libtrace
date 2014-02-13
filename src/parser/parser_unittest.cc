@@ -65,7 +65,7 @@ TEST(ParserTest, Parse) {
      .WillOnce(Return(true));
   EXPECT_CALL(*impl.get(), Parse(Ref(observer)));
 
-  parser.RegisterParser(impl.Pass());
+  parser.RegisterParser(impl.PassAs<parser::ParserImpl>());
   EXPECT_TRUE(parser.AddTraceFile(filename));
 
   parser.Parse(observer);

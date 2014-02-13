@@ -62,10 +62,13 @@ class ParserImpl;
 // The trace files parser.
 class Parser {
  public:
-  typedef std::list<scoped_ptr<ParserImpl> > ParserList;
+  typedef std::list<ParserImpl*> ParserList;
 
   // Constructor.
   Parser() { }
+
+  // Destructor.
+  ~Parser();
 
   // Adds a new kind of parser to the list of parsers.
   // @param parser the parser to add.

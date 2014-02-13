@@ -95,7 +95,7 @@ TEST(EventToStringTest, StructType) {
 TEST(EventToStringTest, Event) {
   scoped_ptr<StructValue> payload(new StructValue());
   payload->AddField<IntValue>("field", 12);
-  Event event(42, payload.PassAs<Value>());
+  Event event(42, payload.PassAs<const Value>());
 
   std::string event_str;
   EXPECT_TRUE(ToString(event, &event_str));

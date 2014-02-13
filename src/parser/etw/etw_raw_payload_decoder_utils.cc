@@ -57,7 +57,7 @@ bool DecodeW16String(const std::string& name,
   scoped_ptr<WStringValue> decoded(decoder->DecodeW16String());
 
   if (decoded.get() == NULL ||
-      !fields->AddField(name, decoded.Pass())) {
+      !fields->AddField(name, decoded.PassAs<Value>())) {
     return false;
   }
 

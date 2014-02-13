@@ -76,7 +76,7 @@ bool DecodeArray(const std::string& name,
   scoped_ptr<event::ArrayValue> decoded(decoder->DecodeArray<T>(length));
 
   if (decoded.get() == NULL ||
-      !fields->AddField(name, decoded.Pass())) {
+      !fields->AddField(name, decoded.PassAs<event::Value>())) {
     return false;
   }
 

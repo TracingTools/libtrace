@@ -101,7 +101,7 @@ class Decoder {
 
     // Decode |size| elements from the sequence of bytes.
     for (size_t i = 0; i < size; ++i) {
-      scoped_ptr<Value> element = Decode<T>();
+      scoped_ptr<Value> element(Decode<T>());
 
       // If an error occurred, clears the array and returns no value.
       if (element.get() == NULL) {

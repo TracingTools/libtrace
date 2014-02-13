@@ -29,8 +29,13 @@
 
 namespace parser {
 
+Parser::~Parser() {
+  for (ParserList::iterator it = parsers_.begin(); it != parsers_.end(); ++it)
+    delete *it;
+}
+
 void Parser::RegisterParser(scoped_ptr<ParserImpl> parser) {
-  parsers_.push_back(parser.Pass());
+  parsers_.push_back(parser.release());
 }
 
 bool Parser::AddTraceFile(const std::string& path) {
