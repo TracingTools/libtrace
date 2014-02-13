@@ -1,0 +1,14 @@
+env:
+    - GMOCK_REPO=http://googlemock.googlecode.com/svn/trunk/
+language: cpp
+install:
+    - sudo apt-get install subversion
+before_script:
+    - svn checkout $GMOCK_REPO third_party/gmock
+script: 
+    - cmake .
+    - make
+    - ./unittests
+compiler:
+    - gcc
+    - clang

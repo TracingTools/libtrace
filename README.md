@@ -1,5 +1,7 @@
 # libtrace
 
+[![Build Status](https://travis-ci.org/cbab/libtrace.png?branch=master)](https://travis-ci.org/cbab/libtrace)
+
 The libtrace librarie aims to help development of tools to analyze traces.
 
 
