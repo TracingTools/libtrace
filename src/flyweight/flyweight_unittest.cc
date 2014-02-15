@@ -35,6 +35,7 @@ namespace {
 
 using testing::Ref;
 typedef Flyweight<int> TestedImpl;
+typedef TestedImpl::KeyValuePair KeyValuePair;
 typedef TestedImpl::Observer Observer;
 typedef TestedImpl::ObserverKeys ObserverKeys;
 typedef TestedImpl::ObserverValues ObserverValues;
@@ -79,7 +80,7 @@ TEST(FlyweightTest, ValueOf) {
 }
 
 TEST(FlyweightTest, Enumerate) {
-  DummyObserver<std::pair<Key, int> > observer;
+  DummyObserver<KeyValuePair> observer;
   scoped_ptr<MockFlyweightImpl> impl(new MockFlyweightImpl());
   EXPECT_CALL(*impl.get(), Enumerate(Ref(observer)));
 

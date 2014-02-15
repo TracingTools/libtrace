@@ -74,7 +74,8 @@ class Flyweight {
  public:
   typedef FlyweightImpl<T, I> Impl;
   typedef FlyweightKey<T, I> Key;
-  typedef base::Observer<std::pair<Key, T> > Observer;
+  typedef std::pair<Key, T> KeyValuePair;
+  typedef base::Observer<KeyValuePair> Observer;
   typedef base::Observer<Key> ObserverKeys;
   typedef base::Observer<T> ObserverValues;
 
@@ -93,8 +94,8 @@ class Flyweight {
   // @returns the value associated with the provided key.
   const T& ValueOf(const Key& key) const;
   
-  // Enumerates the key-value pairs of the flyweight.
-  // @param observer an observer that will receive the key-value pairs.
+  // Enumerates the value-key pairs of the flyweight.
+  // @param observer an observer that will receive the value-key pairs.
   void Enumerate(const Observer& observer) const;
 
   // Enumerates the keys of the flyweight.
@@ -116,6 +117,7 @@ template <typename T, typename I = DefaultFlyweightTag>
 class FlyweightImpl {
  public:
   typedef typename Flyweight<T, I>::Key Key;
+  typedef typename Flyweight<T, I>::KeyValuePair KeyValuePair;
   typedef typename Flyweight<T, I>::Observer Observer;
   typedef typename Flyweight<T, I>::ObserverKeys ObserverKeys;
   typedef typename Flyweight<T, I>::ObserverValues ObserverValues;

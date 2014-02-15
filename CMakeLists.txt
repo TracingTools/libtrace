@@ -65,6 +65,7 @@ add_library(base
 add_custom_target(flyweight SOURCES
     src/flyweight/flyweight.h
     src/flyweight/flyweight_key.h
+    src/flyweight/internals/flyweight_tree_map_impl.h
     )
 
 add_library(event
@@ -113,6 +114,7 @@ add_executable(unittests
     src/event/value_unittest.cc
     src/flyweight/flyweight_key_unittest.cc
     src/flyweight/flyweight_unittest.cc
+    src/flyweight/internals/flyweight_impl_unittest.cc
     src/parser/decoder_unittest.cc
     src/parser/parser_unittest.cc
     src/parser/etw/etw_raw_kernel_payload_decoder_unittest.cc
