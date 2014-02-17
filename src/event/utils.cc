@@ -82,7 +82,7 @@ bool ToString(const Value* value, size_t indent, std::stringstream* result) {
       *result << double_value;
       return true;
     } else if (value->GetAsString(&string_value)) {
-      *result << "\"" << string_value << "\""; // TODO(etienneb): escaping.
+      *result << "\"" << string_value << "\"";  // TODO(etienneb): escaping.
       return true;
     }
   } else if (value->IsAggregate()) {

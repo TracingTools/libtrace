@@ -42,7 +42,7 @@ class IncrementOnDelete : public IntValue {
   int* ptr_;
 };
 
-}
+}  // namespace
 
 TEST(ScalarValueTest, Accessors) {
   BoolValue value_bool(true);
@@ -812,13 +812,13 @@ TEST(ArrayValueTest, GetElementAs) {
   EXPECT_FALSE(array_value.GetElementAsString(1000, &str_value));
   EXPECT_TRUE(str_value.empty());
   EXPECT_TRUE(array_value.GetElementAsString(5, &str_value));
-  EXPECT_TRUE(str_value == "dummy");
+  EXPECT_EQ("dummy", str_value);
 
   std::wstring wstr_value;
   EXPECT_FALSE(array_value.GetElementAsWString(1000, &wstr_value));
   EXPECT_TRUE(wstr_value.empty());
   EXPECT_TRUE(array_value.GetElementAsWString(6, &wstr_value));
-  EXPECT_TRUE(wstr_value == L"dummy");
+  EXPECT_EQ(L"dummy", wstr_value);
 }
 
 TEST(ArrayValueTest, Destructor) {

@@ -68,7 +68,6 @@ bool DecodeSID(const std::string& name,
                bool is_64_bit,
                Decoder* decoder,
                StructValue* fields) {
-
   // Check the minimal SID length to avoid out-of-bound accesses.
   if (decoder->RemainingBytes() < 3 * 8)
     return false;

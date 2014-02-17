@@ -53,9 +53,9 @@ class MockFlyweightImpl : public FlyweightImpl<int> {
  public:
   MOCK_METHOD1(Insert, const Key&(const int& value));
   MOCK_CONST_METHOD1(ValueOf, const int& (const Key& key));
-  MOCK_CONST_METHOD1(Enumerate, void (const Observer& observer));
-  MOCK_CONST_METHOD1(EnumerateKeys, void (const ObserverKeys& observer));
-  MOCK_CONST_METHOD1(EnumerateValues, void (const ObserverValues& observer));
+  MOCK_CONST_METHOD1(Enumerate, void(const Observer& observer));
+  MOCK_CONST_METHOD1(EnumerateKeys, void(const ObserverKeys& observer));
+  MOCK_CONST_METHOD1(EnumerateValues, void(const ObserverValues& observer));
 };
 
 }  // namespace

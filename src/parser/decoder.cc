@@ -26,6 +26,7 @@
 #include "parser/decoder.h"
 
 #include <sstream>
+#include <string>
 
 #include "base/string_utils.h"
 

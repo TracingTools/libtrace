@@ -783,7 +783,7 @@ TEST(EtwRawDecoderTest, ImageUnloadV3) {
   expected->AddField<UIntValue>("Reserved4", 0U);
   std::wstring filename = L"\\Windows\\System32\\wbem\\fastprox.dll";
   expected->AddField<WStringValue>("ImageFileName", filename);
- 
+
   EXPECT_STREQ("Image_Unload", name.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }

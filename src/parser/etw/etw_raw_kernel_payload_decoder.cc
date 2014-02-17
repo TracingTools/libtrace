@@ -169,7 +169,7 @@ bool DecodeImagePayload(Decoder* decoder,
     return false;
   }
 
- if (version >= 3) {
+  if (version >= 3) {
     if (!Decode<UCharValue>("SignatureLevel", decoder, fields) ||
         !Decode<UCharValue>("SignatureType", decoder, fields) ||
         !Decode<UShortValue>("Reserved0", decoder, fields)) {

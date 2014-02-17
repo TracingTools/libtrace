@@ -32,7 +32,7 @@ struct DummyStruct { int field; };
 
 class DecrementOnDelete {
  public:
-  DecrementOnDelete(int* ptr) : ptr_(ptr) { }
+  explicit DecrementOnDelete(int* ptr) : ptr_(ptr) { }
   ~DecrementOnDelete() { *ptr_ -= 1; }
  private:
   int* ptr_;
@@ -40,7 +40,7 @@ class DecrementOnDelete {
 
 class Derive : public DecrementOnDelete {
  public:
-  Derive(int* ptr) : DecrementOnDelete(ptr) { }
+  explicit Derive(int* ptr) : DecrementOnDelete(ptr) { }
 };
 
 scoped_ptr<DecrementOnDelete> Identity(scoped_ptr<DecrementOnDelete> param) {
