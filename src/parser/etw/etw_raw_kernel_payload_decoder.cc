@@ -112,6 +112,25 @@ const unsigned char kTcplpDisconnectIPV4Opcode = 13;
 const unsigned char kTcplpRetransmitIPV4Opcode = 14;
 const unsigned char kTcplpTCPCopyIPV4Opcode = 18;
 
+// Constants for Registry events.
+const std::string kRegistryProviderId = "AE53722E-C863-11D2-8659-00C04FA321A1";
+const unsigned char kRegistryCreateOpcode = 10;
+const unsigned char kRegistryOpenOpcode = 11;
+const unsigned char kRegistryQueryOpcode = 13;
+const unsigned char kRegistrySetValueOpcode = 14;
+const unsigned char kRegistryQueryValueOpcode = 16;
+const unsigned char kRegistryEnumerateKeyOpcode = 17;
+const unsigned char kRegistryEnumerateValueKeyOpcode = 18;
+const unsigned char kRegistrySetInformationOpcode = 20;
+const unsigned char kRegistryKCBCreateOpcode = 22;
+const unsigned char kRegistryKCBDeleteOpcode = 23;
+const unsigned char kRegistryKCBRundownEndOpcode = 25;
+const unsigned char kRegistryCloseOpcode = 27;
+const unsigned char kRegistrySetSecurityOpcode = 28;
+const unsigned char kRegistryQuerySecurityOpcode = 29;
+const unsigned char kRegistryCountersOpcode = 34;
+const unsigned char kRegistryConfigOpcode = 35;
+
 bool DecodeImagePayload(Decoder* decoder,
                         unsigned char version,
                         unsigned char opcode,
@@ -1239,6 +1258,200 @@ bool DecodeTcplpPayload(Decoder* decoder,
   }
 }
 
+bool DecodeRegistryGenericPayload(Decoder* decoder,
+                                  unsigned char version,
+                                  unsigned char opcode,
+                                  bool is_64_bit,
+                                  std::string* operation,
+                                  StructValue* fields) {
+  DCHECK(decoder != NULL);
+  DCHECK(is_64_bit);
+  DCHECK(operation != NULL);
+  DCHECK(fields != NULL);
+
+  if (version != 2)
+    return false;
+
+  // Set the operation name.
+  switch (opcode) {
+    case kRegistryQuerySecurityOpcode:
+      *operation = "QuerySecurity";
+      break;
+
+    case kRegistryQueryOpcode:
+      *operation = "Query";
+      break;
+
+    case kRegistryKCBDeleteOpcode:
+      *operation = "KCBDelete";
+      break;
+
+    case kRegistryKCBCreateOpcode:
+      *operation = "KCBCreate";
+      break;
+
+    case kRegistryOpenOpcode:
+      *operation = "Open";
+      break;
+
+    case kRegistrySetInformationOpcode:
+      *operation = "SetInformation";
+      break;
+
+    case kRegistryEnumerateValueKeyOpcode:
+      *operation = "EnumerateValueKey";
+      break;
+
+    case kRegistryCloseOpcode:
+      *operation = "Close";
+      break;
+
+    case kRegistryEnumerateKeyOpcode:
+      *operation = "EnumerateKey";
+      break;
+
+    case kRegistryCreateOpcode:
+      *operation = "Create";
+      break;
+
+    case kRegistryQueryValueOpcode:
+      *operation = "QueryValue";
+      break;
+
+    case kRegistryKCBRundownEndOpcode:
+      *operation = "KCBRundownEnd";
+      break;
+
+    case kRegistrySetValueOpcode:
+      *operation = "SetValue";
+      break;
+
+    case kRegistrySetSecurityOpcode:
+      *operation = "SetSecurity";
+      break;
+
+    default:
+      // TODO(fdoray): NOTREACHED();
+      return false;
+  }
+
+  // Decode the payload.
+  if (!Decode<LongValue>("InitialTime", decoder, fields) ||
+      !Decode<UIntValue>("Status", decoder, fields) ||
+      !Decode<UIntValue>("Index", decoder, fields) ||
+      !Decode<ULongValue>("KeyHandle", decoder, fields) ||
+      !DecodeW16String("KeyName", decoder, fields)) {
+    return false;
+  }
+
+  return true;
+}
+
+bool DecodeRegistryCountersPayload(Decoder* decoder,
+                                   unsigned char version,
+                                   unsigned char opcode,
+                                   bool is_64_bit,
+                                   std::string* operation,
+                                   StructValue* fields) {
+  DCHECK(decoder != NULL);
+  DCHECK(opcode == kRegistryCountersOpcode);
+  DCHECK(is_64_bit);
+  DCHECK(operation != NULL);
+  DCHECK(fields != NULL);
+
+  if (version != 2)
+    return false;
+
+  // Set the operation name.
+  *operation = "Counters";
+
+  // Decode the payload.
+  if (!Decode<ULongValue>("Counter1", decoder, fields) ||
+      !Decode<ULongValue>("Counter2", decoder, fields) ||
+      !Decode<ULongValue>("Counter3", decoder, fields) ||
+      !Decode<ULongValue>("Counter4", decoder, fields) ||
+      !Decode<ULongValue>("Counter5", decoder, fields) ||
+      !Decode<ULongValue>("Counter6", decoder, fields) ||
+      !Decode<ULongValue>("Counter7", decoder, fields) ||
+      !Decode<ULongValue>("Counter8", decoder, fields) ||
+      !Decode<ULongValue>("Counter9", decoder, fields) ||
+      !Decode<ULongValue>("Counter10", decoder, fields) ||
+      !Decode<ULongValue>("Counter11", decoder, fields)) {
+    return false;
+  }
+
+  return true;
+}
+
+bool DecodeRegistryConfigPayload(Decoder* decoder,
+                                 unsigned char version,
+                                 unsigned char opcode,
+                                 bool is_64_bit,
+                                 std::string* operation,
+                                 StructValue* fields) {
+  DCHECK(decoder != NULL);
+  DCHECK(opcode == kRegistryConfigOpcode);
+  DCHECK(is_64_bit);
+  DCHECK(operation != NULL);
+  DCHECK(fields != NULL);
+
+  if (version != 2)
+    return false;
+
+  // Set the operation name.
+  *operation = "Config";
+
+  // Decode the payload.
+  if (!Decode<UIntValue>("CurrentControlSet", decoder, fields))
+    return false;
+
+  return true;
+}
+
+bool DecodeRegistryPayload(Decoder* decoder,
+                           unsigned char version,
+                           unsigned char opcode,
+                           bool is_64_bit,
+                           std::string* operation,
+                           StructValue* fields) {
+  DCHECK(decoder != NULL);
+  DCHECK(operation != NULL);
+  DCHECK(fields != NULL);
+
+  if (!is_64_bit)
+    return false;
+
+  switch (opcode) {
+    case kRegistryQuerySecurityOpcode:
+    case kRegistryQueryOpcode:
+    case kRegistryKCBDeleteOpcode:
+    case kRegistryKCBCreateOpcode:
+    case kRegistryOpenOpcode:
+    case kRegistrySetInformationOpcode:
+    case kRegistryEnumerateValueKeyOpcode:
+    case kRegistryCloseOpcode:
+    case kRegistryEnumerateKeyOpcode:
+    case kRegistryCreateOpcode:
+    case kRegistryQueryValueOpcode:
+    case kRegistryKCBRundownEndOpcode:
+    case kRegistrySetValueOpcode:
+    case kRegistrySetSecurityOpcode:
+      return DecodeRegistryGenericPayload(
+          decoder, version, opcode, is_64_bit, operation, fields);
+
+    case kRegistryCountersOpcode:
+      return DecodeRegistryCountersPayload(
+          decoder, version, opcode, is_64_bit, operation, fields);
+
+    case kRegistryConfigOpcode:
+      return DecodeRegistryConfigPayload(
+          decoder, version, opcode, is_64_bit, operation, fields);
+
+    default:
+      return false;
+  }
+}
+
 }  // namespace
 
 bool DecodeRawETWKernelPayload(const std::string& provider_id,
@@ -1300,6 +1513,14 @@ bool DecodeRawETWKernelPayload(const std::string& provider_id,
       *category = "Tcplp";
     } else {
       LOG(WARNING) << "Error while decoding Tcplp payload.";
+      return false;
+    }
+  } else if (provider_id == kRegistryProviderId) {
+    if (DecodeRegistryPayload(&decoder, version, opcode, is_64_bit,
+                              operation, fields.get())) {
+      *category = "Registry";
+    } else {
+      LOG(WARNING) << "Error while decoding Registry payload.";
       return false;
     }
   } else {
