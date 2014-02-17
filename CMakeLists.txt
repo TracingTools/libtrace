@@ -25,8 +25,19 @@ if(MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D _UNICODE /D UNICODE")
 endif()
 
+# Add ETW-Parser library.
 if(MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D USE_ETW_PARSER")
+  set(ETW_PARSER_SOURCES
+          src/parser/etw/etw_parser.cc
+          src/parser/etw/etw_parser.h
+          )
+  set(ETW_PARSER_UNITTEST
+          src/parser/etw/etw_parser_unittest.cc
+          )
+else()
+  set(ETW_PARSER_SOURCES "")
+  set(ETW_PARSER_UNITTEST "")
 endif()
 
 # Add thread library.
@@ -88,6 +99,7 @@ add_library(parser
     src/parser/etw/etw_raw_kernel_payload_decoder.h
     src/parser/etw/etw_raw_payload_decoder_utils.cc
     src/parser/etw/etw_raw_payload_decoder_utils.h
+    ${ETW_PARSER_SOURCES}
     )
 target_link_libraries(parser
     base
@@ -119,6 +131,7 @@ add_executable(unittests
     src/parser/parser_unittest.cc
     src/parser/etw/etw_raw_kernel_payload_decoder_unittest.cc
     src/parser/etw/etw_raw_payload_decoder_utils_unittest.cc
+    ${ETW_PARSER_UNITTEST}
     ${GMOCK_ROOT}/gtest/src/gtest-all.cc
     ${GMOCK_ROOT}/src/gmock-all.cc
     ${GMOCK_ROOT}/src/gmock_main.cc
