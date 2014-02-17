@@ -40,6 +40,20 @@ else()
   set(ETW_PARSER_UNITTEST "")
 endif()
 
+# Add files of the "base" library that are specific to Windows.
+if(WIN32)
+  set(BASE_WIN_SOURCES
+          src/base/win/scoped_handle.cc
+          src/base/win/scoped_handle.h
+          )
+  set(BASE_WIN_UNITTEST
+          src/base/win/scoped_handle_unittest.cc
+          )
+else()
+  set(BASE_WIN_SOURCES "")
+  set(BASE_WIN_UNITTEST "")
+endif()
+
 # Add thread library.
 if(MSVC)
   set(PTHREAD_LIB "")
@@ -71,6 +85,7 @@ add_library(base
     src/base/string_utils.cc
     src/base/string_utils.h
     src/base/scoped_ptr.h
+    ${BASE_WIN_SOURCES}
     )
     
 add_custom_target(flyweight SOURCES
@@ -121,6 +136,7 @@ add_executable(unittests
     src/base/logging_unittest.cc
     src/base/scoped_ptr_unittest.cc
     src/base/string_utils_unittest.cc
+    ${BASE_WIN_UNITTEST}
     src/event/event_unittest.cc
     src/event/utils_unittest.cc
     src/event/value_unittest.cc
