@@ -38,14 +38,15 @@ namespace {
 
 using event::ArrayValue;
 using event::CharValue;
-using event::UCharValue;
-using event::UShortValue;
 using event::IntValue;
-using event::UIntValue;
 using event::LongValue;
-using event::ULongValue;
+using event::ShortValue;
 using event::StringValue;
 using event::StructValue;
+using event::UCharValue;
+using event::UIntValue;
+using event::ULongValue;
+using event::UShortValue;
 using event::Value;
 using event::WStringValue;
 
@@ -108,6 +109,15 @@ const unsigned char kThreadSetIoPriorityOpcode = 52;
 const unsigned char kThreadAutoBoostSetFloorOpcode = 66;
 const unsigned char kThreadAutoBoostClearFloorOpcode = 67;
 const unsigned char kThreadAutoBoostEntryExhaustionOpcode = 68;
+
+// Constants for Tcplp events.
+const std::string kTcplpProviderId = "9A280AC0-C8E0-11D1-84E2-00C04FB998A2";
+const unsigned char kTcplpSendIPV4Opcode = 10;
+const unsigned char kTcplpRecvIPV4Opcode = 11;
+const unsigned char kTcplpConnectIPV4Opcode = 12;
+const unsigned char kTcplpDisconnectIPV4Opcode = 13;
+const unsigned char kTcplpRetransmitIPV4Opcode = 14;
+const unsigned char kTcplpTCPCopyIPV4Opcode = 18;
 
 const unsigned char kImageUnloadPayloadV2[] = {
     0x00, 0x00, 0x78, 0xF7, 0xFE, 0x07, 0x00, 0x00,
@@ -709,6 +719,51 @@ const unsigned char kThreadAutoBoostClearFloorPayloadV2[] = {
 const unsigned char kThreadAutoBoostEntryExhaustionPayloadV2[] = {
     0xF0, 0x34, 0xA4, 0x08, 0x00, 0xE0, 0xFF, 0xFF,
     0xBC, 0x0B, 0x00, 0x00, 0x00, 0xF8, 0xFF, 0xFF
+    };
+
+const unsigned char kTcplpSendIPV4PayloadV2[] = {
+    0x34, 0x21, 0x00, 0x00, 0x1A, 0x00, 0x00, 0x00,
+    0x02, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00,
+    0x08, 0x00, 0x09, 0x00, 0xAB, 0x26, 0x35, 0x00,
+    0xAB, 0x26, 0x35, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+    };
+
+const unsigned char kTcplpTCPCopyIPV4PayloadV2[] = {
+    0x80, 0x1A, 0x00, 0x00, 0x55, 0x00, 0x00, 0x00,
+    0x02, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00,
+    0x08, 0x00, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+    };
+
+const unsigned char kTcplpRecvIPV4PayloadV2[] = {
+    0x80, 0x1A, 0x00, 0x00, 0x55, 0x00, 0x00, 0x00,
+    0x02, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00,
+    0x08, 0x00, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+    };
+
+const unsigned char kTcplpConnectIPV4PayloadV2[] = {
+    0x80, 0x1A, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x02, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00,
+    0x08, 0x00, 0x09, 0x00, 0x96, 0x05, 0x01, 0x00,
+    0x00, 0x00, 0x01, 0x00, 0xF4, 0x00, 0x01, 0x00,
+    0x08, 0x00, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+    };
+
+const unsigned char kTcplpDisconnectIPV4PayloadV2[] = {
+    0x80, 0x1A, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x02, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00,
+    0x08, 0x00, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+    };
+
+const unsigned char kTcplpRetransmitIPV4PayloadV2[] = {
+    0x80, 0x1A, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x02, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00,
+    0x08, 0x00, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
 scoped_ptr<Value> MakeSID64(uint64 psid,
@@ -2015,6 +2070,171 @@ TEST(EtwRawDecoderTest, ThreadAutoBoostEntryExhaustionV2) {
 
   EXPECT_STREQ("Thread", category.c_str());
   EXPECT_STREQ("AutoBoostEntryExhaustion", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, TcplpSendIPV4V2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kTcplpProviderId,
+          kVersion2, kTcplpSendIPV4Opcode, k64bit,
+          reinterpret_cast<const char*>(&kTcplpSendIPV4PayloadV2[0]),
+          sizeof(kTcplpSendIPV4PayloadV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<UIntValue>("PID", 8500U);
+  expected->AddField<UIntValue>("size", 26U);
+  expected->AddField<UIntValue>("daddr", 2U);
+  expected->AddField<UIntValue>("saddr", 3U);
+  expected->AddField<UShortValue>("dport", 8);
+  expected->AddField<UShortValue>("sport", 9);
+  expected->AddField<UIntValue>("startime", 3483307U);
+  expected->AddField<UIntValue>("endtime", 3483307U);
+  expected->AddField<UIntValue>("seqnum", 0U);
+  expected->AddField<ULongValue>("connid", 0ULL);
+
+  EXPECT_STREQ("Tcplp", category.c_str());
+  EXPECT_STREQ("SendIPV4", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, TcplpTCPCopyIPV4V2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kTcplpProviderId,
+          kVersion2, kTcplpTCPCopyIPV4Opcode, k64bit,
+          reinterpret_cast<const char*>(&kTcplpTCPCopyIPV4PayloadV2[0]),
+          sizeof(kTcplpTCPCopyIPV4PayloadV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<UIntValue>("PID", 6784U);
+  expected->AddField<UIntValue>("size", 85U);
+  expected->AddField<UIntValue>("daddr", 2U);
+  expected->AddField<UIntValue>("saddr", 3U);
+  expected->AddField<UShortValue>("dport", 8);
+  expected->AddField<UShortValue>("sport", 9);
+  expected->AddField<UIntValue>("seqnum", 0U);
+  expected->AddField<ULongValue>("connid", 0ULL);
+
+  EXPECT_STREQ("Tcplp", category.c_str());
+  EXPECT_STREQ("TCPCopyIPV4", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, TcplpRecvIPV4V2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kTcplpProviderId,
+          kVersion2, kTcplpRecvIPV4Opcode, k64bit,
+          reinterpret_cast<const char*>(&kTcplpRecvIPV4PayloadV2[0]),
+          sizeof(kTcplpRecvIPV4PayloadV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<UIntValue>("PID", 6784U);
+  expected->AddField<UIntValue>("size", 85U);
+  expected->AddField<UIntValue>("daddr", 2U);
+  expected->AddField<UIntValue>("saddr", 3U);
+  expected->AddField<UShortValue>("dport", 8);
+  expected->AddField<UShortValue>("sport", 9);
+  expected->AddField<UIntValue>("seqnum", 0U);
+  expected->AddField<ULongValue>("connid", 0ULL);
+
+  EXPECT_STREQ("Tcplp", category.c_str());
+  EXPECT_STREQ("RecvIPV4", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, TcplpConnectIPV4V2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kTcplpProviderId,
+          kVersion2, kTcplpConnectIPV4Opcode, k64bit,
+          reinterpret_cast<const char*>(&kTcplpConnectIPV4PayloadV2[0]),
+          sizeof(kTcplpConnectIPV4PayloadV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<UIntValue>("PID", 6784U);
+  expected->AddField<UIntValue>("size", 0U);
+  expected->AddField<UIntValue>("daddr", 2U);
+  expected->AddField<UIntValue>("saddr", 3U);
+  expected->AddField<UShortValue>("dport", 8);
+  expected->AddField<UShortValue>("sport", 9);
+  expected->AddField<UShortValue>("mss", 1430);
+  expected->AddField<UShortValue>("sackopt", 1);
+  expected->AddField<UShortValue>("tsopt", 0);
+  expected->AddField<UShortValue>("wsopt", 1);
+  expected->AddField<UIntValue>("rcvwin", 65780U);
+  expected->AddField<ShortValue>("rcvwinscale", 8);
+  expected->AddField<ShortValue>("sndwinscale", 6);
+  expected->AddField<UIntValue>("seqnum", 0U);
+  expected->AddField<ULongValue>("connid", 0ULL);
+
+  EXPECT_STREQ("Tcplp", category.c_str());
+  EXPECT_STREQ("ConnectIPV4", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, TcplpDisconnectIPV4V2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kTcplpProviderId,
+          kVersion2, kTcplpDisconnectIPV4Opcode, k64bit,
+          reinterpret_cast<const char*>(&kTcplpDisconnectIPV4PayloadV2[0]),
+          sizeof(kTcplpDisconnectIPV4PayloadV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<UIntValue>("PID", 6784U);
+  expected->AddField<UIntValue>("size", 0U);
+  expected->AddField<UIntValue>("daddr", 2U);
+  expected->AddField<UIntValue>("saddr", 3U);
+  expected->AddField<UShortValue>("dport", 8);
+  expected->AddField<UShortValue>("sport", 9);
+  expected->AddField<UIntValue>("seqnum", 0U);
+  expected->AddField<ULongValue>("connid", 0ULL);
+
+  EXPECT_STREQ("Tcplp", category.c_str());
+  EXPECT_STREQ("DisconnectIPV4", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, TcplpRetransmitIPV4V2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kTcplpProviderId,
+          kVersion2, kTcplpRetransmitIPV4Opcode, k64bit,
+          reinterpret_cast<const char*>(&kTcplpRetransmitIPV4PayloadV2[0]),
+          sizeof(kTcplpRetransmitIPV4PayloadV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<UIntValue>("PID", 6784U);
+  expected->AddField<UIntValue>("size", 0U);
+  expected->AddField<UIntValue>("daddr", 2U);
+  expected->AddField<UIntValue>("saddr", 3U);
+  expected->AddField<UShortValue>("dport", 8);
+  expected->AddField<UShortValue>("sport", 9);
+  expected->AddField<UIntValue>("seqnum", 0U);
+  expected->AddField<ULongValue>("connid", 0ULL);
+
+  EXPECT_STREQ("Tcplp", category.c_str());
+  EXPECT_STREQ("RetransmitIPV4", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 

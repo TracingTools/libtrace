@@ -38,6 +38,7 @@ namespace {
 using event::CharValue;
 using event::IntValue;
 using event::LongValue;
+using event::ShortValue;
 using event::StringValue;
 using event::StructValue;
 using event::UCharValue;
@@ -101,6 +102,15 @@ const unsigned char kProcessTerminateOpcode = 11;
 const unsigned char kProcessPerfCtrOpcode = 32;
 const unsigned char kProcessPerfCtrRundownOpcode = 33;
 const unsigned char kProcessDefunctOpcode = 39;
+
+// Constants for Tcplp events.
+const std::string kTcplpProviderId = "9A280AC0-C8E0-11D1-84E2-00C04FB998A2";
+const unsigned char kTcplpSendIPV4Opcode = 10;
+const unsigned char kTcplpRecvIPV4Opcode = 11;
+const unsigned char kTcplpConnectIPV4Opcode = 12;
+const unsigned char kTcplpDisconnectIPV4Opcode = 13;
+const unsigned char kTcplpRetransmitIPV4Opcode = 14;
+const unsigned char kTcplpTCPCopyIPV4Opcode = 18;
 
 bool DecodeImagePayload(Decoder* decoder,
                         unsigned char version,
@@ -1036,6 +1046,199 @@ bool DecodeProcessPayload(Decoder* decoder,
   }
 }
 
+bool DecodeTcplpConnectIPV4Payload(Decoder* decoder,
+                                   unsigned char version,
+                                   unsigned char opcode,
+                                   bool is_64_bit,
+                                   std::string* operation,
+                                   StructValue* fields) {
+  DCHECK(decoder != NULL);
+  DCHECK(opcode == kTcplpConnectIPV4Opcode);
+  DCHECK(is_64_bit);
+  DCHECK(operation != NULL);
+  DCHECK(fields != NULL);
+
+  if (version != 2)
+    return false;
+
+  // Set the operation name.
+  *operation = "ConnectIPV4";
+
+  // Decode the payload.
+  if (!Decode<UIntValue>("PID", decoder, fields) ||
+      !Decode<UIntValue>("size", decoder, fields) ||
+      !Decode<UIntValue>("daddr", decoder, fields) ||
+      !Decode<UIntValue>("saddr", decoder, fields) ||
+      !Decode<UShortValue>("dport", decoder, fields) ||
+      !Decode<UShortValue>("sport", decoder, fields) ||
+      !Decode<UShortValue>("mss", decoder, fields) ||
+      !Decode<UShortValue>("sackopt", decoder, fields) ||
+      !Decode<UShortValue>("tsopt", decoder, fields) ||
+      !Decode<UShortValue>("wsopt", decoder, fields) ||
+      !Decode<UIntValue>("rcvwin", decoder, fields) ||
+      !Decode<ShortValue>("rcvwinscale", decoder, fields) ||
+      !Decode<ShortValue>("sndwinscale", decoder, fields) ||
+      !Decode<UIntValue>("seqnum", decoder, fields) ||
+      !Decode<ULongValue>("connid", decoder, fields)) {
+    return false;
+  }
+
+  return true;
+}
+
+bool DecodeTcplpDisconnectIPV4Payload(Decoder* decoder,
+                                      unsigned char version,
+                                      unsigned char opcode,
+                                      bool is_64_bit,
+                                      std::string* operation,
+                                      StructValue* fields) {
+  DCHECK(decoder != NULL);
+  DCHECK(opcode == kTcplpDisconnectIPV4Opcode);
+  DCHECK(is_64_bit);
+  DCHECK(operation != NULL);
+  DCHECK(fields != NULL);
+
+  if (version != 2)
+    return false;
+
+  // Set the operation name.
+  *operation = "DisconnectIPV4";
+
+  // Decode the payload.
+  if (!Decode<UIntValue>("PID", decoder, fields) ||
+      !Decode<UIntValue>("size", decoder, fields) ||
+      !Decode<UIntValue>("daddr", decoder, fields) ||
+      !Decode<UIntValue>("saddr", decoder, fields) ||
+      !Decode<UShortValue>("dport", decoder, fields) ||
+      !Decode<UShortValue>("sport", decoder, fields) ||
+      !Decode<UIntValue>("seqnum", decoder, fields) ||
+      !Decode<ULongValue>("connid", decoder, fields)) {
+    return false;
+  }
+
+  return true;
+}
+
+bool DecodeTcplpTCPCopyRetransmitRecvIPV4Payload(Decoder* decoder,
+                                                 unsigned char version,
+                                                 unsigned char opcode,
+                                                 bool is_64_bit,
+                                                 std::string* operation,
+                                                 StructValue* fields) {
+  DCHECK(decoder != NULL);
+  DCHECK(is_64_bit);
+  DCHECK(operation != NULL);
+  DCHECK(fields != NULL);
+
+  if (version != 2)
+    return false;
+
+  // Set the operation name.
+  switch (opcode) {
+    case kTcplpTCPCopyIPV4Opcode:
+      *operation = "TCPCopyIPV4";
+      break;
+
+    case kTcplpRetransmitIPV4Opcode:
+      *operation = "RetransmitIPV4";
+      break;
+
+    case kTcplpRecvIPV4Opcode:
+      *operation = "RecvIPV4";
+      break;
+
+    default:
+      // TODO(fdoray): NOTREACHED();
+      return false;
+  }
+
+  // Decode the payload.
+  if (!Decode<UIntValue>("PID", decoder, fields) ||
+      !Decode<UIntValue>("size", decoder, fields) ||
+      !Decode<UIntValue>("daddr", decoder, fields) ||
+      !Decode<UIntValue>("saddr", decoder, fields) ||
+      !Decode<UShortValue>("dport", decoder, fields) ||
+      !Decode<UShortValue>("sport", decoder, fields) ||
+      !Decode<UIntValue>("seqnum", decoder, fields) ||
+      !Decode<ULongValue>("connid", decoder, fields)) {
+    return false;
+  }
+
+  return true;
+}
+
+bool DecodeTcplpSendIPV4Payload(Decoder* decoder,
+                                unsigned char version,
+                                unsigned char opcode,
+                                bool is_64_bit,
+                                std::string* operation,
+                                StructValue* fields) {
+  DCHECK(decoder != NULL);
+  DCHECK(opcode == kTcplpSendIPV4Opcode);
+  DCHECK(is_64_bit);
+  DCHECK(operation != NULL);
+  DCHECK(fields != NULL);
+
+  if (version != 2)
+    return false;
+
+  // Set the operation name.
+  *operation = "SendIPV4";
+
+  // Decode the payload.
+  if (!Decode<UIntValue>("PID", decoder, fields) ||
+      !Decode<UIntValue>("size", decoder, fields) ||
+      !Decode<UIntValue>("daddr", decoder, fields) ||
+      !Decode<UIntValue>("saddr", decoder, fields) ||
+      !Decode<UShortValue>("dport", decoder, fields) ||
+      !Decode<UShortValue>("sport", decoder, fields) ||
+      !Decode<UIntValue>("startime", decoder, fields) ||
+      !Decode<UIntValue>("endtime", decoder, fields) ||
+      !Decode<UIntValue>("seqnum", decoder, fields) ||
+      !Decode<ULongValue>("connid", decoder, fields)) {
+    return false;
+  }
+
+  return true;
+}
+
+bool DecodeTcplpPayload(Decoder* decoder,
+                        unsigned char version,
+                        unsigned char opcode,
+                        bool is_64_bit,
+                        std::string* operation,
+                        StructValue* fields) {
+  DCHECK(decoder != NULL);
+  DCHECK(operation != NULL);
+  DCHECK(fields != NULL);
+
+  if (!is_64_bit)
+    return false;
+
+  switch (opcode) {
+    case kTcplpConnectIPV4Opcode:
+      return DecodeTcplpConnectIPV4Payload(
+          decoder, version, opcode, is_64_bit, operation, fields);
+
+    case kTcplpDisconnectIPV4Opcode:
+      return DecodeTcplpDisconnectIPV4Payload(
+          decoder, version, opcode, is_64_bit, operation, fields);
+
+    case kTcplpTCPCopyIPV4Opcode:
+    case kTcplpRetransmitIPV4Opcode:
+    case kTcplpRecvIPV4Opcode:
+      return DecodeTcplpTCPCopyRetransmitRecvIPV4Payload(
+          decoder, version, opcode, is_64_bit, operation, fields);
+
+    case kTcplpSendIPV4Opcode:
+      return DecodeTcplpSendIPV4Payload(
+          decoder, version, opcode, is_64_bit, operation, fields);
+
+    default:
+      return false;
+  }
+}
+
 }  // namespace
 
 bool DecodeRawETWKernelPayload(const std::string& provider_id,
@@ -1089,6 +1292,14 @@ bool DecodeRawETWKernelPayload(const std::string& provider_id,
       *category = "Process";
     } else {
       LOG(WARNING) << "Error while decoding Process payload.";
+      return false;
+    }
+  } else if (provider_id == kTcplpProviderId) {
+    if (DecodeTcplpPayload(&decoder, version, opcode, is_64_bit,
+                           operation, fields.get())) {
+      *category = "Tcplp";
+    } else {
+      LOG(WARNING) << "Error while decoding Tcplp payload.";
       return false;
     }
   } else {
