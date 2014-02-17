@@ -106,44 +106,45 @@ bool DecodeImagePayload(Decoder* decoder,
                         unsigned char version,
                         unsigned char opcode,
                         bool is_64_bit,
-                        std::string* event_name,
+                        std::string* operation,
                         StructValue* fields) {
   DCHECK(decoder != NULL);
-  DCHECK(event_name != NULL);
+  DCHECK(operation != NULL);
   DCHECK(fields != NULL);
 
   if (version > 3)
     return false;
 
-  // Set the event name.
+  // Set the operation name.
   switch (opcode) {
     case kImageLoadOpcode:
       // Image load event. Generated when a DLL or executable file is loaded.
-      *event_name = "Image_Load";
+      *operation = "Load";
       break;
     case kImageUnloadOpcode:
       // Image unload event. Generated when a DLL or executable file is
       // unloaded.
-      *event_name = "Image_Unload";
+      *operation = "Unload";
       break;
     case kImageDCStartOpcode:
       // Data collection start event. Enumerates all loaded images at the
       // beginning of the trace.
-      *event_name = "Image_DCStart";
+      *operation = "DCStart";
       break;
     case kImageDCEndOpcode:
       // Data collection end event. Enumerates all loaded images at the end
       // of the trace.
-      *event_name = "Image_DCEnd";
+      *operation = "DCEnd";
       break;
     case kImageKernelBaseOpcode:
       // Kernel load address event.
-      *event_name = "Image_KernelBase";
+      *operation = "KernelBase";
       break;
     default:
       return false;
   }
 
+  // Decode the payload.
   if (!DecodeUInteger("BaseAddress", is_64_bit, decoder, fields))
     return false;
 
@@ -199,24 +200,24 @@ bool DecodePerfInfoCollectionPayload(Decoder* decoder,
                                      unsigned char version,
                                      unsigned char opcode,
                                      bool is_64_bit,
-                                     std::string* event_name,
+                                     std::string* operation,
                                      StructValue* fields) {
   DCHECK(is_64_bit);
   DCHECK(decoder != NULL);
-  DCHECK(event_name != NULL);
+  DCHECK(operation != NULL);
   DCHECK(fields != NULL);
 
   if (version != 3)
     return false;
 
-  // Set the event name.
+  // Set the operation name.
   switch (opcode) {
     case kPerfInfoCollectionStartOpcode:
-      *event_name = "PerfInfo_CollectionStart";
+      *operation = "CollectionStart";
       break;
 
     case kPerfInfoCollectionEndOpcode:
-      *event_name = "PerfInfo_CollectionEnd";
+      *operation = "CollectionEnd";
       break;
 
     default:
@@ -239,24 +240,24 @@ bool DecodePerfInfoISRPayload(Decoder* decoder,
                               unsigned char version,
                               unsigned char opcode,
                               bool is_64_bit,
-                              std::string* event_name,
+                              std::string* operation,
                               StructValue* fields) {
   DCHECK(is_64_bit);
   DCHECK(decoder != NULL);
-  DCHECK(event_name != NULL);
+  DCHECK(operation != NULL);
   DCHECK(fields != NULL);
 
   if (version != 2)
     return false;
 
-  // Set the event name.
+  // Set the operation name.
   switch (opcode) {
     case kPerfInfoISRMSIOpcode:
-      *event_name = "PerfInfo_ISR-MSI";
+      *operation = "ISR-MSI";
       break;
 
     case kPerfInfoISROpcode:
-      *event_name = "PerfInfo_ISR";
+      *operation = "ISR";
       break;
 
     default:
@@ -285,24 +286,24 @@ bool DecodePerfInfoCollectionSecondPayload(Decoder* decoder,
                                            unsigned char version,
                                            unsigned char opcode,
                                            bool is_64_bit,
-                                           std::string* event_name,
+                                           std::string* operation,
                                            StructValue* fields) {
   DCHECK(is_64_bit);
   DCHECK(decoder != NULL);
-  DCHECK(event_name != NULL);
+  DCHECK(operation != NULL);
   DCHECK(fields != NULL);
 
   if (version != 3)
     return false;
 
-  // Set the event name.
+  // Set the operation name.
   switch (opcode) {
     case kPerfInfoCollectionStartSecondOpcode:
-      *event_name = "PerfInfo_CollectionStart";
+      *operation = "CollectionStart";
       break;
 
     case kPerfInfoCollectionEndSecondOpcode:
-      *event_name = "PerfInfo_CollectionEnd";
+      *operation = "CollectionEnd";
       break;
 
     default:
@@ -325,24 +326,24 @@ bool DecodePerfInfoDPCPayload(Decoder* decoder,
                               unsigned char version,
                               unsigned char opcode,
                               bool is_64_bit,
-                              std::string* event_name,
+                              std::string* operation,
                               StructValue* fields) {
   DCHECK(is_64_bit);
   DCHECK(decoder != NULL);
-  DCHECK(event_name != NULL);
+  DCHECK(operation != NULL);
   DCHECK(fields != NULL);
 
   if (version != 2)
     return false;
 
-  // Set the event name.
+  // Set the operation name.
   switch (opcode) {
     case kPerfInfoDPCOpcode:
-      *event_name = "PerfInfo_DPC";
+      *operation = "DPC";
       break;
 
     case kPerfInfoTimerDPCOpcode:
-      *event_name = "PerfInfo_TimerDPC";
+      *operation = "TimerDPC";
       break;
 
     default:
@@ -363,19 +364,19 @@ bool DecodePerfInfoSysClEnterPayload(Decoder* decoder,
                                      unsigned char version,
                                      unsigned char opcode,
                                      bool is_64_bit,
-                                     std::string* event_name,
+                                     std::string* operation,
                                      StructValue* fields) {
   DCHECK(opcode == kPerfInfoSysClEnterOpcode);
   DCHECK(is_64_bit);
   DCHECK(decoder != NULL);
-  DCHECK(event_name != NULL);
+  DCHECK(operation != NULL);
   DCHECK(fields != NULL);
 
   if (version != 2)
     return false;
 
-  // Set the event name.
-  *event_name = "PerfInfo_SysClEnter";
+  // Set the operation name.
+  *operation = "SysClEnter";
 
   // Decode the payload.
   if (!Decode<ULongValue>("SysCallAddress", decoder, fields))
@@ -388,19 +389,19 @@ bool DecodePerfInfoSysClExitPayload(Decoder* decoder,
                                     unsigned char version,
                                     unsigned char opcode,
                                     bool is_64_bit,
-                                    std::string* event_name,
+                                    std::string* operation,
                                     StructValue* fields) {
   DCHECK(opcode == kPerfInfoSysClExitOpcode);
   DCHECK(is_64_bit);
   DCHECK(decoder != NULL);
-  DCHECK(event_name != NULL);
+  DCHECK(operation != NULL);
   DCHECK(fields != NULL);
 
   if (version != 2)
     return false;
 
-  // Set the event name.
-  *event_name = "PerfInfo_SysClExit";
+  // Set the operation name.
+  *operation = "SysClExit";
 
   // Decode the payload.
   if (!Decode<UIntValue>("SysCallNtStatus", decoder, fields))
@@ -413,19 +414,19 @@ bool DecodePerfInfoSampleProfPayload(Decoder* decoder,
                                      unsigned char version,
                                      unsigned char opcode,
                                      bool is_64_bit,
-                                     std::string* event_name,
+                                     std::string* operation,
                                      StructValue* fields) {
   DCHECK(opcode == kPerfInfoSampleProfOpcode);
   DCHECK(is_64_bit);
   DCHECK(decoder != NULL);
-  DCHECK(event_name != NULL);
+  DCHECK(operation != NULL);
   DCHECK(fields != NULL);
 
   if (version != 2)
     return false;
 
-  // Set the event name.
-  *event_name = "PerfInfo_SampleProf";
+  // Set the operation name.
+  *operation = "SampleProf";
 
   // Decode the payload.
   if (!Decode<ULongValue>("InstructionPointer", decoder, fields) ||
@@ -442,10 +443,10 @@ bool DecodePerfInfoPayload(Decoder* decoder,
                            unsigned char version,
                            unsigned char opcode,
                            bool is_64_bit,
-                           std::string* event_name,
+                           std::string* operation,
                            StructValue* fields) {
   DCHECK(decoder != NULL);
-  DCHECK(event_name != NULL);
+  DCHECK(operation != NULL);
   DCHECK(fields != NULL);
 
   if (!is_64_bit)
@@ -455,34 +456,34 @@ bool DecodePerfInfoPayload(Decoder* decoder,
     case kPerfInfoCollectionStartOpcode:
     case kPerfInfoCollectionEndOpcode:
       return DecodePerfInfoCollectionPayload(
-          decoder, version, opcode, is_64_bit, event_name, fields);
+          decoder, version, opcode, is_64_bit, operation, fields);
 
     case kPerfInfoCollectionStartSecondOpcode:
     case kPerfInfoCollectionEndSecondOpcode:
       return DecodePerfInfoCollectionSecondPayload(
-          decoder, version, opcode, is_64_bit, event_name, fields);
+          decoder, version, opcode, is_64_bit, operation, fields);
 
     case kPerfInfoISROpcode:
     case kPerfInfoISRMSIOpcode:
       return DecodePerfInfoISRPayload(
-          decoder, version, opcode, is_64_bit, event_name, fields);
+          decoder, version, opcode, is_64_bit, operation, fields);
 
     case kPerfInfoDPCOpcode:
     case kPerfInfoTimerDPCOpcode:
       return DecodePerfInfoDPCPayload(
-          decoder, version, opcode, is_64_bit, event_name, fields);
+          decoder, version, opcode, is_64_bit, operation, fields);
 
     case kPerfInfoSysClEnterOpcode:
       return DecodePerfInfoSysClEnterPayload(
-          decoder, version, opcode, is_64_bit, event_name, fields);
+          decoder, version, opcode, is_64_bit, operation, fields);
 
     case kPerfInfoSysClExitOpcode:
       return DecodePerfInfoSysClExitPayload(
-          decoder, version, opcode, is_64_bit, event_name, fields);
+          decoder, version, opcode, is_64_bit, operation, fields);
 
     case kPerfInfoSampleProfOpcode:
       return DecodePerfInfoSampleProfPayload(
-          decoder, version, opcode, is_64_bit, event_name, fields);
+          decoder, version, opcode, is_64_bit, operation, fields);
 
     case kPerfInfoUnknown80Opcode:
     case kPerfInfoUnknown81Opcode:
@@ -502,24 +503,24 @@ bool DecodeThreadAutoBoostPayload(Decoder* decoder,
                                   unsigned char version,
                                   unsigned char opcode,
                                   bool is_64_bit,
-                                  std::string* event_name,
+                                  std::string* operation,
                                   StructValue* fields) {
   DCHECK(is_64_bit);
   DCHECK(decoder != NULL);
-  DCHECK(event_name != NULL);
+  DCHECK(operation != NULL);
   DCHECK(fields != NULL);
 
   if (version != 2)
     return false;
 
-  // Set the event name.
+  // Set the operation name.
   switch (opcode) {
     case kThreadAutoBoostEntryExhaustionOpcode:
-      *event_name = "Thread_AutoBoostEntryExhaustion";
+      *operation = "AutoBoostEntryExhaustion";
       break;
 
     case kThreadAutoBoostClearFloorOpcode:
-      *event_name = "Thread_AutoBoostClearFloor";
+      *operation = "AutoBoostClearFloor";
       break;
 
     default:
@@ -551,19 +552,19 @@ bool DecodeThreadAutoBoostSetFloorPayload(Decoder* decoder,
                                           unsigned char version,
                                           unsigned char opcode,
                                           bool is_64_bit,
-                                          std::string* event_name,
+                                          std::string* operation,
                                           StructValue* fields) {
   DCHECK(opcode == kThreadAutoBoostSetFloorOpcode);
   DCHECK(is_64_bit);
   DCHECK(decoder != NULL);
-  DCHECK(event_name != NULL);
+  DCHECK(operation != NULL);
   DCHECK(fields != NULL);
 
   if (version != 2)
     return false;
 
-  // Set the event name.
-  *event_name = "Thread_AutoBoostSetFloor";
+  // Set the operation name.
+  *operation = "AutoBoostSetFloor";
 
   // Decode the payload.
   if (!Decode<ULongValue>("Lock", decoder, fields) ||
@@ -582,32 +583,32 @@ bool DecodeThreadSetPriorityPayload(Decoder* decoder,
                                     unsigned char version,
                                     unsigned char opcode,
                                     bool is_64_bit,
-                                    std::string* event_name,
+                                    std::string* operation,
                                     StructValue* fields) {
   DCHECK(is_64_bit);
   DCHECK(decoder != NULL);
-  DCHECK(event_name != NULL);
+  DCHECK(operation != NULL);
   DCHECK(fields != NULL);
 
   if (version != 3)
     return false;
 
-  // Set the event name.
+  // Set the operation name.
   switch (opcode) {
     case kThreadSetPriorityOpcode:
-      *event_name = "Thread_SetPriority";
+      *operation = "SetPriority";
       break;
 
     case kThreadSetIoPriorityOpcode:
-      *event_name = "Thread_SetIoPriority";
+      *operation = "SetIoPriority";
       break;
 
     case kThreadSetBasePriorityOpcode:
-      *event_name = "Thread_SetBasePriority";
+      *operation = "SetBasePriority";
       break;
 
     case kThreadSetPagePriorityOpcode:
-      *event_name = "Thread_SetPagePriority";
+      *operation = "SetPagePriority";
       break;
 
     default:
@@ -630,19 +631,19 @@ bool DecodeThreadCSwitchPayload(Decoder* decoder,
                                 unsigned char version,
                                 unsigned char opcode,
                                 bool is_64_bit,
-                                std::string* event_name,
+                                std::string* operation,
                                 StructValue* fields) {
   DCHECK(opcode == kThreadCSwitchOpcode);
   DCHECK(is_64_bit);
   DCHECK(decoder != NULL);
-  DCHECK(event_name != NULL);
+  DCHECK(operation != NULL);
   DCHECK(fields != NULL);
 
   if (version != 2)
     return false;
 
-  // Set the event name.
-  *event_name = "Thread_CSwitch";
+  // Set the operation name.
+  *operation = "CSwitch";
 
   // Decode the payload.
   if (!Decode<UIntValue>("NewThreadId", decoder, fields) ||
@@ -667,19 +668,19 @@ bool DecodeThreadReadyThreadPayload(Decoder* decoder,
                                     unsigned char version,
                                     unsigned char opcode,
                                     bool is_64_bit,
-                                    std::string* event_name,
+                                    std::string* operation,
                                     StructValue* fields) {
   DCHECK(decoder != NULL);
   DCHECK(opcode == kThreadReadyThreadOpcode);
   DCHECK(is_64_bit);
-  DCHECK(event_name != NULL);
+  DCHECK(operation != NULL);
   DCHECK(fields != NULL);
 
   if (version != 2)
     return false;
 
-  // Set the event name.
-  *event_name = "Thread_ReadyThread";
+  // Set the operation name.
+  *operation = "ReadyThread";
 
   // Decode the payload.
   if (!Decode<UIntValue>("TThreadId", decoder, fields) ||
@@ -697,19 +698,19 @@ bool DecodeThreadSpinLockPayload(Decoder* decoder,
                                 unsigned char version,
                                 unsigned char opcode,
                                 bool is_64_bit,
-                                std::string* event_name,
+                                std::string* operation,
                                 StructValue* fields) {
   DCHECK(decoder != NULL);
   DCHECK(opcode == kThreadSpinLockOpcode);
   DCHECK(is_64_bit);
-  DCHECK(event_name != NULL);
+  DCHECK(operation != NULL);
   DCHECK(fields != NULL);
 
   if (version != 2)
     return false;
 
-  // Set the event name.
-  *event_name = "Thread_SpinLock";
+  // Set the operation name.
+  *operation = "SpinLock";
 
   // Decode the payload.
   if (!Decode<ULongValue>("SpinLockAddress", decoder, fields) ||
@@ -734,32 +735,32 @@ bool DecodeThreadStartEndPayload(Decoder* decoder,
                                  unsigned char version,
                                  unsigned char opcode,
                                  bool is_64_bit,
-                                 std::string* event_name,
+                                 std::string* operation,
                                  StructValue* fields) {
   DCHECK(decoder != NULL);
   DCHECK(is_64_bit);
-  DCHECK(event_name != NULL);
+  DCHECK(operation != NULL);
   DCHECK(fields != NULL);
 
   if (version != 3)
     return false;
 
-  // Set the event name.
+  // Set the operation name.
   switch (opcode) {
     case kThreadDCStartOpcode:
-      *event_name = "Thread_DCStart";
+      *operation = "DCStart";
       break;
 
     case kThreadStartOpcode:
-      *event_name = "Thread_Start";
+      *operation = "Start";
       break;
 
     case kThreadDCEndOpcode:
-      *event_name = "Thread_DCEnd";
+      *operation = "DCEnd";
       break;
 
     case kThreadEndOpcode:
-      *event_name = "Thread_End";
+      *operation = "End";
       break;
 
     default:
@@ -792,10 +793,10 @@ bool DecodeThreadPayload(Decoder* decoder,
                          unsigned char version,
                          unsigned char opcode,
                          bool is_64_bit,
-                         std::string* event_name,
+                         std::string* operation,
                          StructValue* fields) {
   DCHECK(decoder != NULL);
-  DCHECK(event_name != NULL);
+  DCHECK(operation != NULL);
   DCHECK(fields != NULL);
 
   if (!is_64_bit)
@@ -804,38 +805,38 @@ bool DecodeThreadPayload(Decoder* decoder,
   switch (opcode) {
     case kThreadCSwitchOpcode:
       return DecodeThreadCSwitchPayload(
-          decoder, version, opcode, is_64_bit, event_name, fields);
+          decoder, version, opcode, is_64_bit, operation, fields);
 
     case kThreadReadyThreadOpcode:
       return DecodeThreadReadyThreadPayload(
-          decoder, version, opcode, is_64_bit, event_name, fields);
+          decoder, version, opcode, is_64_bit, operation, fields);
 
     case kThreadSpinLockOpcode:
       return DecodeThreadSpinLockPayload(
-          decoder, version, opcode, is_64_bit, event_name, fields);
+          decoder, version, opcode, is_64_bit, operation, fields);
 
     case kThreadDCStartOpcode:
     case kThreadStartOpcode:
     case kThreadDCEndOpcode:
     case kThreadEndOpcode:
       return DecodeThreadStartEndPayload(
-          decoder, version, opcode, is_64_bit, event_name, fields);
+          decoder, version, opcode, is_64_bit, operation, fields);
 
     case kThreadAutoBoostClearFloorOpcode:
     case kThreadAutoBoostEntryExhaustionOpcode:
       return DecodeThreadAutoBoostPayload(
-          decoder, version, opcode, is_64_bit, event_name, fields);
+          decoder, version, opcode, is_64_bit, operation, fields);
 
     case kThreadAutoBoostSetFloorOpcode:
       return DecodeThreadAutoBoostSetFloorPayload(
-          decoder, version, opcode, is_64_bit, event_name, fields);
+          decoder, version, opcode, is_64_bit, operation, fields);
 
     case kThreadSetPriorityOpcode:
     case kThreadSetIoPriorityOpcode:
     case kThreadSetBasePriorityOpcode:
     case kThreadSetPagePriorityOpcode:
       return DecodeThreadSetPriorityPayload(
-          decoder, version, opcode, is_64_bit, event_name, fields);
+          decoder, version, opcode, is_64_bit, operation, fields);
 
     default:
       return false;
@@ -846,11 +847,11 @@ bool DecodeProcessStartEndDefunctPayload(Decoder* decoder,
                                          unsigned char version,
                                          unsigned char opcode,
                                          bool is_64_bit,
-                                         std::string* event_name,
+                                         std::string* operation,
                                          StructValue* fields) {
   DCHECK(is_64_bit);
   DCHECK(decoder != NULL);
-  DCHECK(event_name != NULL);
+  DCHECK(operation != NULL);
   DCHECK(fields != NULL);
 
   if (opcode == kProcessDefunctOpcode) {
@@ -861,26 +862,26 @@ bool DecodeProcessStartEndDefunctPayload(Decoder* decoder,
       return false;
   }
 
-  // Set the event name.
+  // Set the operation name.
   switch (opcode) {
     case kProcessDCStartOpcode:
-      *event_name = "Process_DCStart";
+      *operation = "DCStart";
       break;
 
     case kProcessStartOpcode:
-      *event_name = "Process_Start";
+      *operation = "Start";
       break;
 
     case kProcessDCEndOpcode:
-      *event_name = "Process_DCEnd";
+      *operation = "DCEnd";
       break;
 
     case kProcessEndOpcode:
-      *event_name = "Process_End";
+      *operation = "End";
       break;
 
     case kProcessDefunctOpcode:
-      *event_name = "Process_Defunct";
+      *operation = "Defunct";
       break;
 
     default:
@@ -927,19 +928,19 @@ bool DecodeProcessTerminatePayload(Decoder* decoder,
                                    unsigned char version,
                                    unsigned char opcode,
                                    bool is_64_bit,
-                                   std::string* event_name,
+                                   std::string* operation,
                                    StructValue* fields) {
   DCHECK(opcode == kProcessTerminateOpcode);
   DCHECK(is_64_bit);
   DCHECK(decoder != NULL);
-  DCHECK(event_name != NULL);
+  DCHECK(operation != NULL);
   DCHECK(fields != NULL);
 
   if (version != 2)
     return false;
 
-  // Set the event name.
-  *event_name = "Process_Terminate";
+  // Set the operation name.
+  *operation = "Terminate";
 
   // Decode the payload.
   if (!Decode<UIntValue>("ProcessId", decoder, fields))
@@ -952,24 +953,24 @@ bool DecodeProcessPerfCtrPayload(Decoder* decoder,
                                  unsigned char version,
                                  unsigned char opcode,
                                  bool is_64_bit,
-                                 std::string* event_name,
+                                 std::string* operation,
                                  StructValue* fields) {
   DCHECK(is_64_bit);
   DCHECK(decoder != NULL);
-  DCHECK(event_name != NULL);
+  DCHECK(operation != NULL);
   DCHECK(fields != NULL);
 
   if (version != 2)
     return false;
 
-  // Set the event name.
+  // Set the operation name.
   switch (opcode) {
     case kProcessPerfCtrOpcode:
-      *event_name = "Process_PerfCtr";
+      *operation = "PerfCtr";
       break;
 
     case kProcessPerfCtrRundownOpcode:
-      *event_name = "Process_PerfCtrRundown";
+      *operation = "PerfCtrRundown";
       break;
 
     default:
@@ -1003,10 +1004,10 @@ bool DecodeProcessPayload(Decoder* decoder,
                           unsigned char version,
                           unsigned char opcode,
                           bool is_64_bit,
-                          std::string* event_name,
+                          std::string* operation,
                           StructValue* fields) {
   DCHECK(decoder != NULL);
-  DCHECK(event_name != NULL);
+  DCHECK(operation != NULL);
   DCHECK(fields != NULL);
 
   if (!is_64_bit)
@@ -1019,16 +1020,16 @@ bool DecodeProcessPayload(Decoder* decoder,
     case kProcessDCEndOpcode:
     case kProcessEndOpcode:
       return DecodeProcessStartEndDefunctPayload(
-          decoder, version, opcode, is_64_bit, event_name, fields);
+          decoder, version, opcode, is_64_bit, operation, fields);
 
     case kProcessTerminateOpcode:
       return DecodeProcessTerminatePayload(
-          decoder, version, opcode, is_64_bit, event_name, fields);
+          decoder, version, opcode, is_64_bit, operation, fields);
 
     case kProcessPerfCtrOpcode:
     case kProcessPerfCtrRundownOpcode:
       return DecodeProcessPerfCtrPayload(
-          decoder, version, opcode, is_64_bit, event_name, fields);
+          decoder, version, opcode, is_64_bit, operation, fields);
 
     default:
       return false;
@@ -1043,10 +1044,12 @@ bool DecodeRawETWKernelPayload(const std::string& provider_id,
                                bool is_64_bit,
                                const char* payload,
                                size_t payload_size,
-                               std::string* event_name,
+                               std::string* operation,
+                               std::string* category,
                                scoped_ptr<event::Value>* decoded_payload) {
   DCHECK(payload != NULL || payload_size == 0);  // note: payload can be NULL.
-  DCHECK(event_name != NULL);
+  DCHECK(operation != NULL);
+  DCHECK(category != NULL);
   DCHECK(decoded_payload != NULL);
 
   // Create the byte decoder for the encoded payload.
@@ -1055,28 +1058,36 @@ bool DecodeRawETWKernelPayload(const std::string& provider_id,
 
   // Dispatch event by provider (GUID).
   if (provider_id == kImageProviderId) {
-    if (!DecodeImagePayload(
-            &decoder, version, opcode, is_64_bit, event_name, fields.get())) {
+    if (DecodeImagePayload(&decoder, version, opcode, is_64_bit,
+                           operation, fields.get())) {
+      *category = "Image";
+    } else {
       LOG(ERROR) << "Error while decoding Image payload.";
       return false;
     }
   } else if (provider_id == kPerfInfoProviderId) {
-    if (!DecodePerfInfoPayload(
-            &decoder, version, opcode, is_64_bit, event_name, fields.get())) {
+    if (DecodePerfInfoPayload(&decoder, version, opcode, is_64_bit,
+                              operation, fields.get())) {
+      *category = "PerfInfo";
+    } else {
       // TODO(etienneb): Complete the decoding of these payload.
       LOG(WARNING) << "Error while decoding PerfInfo payload.";
       return false;
     }
   } else if (provider_id == kThreadProviderId) {
-    if (!DecodeThreadPayload(
-            &decoder, version, opcode, is_64_bit, event_name, fields.get())) {
+    if (DecodeThreadPayload(&decoder, version, opcode, is_64_bit,
+                            operation, fields.get())) {
+      *category = "Thread";
+    } else {
       // TODO(etienneb): Complete the decoding of these payload.
       LOG(WARNING) << "Error while decoding Thread payload.";
       return false;
     }
   } else if (provider_id == kProcessProviderId) {
-    if (!DecodeProcessPayload(
-            &decoder, version, opcode, is_64_bit, event_name, fields.get())) {
+    if (DecodeProcessPayload(&decoder, version, opcode, is_64_bit,
+                             operation, fields.get())) {
+      *category = "Process";
+    } else {
       LOG(WARNING) << "Error while decoding Process payload.";
       return false;
     }

@@ -729,14 +729,15 @@ scoped_ptr<Value> MakeSID64(uint64 psid,
 }  // namespace
 
 TEST(EtwRawDecoderTest, ImageUnloadV2) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kImageProviderId,
           kVersion2, kImageUnloadOpcode, k64bit,
           reinterpret_cast<const char*>(&kImageUnloadPayloadV2[0]),
           sizeof(kImageUnloadPayloadV2),
-          &name, &fields));
+          &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<ULongValue>("BaseAddress", 0x7FEF7780000ULL);
@@ -753,19 +754,21 @@ TEST(EtwRawDecoderTest, ImageUnloadV2) {
   std::wstring filename = L"\\Windows\\System32\\wbem\\fastprox.dll";
   expected->AddField<WStringValue>("ImageFileName", filename);
 
-  EXPECT_STREQ("Image_Unload", name.c_str());
+  EXPECT_STREQ("Image", category.c_str());
+  EXPECT_STREQ("Unload", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, ImageUnloadV3) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kImageProviderId,
           kVersion3, kImageUnloadOpcode, k64bit,
           reinterpret_cast<const char*>(&kImageUnloadPayloadV3[0]),
           sizeof(kImageUnloadPayloadV3),
-          &name, &fields));
+          &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<ULongValue>("BaseAddress", 140723059097600ULL);
@@ -784,19 +787,21 @@ TEST(EtwRawDecoderTest, ImageUnloadV3) {
   std::wstring filename = L"\\Windows\\System32\\wbem\\fastprox.dll";
   expected->AddField<WStringValue>("ImageFileName", filename);
 
-  EXPECT_STREQ("Image_Unload", name.c_str());
+  EXPECT_STREQ("Image", category.c_str());
+  EXPECT_STREQ("Unload", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, ImageDCStartV2) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kImageProviderId,
           kVersion2, kImageDCStartOpcode, k64bit,
           reinterpret_cast<const char*>(&kImageDCStartPayloadV2[0]),
           sizeof(kImageDCStartPayloadV2),
-          &name, &fields));
+          &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<ULongValue>("BaseAddress", 18446735277664796672ULL);
@@ -813,19 +818,21 @@ TEST(EtwRawDecoderTest, ImageDCStartV2) {
   std::wstring filename = L"\\SystemRoot\\system32\\ntoskrnl.exe";
   expected->AddField<WStringValue>("ImageFileName", filename);
 
-  EXPECT_STREQ("Image_DCStart", name.c_str());
+  EXPECT_STREQ("Image", category.c_str());
+  EXPECT_STREQ("DCStart", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, ImageDCStartV3) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kImageProviderId,
           kVersion3, kImageDCStartOpcode, k64bit,
           reinterpret_cast<const char*>(&kImageDCStartPayloadV3[0]),
           sizeof(kImageDCStartPayloadV3),
-          &name, &fields));
+          &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<ULongValue>("BaseAddress", 2001010688ULL);
@@ -845,19 +852,21 @@ TEST(EtwRawDecoderTest, ImageDCStartV3) {
       L"\\Device\\HarddiskVolume4\\Windows\\SysWOW64\\ntdll.dll";
   expected->AddField<WStringValue>("ImageFileName", filename);
 
-  EXPECT_STREQ("Image_DCStart", name.c_str());
+  EXPECT_STREQ("Image", category.c_str());
+  EXPECT_STREQ("DCStart", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, ImageDCEndV2) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kImageProviderId,
           kVersion2, kImageDCEndOpcode, true,
           reinterpret_cast<const char*>(&kImageDCEndPayloadV2[0]),
           sizeof(kImageDCEndPayloadV2),
-          &name, &fields));
+          &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<ULongValue>("BaseAddress", 18446735277664866304ULL);
@@ -874,19 +883,21 @@ TEST(EtwRawDecoderTest, ImageDCEndV2) {
   std::wstring filename = L"\\SystemRoot\\system32\\ntoskrnl.exe";
   expected->AddField<WStringValue>("ImageFileName", filename);
 
-  EXPECT_STREQ("Image_DCEnd", name.c_str());
+  EXPECT_STREQ("Image", category.c_str());
+  EXPECT_STREQ("DCEnd", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, ImageDCEndV3) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kImageProviderId,
           kVersion3, kImageDCEndOpcode, true,
           reinterpret_cast<const char*>(&kImageDCEndPayloadV3[0]),
           sizeof(kImageDCEndPayloadV3),
-          &name, &fields));
+          &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<ULongValue>("BaseAddress", 18446735279571529728ULL);
@@ -905,19 +916,21 @@ TEST(EtwRawDecoderTest, ImageDCEndV3) {
   std::wstring filename = L"\\SystemRoot\\system32\\ntoskrnl.exe";
   expected->AddField<WStringValue>("ImageFileName", filename);
 
-  EXPECT_STREQ("Image_DCEnd", name.c_str());
+  EXPECT_STREQ("Image", category.c_str());
+  EXPECT_STREQ("DCEnd", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, ImageLoadV2) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kImageProviderId,
           kVersion2, kImageLoadOpcode, k64bit,
           reinterpret_cast<const char*>(&kImageLoadPayloadV2[0]),
           sizeof(kImageLoadPayloadV2),
-          &name, &fields));
+          &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<ULongValue>("BaseAddress", 0x71400000ULL);
@@ -934,19 +947,21 @@ TEST(EtwRawDecoderTest, ImageLoadV2) {
   std::wstring filename = L"\\Windows\\SysWOW64\\wscisvif.dll";
   expected->AddField<WStringValue>("ImageFileName", filename);
 
-  EXPECT_STREQ("Image_Load", name.c_str());
+  EXPECT_STREQ("Image", category.c_str());
+  EXPECT_STREQ("Load", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, ImageLoadV3) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kImageProviderId,
           kVersion3, kImageLoadOpcode, k64bit,
           reinterpret_cast<const char*>(&kImageLoadPayloadV3[0]),
           sizeof(kImageLoadPayloadV3),
-          &name, &fields));
+          &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<ULongValue>("BaseAddress", 140699811512320ULL);
@@ -966,29 +981,33 @@ TEST(EtwRawDecoderTest, ImageLoadV3) {
       L"Windows Kits\\8.0\\Windows Performance Toolkit\\xperf.exe";
   expected->AddField<WStringValue>("ImageFileName", filename);
 
-  EXPECT_STREQ("Image_Load", name.c_str());
+  EXPECT_STREQ("Image", category.c_str());
+  EXPECT_STREQ("Load", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, ImageKernelBaseV2) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kImageProviderId,
           kVersion2, kImageKernelBaseOpcode, k64bit,
           reinterpret_cast<const char*>(&kImageKernelBasePayloadV2[0]),
           sizeof(kImageKernelBasePayloadV2),
-          &name, &fields));
+          &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<ULongValue>("BaseAddress", 18446735277664866304ULL);
 
-  EXPECT_STREQ("Image_KernelBase", name.c_str());
+  EXPECT_STREQ("Image", category.c_str());
+  EXPECT_STREQ("KernelBase", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, ProcessStartV3) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
 
   EXPECT_TRUE(
@@ -996,7 +1015,7 @@ TEST(EtwRawDecoderTest, ProcessStartV3) {
           kVersion3, kProcessStartOpcode, k64bit,
           reinterpret_cast<const char*>(&kProcessStartPayloadV3[0]),
           sizeof(kProcessStartPayloadV3),
-          &name, &fields));
+          &operation, &category, &fields));
 
   const unsigned char sid[] = { 1, 5, 0, 0, 0, 0, 0, 5, 21, 0, 0, 0, 2, 3,
       1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0, 0 };
@@ -1017,19 +1036,21 @@ TEST(EtwRawDecoderTest, ProcessStartV3) {
   std::wstring commandline = L"xperf  -d out.etl";
   expected->AddField<WStringValue>("CommandLine", commandline);
 
-  EXPECT_STREQ("Process_Start", name.c_str());
+  EXPECT_STREQ("Process", category.c_str());
+  EXPECT_STREQ("Start", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, ProcessStartV4) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kProcessProviderId,
           kVersion4, kProcessStartOpcode, k64bit,
           reinterpret_cast<const char*>(&kProcessStartPayloadV4[0]),
           sizeof(kProcessStartPayloadV4),
-          &name, &fields));
+          &operation, &category, &fields));
 
   const unsigned char sid[] = {
       0x01, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05,
@@ -1055,12 +1076,14 @@ TEST(EtwRawDecoderTest, ProcessStartV4) {
   expected->AddField<WStringValue>("PackageFullName", L"");
   expected->AddField<WStringValue>("ApplicationId", L"");
 
-  EXPECT_STREQ("Process_Start", name.c_str());
+  EXPECT_STREQ("Process", category.c_str());
+  EXPECT_STREQ("Start", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, ProcessEndV3) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
 
   EXPECT_TRUE(
@@ -1068,7 +1091,7 @@ TEST(EtwRawDecoderTest, ProcessEndV3) {
           kVersion3, kProcessEndOpcode, k64bit,
           reinterpret_cast<const char*>(&kProcessEndPayloadV3[0]),
           sizeof(kProcessEndPayloadV3),
-          &name, &fields));
+          &operation, &category, &fields));
 
   const unsigned char sid[] = { 1, 5, 0, 0, 0, 0, 0, 5, 21, 0, 0, 0, 1, 2, 3,
       4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 3, 0, 0 };
@@ -1090,19 +1113,21 @@ TEST(EtwRawDecoderTest, ProcessEndV3) {
      L"xperf  -on PROC_THREAD+LOADER+CSWITCH -stackwalk ImageLoad+ImageUnload";
   expected->AddField<WStringValue>("CommandLine", commandline);
 
-  EXPECT_STREQ("Process_End", name.c_str());
+  EXPECT_STREQ("Process", category.c_str());
+  EXPECT_STREQ("End", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, ProcessEndV4) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kProcessProviderId,
           kVersion4, kProcessEndOpcode, k64bit,
           reinterpret_cast<const char*>(&kProcessEndPayloadV4[0]),
           sizeof(kProcessEndPayloadV4),
-          &name, &fields));
+          &operation, &category, &fields));
 
   const unsigned char sid[] = {
       0x01, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05,
@@ -1133,12 +1158,14 @@ TEST(EtwRawDecoderTest, ProcessEndV4) {
   expected->AddField<WStringValue>("PackageFullName", L"");
   expected->AddField<WStringValue>("ApplicationId", L"");
 
-  EXPECT_STREQ("Process_End", name.c_str());
+  EXPECT_STREQ("Process", category.c_str());
+  EXPECT_STREQ("End", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, ProcessDCStartV3) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
 
   EXPECT_TRUE(
@@ -1146,7 +1173,7 @@ TEST(EtwRawDecoderTest, ProcessDCStartV3) {
           kVersion3, kProcessDCStartOpcode, k64bit,
           reinterpret_cast<const char*>(&kProcessDCStartPayloadV3[0]),
           sizeof(kProcessDCStartPayloadV3),
-          &name, &fields));
+          &operation, &category, &fields));
 
   const unsigned char sid[] = { 1, 1, 0, 0, 0, 0, 0, 5, 16, 0, 0, 0 };
 
@@ -1166,12 +1193,14 @@ TEST(EtwRawDecoderTest, ProcessDCStartV3) {
   std::wstring commandline = L"";
   expected->AddField<WStringValue>("CommandLine", commandline);
 
-  EXPECT_STREQ("Process_DCStart", name.c_str());
+  EXPECT_STREQ("Process", category.c_str());
+  EXPECT_STREQ("DCStart", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, ProcessDCStartV4) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
 
   EXPECT_TRUE(
@@ -1179,7 +1208,7 @@ TEST(EtwRawDecoderTest, ProcessDCStartV4) {
           kVersion4, kProcessDCStartOpcode, k64bit,
           reinterpret_cast<const char*>(&kProcessDCStartPayloadV4[0]),
           sizeof(kProcessDCStartPayloadV4),
-          &name, &fields));
+          &operation, &category, &fields));
 
   const unsigned char sid[] = { 1, 1, 0, 0, 0, 0, 0, 5, 16, 0, 0, 0 };
 
@@ -1200,19 +1229,21 @@ TEST(EtwRawDecoderTest, ProcessDCStartV4) {
   expected->AddField<WStringValue>("PackageFullName", L"");
   expected->AddField<WStringValue>("ApplicationId", L"");
 
-  EXPECT_STREQ("Process_DCStart", name.c_str());
+  EXPECT_STREQ("Process", category.c_str());
+  EXPECT_STREQ("DCStart", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, ProcessDCEndV4) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kProcessProviderId,
           kVersion4, kProcessDCEndOpcode, k64bit,
           reinterpret_cast<const char*>(&kProcessDCEndPayloadV4[0]),
           sizeof(kProcessDCEndPayloadV4),
-          &name, &fields));
+          &operation, &category, &fields));
 
   const unsigned char sid[] = {
       0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05,
@@ -1235,36 +1266,40 @@ TEST(EtwRawDecoderTest, ProcessDCEndV4) {
   expected->AddField<WStringValue>("PackageFullName", L"");
   expected->AddField<WStringValue>("ApplicationId", L"");
 
-  EXPECT_STREQ("Process_DCEnd", name.c_str());
+  EXPECT_STREQ("Process", category.c_str());
+  EXPECT_STREQ("DCEnd", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, ProcessTerminateV2) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kProcessProviderId,
           kVersion2, kProcessTerminateOpcode, k64bit,
           reinterpret_cast<const char*>(&kProcessTerminatePayloadV2[0]),
           sizeof(kProcessTerminatePayloadV2),
-          &name, &fields));
+          &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<UIntValue>("ProcessId", 2040U);
 
-  EXPECT_STREQ("Process_Terminate", name.c_str());
+  EXPECT_STREQ("Process", category.c_str());
+  EXPECT_STREQ("Terminate", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, ProcessPerfCtrV2) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kProcessProviderId,
           kVersion2, kProcessPerfCtrOpcode, k64bit,
           reinterpret_cast<const char*>(&kProcessPerfCtrPayloadV2[0]),
           sizeof(kProcessPerfCtrPayloadV2),
-          &name, &fields));
+          &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<UIntValue>("ProcessId", 2040U);
@@ -1283,19 +1318,21 @@ TEST(EtwRawDecoderTest, ProcessPerfCtrV2) {
   expected->AddField<ULongValue>("QuotaNonPagedPoolUsage", 0ULL);
   expected->AddField<ULongValue>("PrivatePageCount", 0ULL);
 
-  EXPECT_STREQ("Process_PerfCtr", name.c_str());
+  EXPECT_STREQ("Process", category.c_str());
+  EXPECT_STREQ("PerfCtr", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, ProcessPerfCtrRundownV2) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kProcessProviderId,
           kVersion2, kProcessPerfCtrRundownOpcode, k64bit,
           reinterpret_cast<const char*>(&kProcessPerfCtrRundownPayloadV2[0]),
           sizeof(kProcessPerfCtrRundownPayloadV2),
-          &name, &fields));
+          &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<UIntValue>("ProcessId", 0U);
@@ -1314,12 +1351,14 @@ TEST(EtwRawDecoderTest, ProcessPerfCtrRundownV2) {
   expected->AddField<ULongValue>("QuotaNonPagedPoolUsage", 0ULL);
   expected->AddField<ULongValue>("PrivatePageCount", 0ULL);
 
-  EXPECT_STREQ("Process_PerfCtrRundown", name.c_str());
+  EXPECT_STREQ("Process", category.c_str());
+  EXPECT_STREQ("PerfCtrRundown", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, ProcessDefunctV3) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
 
   EXPECT_TRUE(
@@ -1327,7 +1366,7 @@ TEST(EtwRawDecoderTest, ProcessDefunctV3) {
           kVersion3, kProcessDefunctOpcode, k64bit,
           reinterpret_cast<const char*>(&kProcessDefunctPayloadV3[0]),
           sizeof(kProcessDefunctPayloadV3),
-          &name, &fields));
+          &operation, &category, &fields));
 
   const unsigned char sid[] = { 1, 1, 0, 0, 0, 0, 0, 5, 16, 0, 0, 0 };
 
@@ -1345,19 +1384,21 @@ TEST(EtwRawDecoderTest, ProcessDefunctV3) {
   expected->AddField<StringValue>("ImageFileName", "cmd.exe");
   expected->AddField<WStringValue>("CommandLine", L"");
 
-  EXPECT_STREQ("Process_Defunct", name.c_str());
+  EXPECT_STREQ("Process", category.c_str());
+  EXPECT_STREQ("Defunct", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, ProcessDefunctV5) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kProcessProviderId,
           kVersion5, kProcessDefunctOpcode, k64bit,
           reinterpret_cast<const char*>(&kProcessDefunctPayloadV5[0]),
           sizeof(kProcessDefunctPayloadV5),
-          &name, &fields));
+          &operation, &category, &fields));
 
   const unsigned char sid[] = {
       0x01, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05,
@@ -1383,19 +1424,21 @@ TEST(EtwRawDecoderTest, ProcessDefunctV5) {
   expected->AddField<WStringValue>("ApplicationId", L"");
   expected->AddField<ULongValue>("ExitTime", 130317334947711373ULL);
 
-  EXPECT_STREQ("Process_Defunct", name.c_str());
+  EXPECT_STREQ("Process", category.c_str());
+  EXPECT_STREQ("Defunct", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, PerfInfoSampleProfV2) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kPerfInfoProviderId,
           kVersion2, kPerfInfoSampleProfOpcode, k64bit,
           reinterpret_cast<const char*>(&kPerfInfoSampleProfPayloadV2[0]),
           sizeof(kPerfInfoSampleProfPayloadV2),
-          &name, &fields));
+          &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<ULongValue>("InstructionPointer",
@@ -1404,19 +1447,21 @@ TEST(EtwRawDecoderTest, PerfInfoSampleProfV2) {
   expected->AddField<UShortValue>("Count", 1);
   expected->AddField<UShortValue>("Reserved", 64);
 
-  EXPECT_STREQ("PerfInfo_SampleProf", name.c_str());
+  EXPECT_STREQ("PerfInfo", category.c_str());
+  EXPECT_STREQ("SampleProf", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, PerfInfoISRMSIV2) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kPerfInfoProviderId,
           kVersion2, kPerfInfoISRMSIOpcode, k64bit,
           reinterpret_cast<const char*>(&kPerfInfoISRMSIPayloadV2[0]),
           sizeof(kPerfInfoISRMSIPayloadV2),
-          &name, &fields));
+          &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<ULongValue>("InitialTime", 4838955609579ULL);
@@ -1426,53 +1471,59 @@ TEST(EtwRawDecoderTest, PerfInfoISRMSIV2) {
   expected->AddField<UCharValue>("Reserved", 0);
   expected->AddField<UIntValue>("MessageNumber", 0U);
 
-  EXPECT_STREQ("PerfInfo_ISR-MSI", name.c_str());
+  EXPECT_STREQ("PerfInfo", category.c_str());
+  EXPECT_STREQ("ISR-MSI", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, PerfInfoSysClEnterV2) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kPerfInfoProviderId,
           kVersion2, kPerfInfoSysClEnterOpcode, k64bit,
           reinterpret_cast<const char*>(&kPerfInfoSysClEnterPayloadV2[0]),
           sizeof(kPerfInfoSysClEnterPayloadV2),
-          &name, &fields));
+          &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<ULongValue>("SysCallAddress", 18446735279572131108ULL);
 
-  EXPECT_STREQ("PerfInfo_SysClEnter", name.c_str());
+  EXPECT_STREQ("PerfInfo", category.c_str());
+  EXPECT_STREQ("SysClEnter", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, PerfInfoSysClExitV2) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kPerfInfoProviderId,
           kVersion2, kPerfInfoSysClExitOpcode, k64bit,
           reinterpret_cast<const char*>(&kPerfInfoSysClExitPayloadV2[0]),
           sizeof(kPerfInfoSysClExitPayloadV2),
-          &name, &fields));
+          &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<UIntValue>("SysCallNtStatus", 0U);
 
-  EXPECT_STREQ("PerfInfo_SysClExit", name.c_str());
+  EXPECT_STREQ("PerfInfo", category.c_str());
+  EXPECT_STREQ("SysClExit", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, PerfInfoISRV2) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kPerfInfoProviderId,
           kVersion2, kPerfInfoISROpcode, k64bit,
           reinterpret_cast<const char*>(&kPerfInfoISRPayloadV2[0]),
           sizeof(kPerfInfoISRPayloadV2),
-          &name, &fields));
+          &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<ULongValue>("InitialTime", 4838956092844ULL);
@@ -1481,30 +1532,34 @@ TEST(EtwRawDecoderTest, PerfInfoISRV2) {
   expected->AddField<UShortValue>("Vector", 129);
   expected->AddField<UCharValue>("Reserved", 0);
 
-  EXPECT_STREQ("PerfInfo_ISR", name.c_str());
+  EXPECT_STREQ("PerfInfo", category.c_str());
+  EXPECT_STREQ("ISR", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, PerfInfoDPCV2) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kPerfInfoProviderId,
           kVersion2, kPerfInfoDPCOpcode, k64bit,
           reinterpret_cast<const char*>(&kPerfInfoDPCPayloadV2[0]),
           sizeof(kPerfInfoDPCPayloadV2),
-          &name, &fields));
+          &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<ULongValue>("InitialTime", 4838955609293ULL);
   expected->AddField<ULongValue>("Routine", 18446735279572565220ULL);
 
-  EXPECT_STREQ("PerfInfo_DPC", name.c_str());
+  EXPECT_STREQ("PerfInfo", category.c_str());
+  EXPECT_STREQ("DPC", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, PerfInfoCollectionStartSecondV3) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kPerfInfoProviderId,
@@ -1512,7 +1567,7 @@ TEST(EtwRawDecoderTest, PerfInfoCollectionStartSecondV3) {
           reinterpret_cast<const char*>(
               &kPerfInfoCollectionStartSecondPayloadV3[0]),
           sizeof(kPerfInfoCollectionStartSecondPayloadV3),
-          &name, &fields));
+          &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<UIntValue>("Source", 0U);
@@ -1520,19 +1575,21 @@ TEST(EtwRawDecoderTest, PerfInfoCollectionStartSecondV3) {
   expected->AddField<UIntValue>("OldInterval", 10000U);
   expected->AddField<WStringValue>("SourceName", L"Timer");
 
-  EXPECT_STREQ("PerfInfo_CollectionStart", name.c_str());
+  EXPECT_STREQ("PerfInfo", category.c_str());
+  EXPECT_STREQ("CollectionStart", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, PerfInfoCollectionStartV3) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kPerfInfoProviderId,
           kVersion3, kPerfInfoCollectionStartOpcode, k64bit,
           reinterpret_cast<const char*>(&kPerfInfoCollectionStartPayloadV3[0]),
           sizeof(kPerfInfoCollectionStartPayloadV3),
-          &name, &fields));
+          &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<UIntValue>("SpinLockSpinThreshold", 1U);
@@ -1540,19 +1597,21 @@ TEST(EtwRawDecoderTest, PerfInfoCollectionStartV3) {
   expected->AddField<UIntValue>("SpinLockAcquireSampleRate", 1000U);
   expected->AddField<UIntValue>("SpinLockHoldThreshold", 0U);
 
-  EXPECT_STREQ("PerfInfo_CollectionStart", name.c_str());
+  EXPECT_STREQ("PerfInfo", category.c_str());
+  EXPECT_STREQ("CollectionStart", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, PerfInfoCollectionEndV3) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kPerfInfoProviderId,
           kVersion3, kPerfInfoCollectionEndOpcode, k64bit,
           reinterpret_cast<const char*>(&kPerfInfoCollectionEndPayloadV3[0]),
           sizeof(kPerfInfoCollectionEndPayloadV3),
-          &name, &fields));
+          &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<UIntValue>("SpinLockSpinThreshold", 1U);
@@ -1560,12 +1619,14 @@ TEST(EtwRawDecoderTest, PerfInfoCollectionEndV3) {
   expected->AddField<UIntValue>("SpinLockAcquireSampleRate", 1000U);
   expected->AddField<UIntValue>("SpinLockHoldThreshold", 0U);
 
-  EXPECT_STREQ("PerfInfo_CollectionEnd", name.c_str());
+  EXPECT_STREQ("PerfInfo", category.c_str());
+  EXPECT_STREQ("CollectionEnd", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, PerfInfoCollectionEndSecondV3) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kPerfInfoProviderId,
@@ -1573,7 +1634,7 @@ TEST(EtwRawDecoderTest, PerfInfoCollectionEndSecondV3) {
           reinterpret_cast<const char*>(
               &kPerfInfoCollectionEndSecondPayloadV3[0]),
           sizeof(kPerfInfoCollectionEndSecondPayloadV3),
-          &name, &fields));
+          &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<UIntValue>("Source", 0U);
@@ -1581,19 +1642,21 @@ TEST(EtwRawDecoderTest, PerfInfoCollectionEndSecondV3) {
   expected->AddField<UIntValue>("OldInterval", 10000U);
   expected->AddField<WStringValue>("SourceName", L"Timer");
 
-  EXPECT_STREQ("PerfInfo_CollectionEnd", name.c_str());
+  EXPECT_STREQ("PerfInfo", category.c_str());
+  EXPECT_STREQ("CollectionEnd", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, ThreadStartV3) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kThreadProviderId,
           kVersion3, kThreadStartOpcode, k64bit,
           reinterpret_cast<const char*>(&kThreadStartPayloadV3[0]),
           sizeof(kThreadStartPayloadV3),
-          &name, &fields));
+          &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<UIntValue>("ProcessId", 8568U);
@@ -1611,19 +1674,21 @@ TEST(EtwRawDecoderTest, ThreadStartV3) {
   expected->AddField<UCharValue>("IoPriority", 2);
   expected->AddField<UCharValue>("ThreadFlags", 0);
 
-  EXPECT_STREQ("Thread_Start", name.c_str());
+  EXPECT_STREQ("Thread", category.c_str());
+  EXPECT_STREQ("Start", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, ThreadEndV3) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kThreadProviderId,
           kVersion3, kThreadEndOpcode, k64bit,
           reinterpret_cast<const char*>(&kThreadEndPayloadV3[0]),
           sizeof(kThreadEndPayloadV3),
-          &name, &fields));
+          &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<UIntValue>("ProcessId", 2040U);
@@ -1641,19 +1706,21 @@ TEST(EtwRawDecoderTest, ThreadEndV3) {
   expected->AddField<UCharValue>("IoPriority", 2);
   expected->AddField<UCharValue>("ThreadFlags", 0);
 
-  EXPECT_STREQ("Thread_End", name.c_str());
+  EXPECT_STREQ("Thread", category.c_str());
+  EXPECT_STREQ("End", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, ThreadDCStartV3) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kThreadProviderId,
           kVersion3, kThreadDCStartOpcode, k64bit,
           reinterpret_cast<const char*>(&kThreadDCStartPayloadV3[0]),
           sizeof(kThreadDCStartPayloadV3),
-          &name, &fields));
+          &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<UIntValue>("ProcessId", 0U);
@@ -1671,19 +1738,21 @@ TEST(EtwRawDecoderTest, ThreadDCStartV3) {
   expected->AddField<UCharValue>("IoPriority", 0);
   expected->AddField<UCharValue>("ThreadFlags", 0);
 
-  EXPECT_STREQ("Thread_DCStart", name.c_str());
+  EXPECT_STREQ("Thread", category.c_str());
+  EXPECT_STREQ("DCStart", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, ThreadDCEndV3) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kThreadProviderId,
           kVersion3, kThreadDCEndOpcode, k64bit,
           reinterpret_cast<const char*>(&kThreadDCEndPayloadV3[0]),
           sizeof(kThreadDCEndPayloadV3),
-          &name, &fields));
+          &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<UIntValue>("ProcessId", 0U);
@@ -1701,19 +1770,21 @@ TEST(EtwRawDecoderTest, ThreadDCEndV3) {
   expected->AddField<UCharValue>("IoPriority", 0);
   expected->AddField<UCharValue>("ThreadFlags", 0);
 
-  EXPECT_STREQ("Thread_DCEnd", name.c_str());
+  EXPECT_STREQ("Thread", category.c_str());
+  EXPECT_STREQ("DCEnd", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, ThreadCSwitchV2) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kThreadProviderId,
           kVersion2, kThreadCSwitchOpcode, k64bit,
           reinterpret_cast<const char*>(&kThreadCSwitchPayloadV2[0]),
           sizeof(kThreadCSwitchPayloadV2),
-          &name, &fields));
+          &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<UIntValue>("NewThreadId", 2252U);
@@ -1729,19 +1800,21 @@ TEST(EtwRawDecoderTest, ThreadCSwitchV2) {
   expected->AddField<UIntValue>("NewThreadWaitTime", 1U);
   expected->AddField<UIntValue>("Reserved", 881356167U);
 
-  EXPECT_STREQ("Thread_CSwitch", name.c_str());
+  EXPECT_STREQ("Thread", category.c_str());
+  EXPECT_STREQ("CSwitch", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, ThreadSpinLockV2) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kThreadProviderId,
           kVersion2, kThreadSpinLockOpcode, k64bit,
           reinterpret_cast<const char*>(&kThreadSpinLockPayloadV2[0]),
           sizeof(kThreadSpinLockPayloadV2),
-          &name, &fields));
+          &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<ULongValue>("SpinLockAddress", 18446708889382682976ULL);
@@ -1761,19 +1834,21 @@ TEST(EtwRawDecoderTest, ThreadSpinLockV2) {
     reserved_array->Append<UCharValue>(0);
   expected->AddField("Reserved", reserved_array.PassAs<Value>());
 
-  EXPECT_STREQ("Thread_SpinLock", name.c_str());
+  EXPECT_STREQ("Thread", category.c_str());
+  EXPECT_STREQ("SpinLock", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, ThreadSetPriorityV3) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kThreadProviderId,
           kVersion3, kThreadSetPriorityOpcode, k64bit,
           reinterpret_cast<const char*>(&kThreadSetPriorityPayloadV3[0]),
           sizeof(kThreadSetPriorityPayloadV3),
-          &name, &fields));
+          &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<UIntValue>("ThreadId", 544U);
@@ -1781,19 +1856,21 @@ TEST(EtwRawDecoderTest, ThreadSetPriorityV3) {
   expected->AddField<UCharValue>("NewPriority", 16);
   expected->AddField<UShortValue>("Reserved", 0);
 
-  EXPECT_STREQ("Thread_SetPriority", name.c_str());
+  EXPECT_STREQ("Thread", category.c_str());
+  EXPECT_STREQ("SetPriority", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, ThreadSetBasePriorityV3) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kThreadProviderId,
           kVersion3, kThreadSetBasePriorityOpcode, k64bit,
           reinterpret_cast<const char*>(&kThreadSetBasePriorityPayloadV3[0]),
           sizeof(kThreadSetBasePriorityPayloadV3),
-          &name, &fields));
+          &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<UIntValue>("ThreadId", 6896U);
@@ -1801,19 +1878,21 @@ TEST(EtwRawDecoderTest, ThreadSetBasePriorityV3) {
   expected->AddField<UCharValue>("NewPriority", 7);
   expected->AddField<UShortValue>("Reserved", 7);
 
-  EXPECT_STREQ("Thread_SetBasePriority", name.c_str());
+  EXPECT_STREQ("Thread", category.c_str());
+  EXPECT_STREQ("SetBasePriority", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, ThreadReadyThreadV2) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kThreadProviderId,
           kVersion2, kThreadReadyThreadOpcode, k64bit,
           reinterpret_cast<const char*>(&kThreadReadyThreadPayloadV2[0]),
           sizeof(kThreadReadyThreadPayloadV2),
-          &name, &fields));
+          &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<UIntValue>("TThreadId", 2252U);
@@ -1822,19 +1901,21 @@ TEST(EtwRawDecoderTest, ThreadReadyThreadV2) {
   expected->AddField<CharValue>("Flag", 1);
   expected->AddField<CharValue>("Reserved", 0);
 
-  EXPECT_STREQ("Thread_ReadyThread", name.c_str());
+  EXPECT_STREQ("Thread", category.c_str());
+  EXPECT_STREQ("ReadyThread", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, ThreadSetPagePriorityV3) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kThreadProviderId,
           kVersion3, kThreadSetPagePriorityOpcode, k64bit,
           reinterpret_cast<const char*>(&kThreadSetPagePriorityPayloadV3[0]),
           sizeof(kThreadSetPagePriorityPayloadV3),
-          &name, &fields));
+          &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<UIntValue>("ThreadId", 6764U);
@@ -1842,19 +1923,21 @@ TEST(EtwRawDecoderTest, ThreadSetPagePriorityV3) {
   expected->AddField<UCharValue>("NewPriority", 6);
   expected->AddField<UShortValue>("Reserved", 0);
 
-  EXPECT_STREQ("Thread_SetPagePriority", name.c_str());
+  EXPECT_STREQ("Thread", category.c_str());
+  EXPECT_STREQ("SetPagePriority", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, ThreadSetIoPriorityV3) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kThreadProviderId,
           kVersion3, kThreadSetIoPriorityOpcode, k64bit,
           reinterpret_cast<const char*>(&kThreadSetIoPriorityPayloadV3[0]),
           sizeof(kThreadSetIoPriorityPayloadV3),
-          &name, &fields));
+          &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<UIntValue>("ThreadId", 188U);
@@ -1862,19 +1945,21 @@ TEST(EtwRawDecoderTest, ThreadSetIoPriorityV3) {
   expected->AddField<UCharValue>("NewPriority", 0);
   expected->AddField<UShortValue>("Reserved", 0);
 
-  EXPECT_STREQ("Thread_SetIoPriority", name.c_str());
+  EXPECT_STREQ("Thread", category.c_str());
+  EXPECT_STREQ("SetIoPriority", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, ThreadAutoBoostSetFloorV2) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kThreadProviderId,
           kVersion2, kThreadAutoBoostSetFloorOpcode, k64bit,
           reinterpret_cast<const char*>(&kThreadAutoBoostSetFloorPayloadV2[0]),
           sizeof(kThreadAutoBoostSetFloorPayloadV2),
-          &name, &fields));
+          &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<ULongValue>("Lock", 18446708889355637112ULL);
@@ -1884,12 +1969,14 @@ TEST(EtwRawDecoderTest, ThreadAutoBoostSetFloorV2) {
   expected->AddField<UCharValue>("IoPriorities", 32);
   expected->AddField<UCharValue>("BoostFlags", 0);
 
-  EXPECT_STREQ("Thread_AutoBoostSetFloor", name.c_str());
+  EXPECT_STREQ("Thread", category.c_str());
+  EXPECT_STREQ("AutoBoostSetFloor", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, ThreadAutoBoostClearFloorV2) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kThreadProviderId,
@@ -1897,7 +1984,7 @@ TEST(EtwRawDecoderTest, ThreadAutoBoostClearFloorV2) {
           reinterpret_cast<const char*>(
               &kThreadAutoBoostClearFloorPayloadV2[0]),
           sizeof(kThreadAutoBoostClearFloorPayloadV2),
-          &name, &fields));
+          &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<ULongValue>("LockAddress", 18446708889355637112ULL);
@@ -1905,12 +1992,14 @@ TEST(EtwRawDecoderTest, ThreadAutoBoostClearFloorV2) {
   expected->AddField<UShortValue>("BoostBitmap", 2048);
   expected->AddField<UShortValue>("Reserved", 0);
 
-  EXPECT_STREQ("Thread_AutoBoostClearFloor", name.c_str());
+  EXPECT_STREQ("Thread", category.c_str());
+  EXPECT_STREQ("AutoBoostClearFloor", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
 TEST(EtwRawDecoderTest, ThreadAutoBoostEntryExhaustionV2) {
-  std::string name;
+  std::string operation;
+  std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kThreadProviderId,
@@ -1918,13 +2007,14 @@ TEST(EtwRawDecoderTest, ThreadAutoBoostEntryExhaustionV2) {
           reinterpret_cast<const char*>(
               &kThreadAutoBoostEntryExhaustionPayloadV2[0]),
           sizeof(kThreadAutoBoostEntryExhaustionPayloadV2),
-          &name, &fields));
+          &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<ULongValue>("LockAddress", 18446708889482441968ULL);
   expected->AddField<UIntValue>("ThreadId", 3004U);
 
-  EXPECT_STREQ("Thread_AutoBoostEntryExhaustion", name.c_str());
+  EXPECT_STREQ("Thread", category.c_str());
+  EXPECT_STREQ("AutoBoostEntryExhaustion", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 

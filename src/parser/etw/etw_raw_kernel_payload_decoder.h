@@ -47,7 +47,8 @@ namespace etw {
 // @param is_64_bit indicates whether the event was generated on a 64-bit OS.
 // @param payload the raw payload to decode.
 // @param payload_size the size of the raw payload, in bytes.
-// @param event_name the name of the event.
+// @param operation the name associated with the opcode of this event.
+// @param category the name of the category of this event.
 // @param decoded_payload the decoded payload.
 // @returns true if the payload has been decoded successfully, false otherwise.
 bool DecodeRawETWKernelPayload(const std::string& provider_id,
@@ -56,7 +57,8 @@ bool DecodeRawETWKernelPayload(const std::string& provider_id,
                                bool is_64_bit,
                                const char* payload,
                                size_t payload_size,
-                               std::string* event_name,
+                               std::string* operation,
+                               std::string* category,
                                scoped_ptr<event::Value>* decoded_payload);
 
 }  // namespace etw

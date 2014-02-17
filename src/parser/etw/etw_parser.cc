@@ -81,11 +81,12 @@ bool DecodeRawETWPayload(const std::string& provider_id,
                          bool is_64_bit,
                          const char* payload,
                          size_t payload_size,
-                         std::string* event_name,
+                         std::string* operation,
+                         std::string* category,
                          scoped_ptr<event::Value>* decoded_payload) {
   if (DecodeRawETWKernelPayload(
           provider_id, version, opcode, is_64_bit, payload, payload_size,
-          event_name, decoded_payload)) {
+          operation, category, decoded_payload)) {
     return true;
   }
   return false;
@@ -95,7 +96,9 @@ void WINAPI ProcessEvent(PEVENT_RECORD pevent) {
   DCHECK(pevent != NULL);
 
   // Decode the payload of the event.
-  std::string event_name;
+  std::string operation;
+  std::string category;
+
   std::string provider_guid = GuidToString(pevent->EventHeader.ProviderId);
   scoped_ptr<Value> payload;
   if (!DecodeRawETWPayload(
@@ -105,14 +108,16 @@ void WINAPI ProcessEvent(PEVENT_RECORD pevent) {
           (pevent->EventHeader.Flags & EVENT_HEADER_FLAG_64_BIT_HEADER) != 0,
           reinterpret_cast<const char*>(pevent->UserData),
           pevent->UserDataLength,
-          &event_name,
+          &operation,
+          &category,
           &payload)) {
     return;
   }
 
   // Generate the event header fields.
   scoped_ptr<StructValue> fields(new StructValue());
-  fields->AddField<StringValue>("name", event_name);
+  fields->AddField<StringValue>("operation", operation);
+  fields->AddField<StringValue>("category", category);
   fields->AddField<ULongValue>("process_id", pevent->EventHeader.ProcessId);
   fields->AddField<ULongValue>("thread_id", pevent->EventHeader.ThreadId);
   fields->AddField<UCharValue>("processor_number",
