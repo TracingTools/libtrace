@@ -61,17 +61,28 @@ else()
   set(PTHREAD_LIB "pthread")
 endif()
 
-# TODO(etienneb): Detect gmock installation automatically.
-set(GMOCK_ROOT "third_party/gmock")
+# Find the location of gmock library.
+find_path(GMOCK_FOLDER NAMES gmock/CMakeLists.txt
+          HINTS .. third_party ../third_party)
+if(GMOCK_FOLDER)
+  set(GMOCK_ROOT ${GMOCK_FOLDER}/gmock)
+  set(GMOCK_FOUND 1)
+else()
+  message("gmock folder not found.")
+endif(GMOCK_FOLDER)
 
-# Includes search path
-include_directories(
-    ${GMOCK_ROOT}/include
-    ${GMOCK_ROOT}
-    ${GMOCK_ROOT}/gtest/include
-    ${GMOCK_ROOT}/gtest
-    src
-    )
+# Add include search paths for gmock.
+if(GMOCK_FOUND)
+  include_directories(
+      ${GMOCK_ROOT}/include
+      ${GMOCK_ROOT}
+      ${GMOCK_ROOT}/gtest/include
+      ${GMOCK_ROOT}/gtest
+      )
+endif(GMOCK_FOUND)
+
+# Add the libtrace default include paths.
+include_directories(src)
 
 ####################
 # Libraries
@@ -103,7 +114,8 @@ add_library(event
     src/event/value.h
     )
 target_link_libraries(event
-    base)
+    base
+    )
 
 add_library(parser
     src/parser/decoder.cc
@@ -122,15 +134,10 @@ target_link_libraries(parser
     )
 
 ####################
-# Executables
-####################
-
-# TODO(etienneb): Plug executables here.
-
-####################
 # Unittests
 ####################
 
+if(GMOCK_FOUND)
 add_executable(unittests
     src/base/observer_unittest.cc
     src/base/logging_unittest.cc
@@ -159,3 +166,4 @@ target_link_libraries(unittests
     parser
     ${PTHREAD_LIB}
     )
+endif(GMOCK_FOUND)
