@@ -82,6 +82,7 @@ const unsigned char kThreadEndOpcode = 2;
 const unsigned char kThreadDCStartOpcode = 3;
 const unsigned char kThreadDCEndOpcode = 4;
 const unsigned char kThreadCSwitchOpcode = 36;
+const unsigned char kThreadCompCSOpcode = 37;
 const unsigned char kThreadSpinLockOpcode = 41;
 const unsigned char kThreadSetPriorityOpcode = 48;
 const unsigned char kThreadSetBasePriorityOpcode = 49;
@@ -693,6 +694,30 @@ bool DecodeThreadCSwitchPayload(Decoder* decoder,
   return true;
 }
 
+bool DecodeThreadCompCSPayload(Decoder* decoder,
+                               unsigned char version,
+                               unsigned char opcode,
+                               bool is_64_bit,
+                               std::string* operation,
+                               StructValue* fields) {
+  DCHECK(opcode == kThreadCompCSOpcode);
+  DCHECK(is_64_bit);
+  DCHECK(decoder != NULL);
+  DCHECK(operation != NULL);
+  DCHECK(fields != NULL);
+
+  if (version != 2)
+    return false;
+
+  // Set the operation name.
+  *operation = "CompCS";
+
+  // This payload is a compressed version of the CSwitch event.
+  // TODO(bergeret): Determine a way to decode this event.
+  LOG(ERROR) << "The CompCS Thread event is currently unsupported.";
+  return false;
+}
+
 bool DecodeThreadReadyThreadPayload(Decoder* decoder,
                                     unsigned char version,
                                     unsigned char opcode,
@@ -834,6 +859,10 @@ bool DecodeThreadPayload(Decoder* decoder,
   switch (opcode) {
     case kThreadCSwitchOpcode:
       return DecodeThreadCSwitchPayload(
+          decoder, version, opcode, is_64_bit, operation, fields);
+
+    case kThreadCompCSOpcode:
+      return DecodeThreadCompCSPayload(
           decoder, version, opcode, is_64_bit, operation, fields);
 
     case kThreadReadyThreadOpcode:
