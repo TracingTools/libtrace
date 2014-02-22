@@ -132,6 +132,10 @@ const unsigned char kRegistryQuerySecurityOpcode = 29;
 const unsigned char kRegistryCountersOpcode = 34;
 const unsigned char kRegistryConfigOpcode = 35;
 
+// Constants for StackWalk events.
+const std::string kStackWalkProviderId = "DEF2FE46-7BD6-4B80-BD94-F57FE20D0CE3";
+const unsigned char kStackWalkStackOpcode = 32;
+
 bool DecodeImagePayload(Decoder* decoder,
                         unsigned char version,
                         unsigned char opcode,
@@ -1481,6 +1485,37 @@ bool DecodeRegistryPayload(Decoder* decoder,
   }
 }
 
+bool DecodeStackWalkPayload(Decoder* decoder,
+                            unsigned char version,
+                            unsigned char opcode,
+                            bool is_64_bit,
+                            std::string* operation,
+                            StructValue* fields) {
+  DCHECK(decoder != NULL);
+  DCHECK(operation != NULL);
+  DCHECK(fields != NULL);
+
+  if (version != 2 || opcode != kStackWalkStackOpcode || !is_64_bit)
+    return false;
+
+  // Set the operation name.
+  *operation = "Stack";
+
+  // Deduce the number of stack pointers from the event size.
+  size_t num_stack_pointers = (decoder->RemainingBytes() - sizeof(int64) -
+                               2 * sizeof(uint32)) / sizeof(uint64);
+
+  // Decode the payload.
+  if (!Decode<ULongValue>("EventTimeStamp", decoder, fields) ||
+      !Decode<UIntValue>("StackProcess", decoder, fields) ||
+      !Decode<UIntValue>("StackThread", decoder, fields) ||
+      !DecodeArray<ULongValue>("Stack", num_stack_pointers, decoder, fields)) {
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 bool DecodeRawETWKernelPayload(const std::string& provider_id,
@@ -1550,6 +1585,14 @@ bool DecodeRawETWKernelPayload(const std::string& provider_id,
       *category = "Registry";
     } else {
       LOG(WARNING) << "Error while decoding Registry payload.";
+      return false;
+    }
+  } else if (provider_id == kStackWalkProviderId) {
+    if (DecodeStackWalkPayload(&decoder, version, opcode, is_64_bit,
+                               operation, fields.get())) {
+      *category = "StackWalk";
+    } else {
+      LOG(WARNING) << "Error while decoding StackWalk payload.";
       return false;
     }
   } else {
