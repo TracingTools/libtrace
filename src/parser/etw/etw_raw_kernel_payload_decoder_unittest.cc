@@ -142,6 +142,10 @@ const unsigned char kRegistryConfigOpcode = 35;
 const std::string kStackWalkProviderId = "DEF2FE46-7BD6-4B80-BD94-F57FE20D0CE3";
 const unsigned char kStackWalkStackOpcode = 32;
 
+// Constants for PageFault events.
+const std::string kPageFaultProviderId = "3D6FA8D3-FE05-11D0-9DDA-00C04FD7BA7C";
+const unsigned char kPageFaultHardFaultOpcode = 32;
+
 const unsigned char kImageUnloadPayloadV2[] = {
     0x00, 0x00, 0x78, 0xF7, 0xFE, 0x07, 0x00, 0x00,
     0x00, 0x20, 0x0E, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -1039,6 +1043,14 @@ const unsigned char kStackWalkStackPayloadV2[] = {
     0xE2, 0xF3, 0x19, 0x60, 0xFB, 0x7F, 0x00, 0x00,
     0xCD, 0x15, 0x52, 0x7A, 0xFB, 0x7F, 0x00, 0x00,
     0xD1, 0x43, 0xFB, 0x7A, 0xFB, 0x7F, 0x00, 0x00
+    };
+
+const unsigned char kPageFaultHardFaultPayloadV2[] = {
+    0x5D, 0xA5, 0x88, 0x13, 0x19, 0x00, 0x00, 0x00,
+    0x00, 0x50, 0xFB, 0x08, 0x00, 0x00, 0x00, 0x00,
+    0x20, 0x3B, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x5A, 0xA4, 0x11, 0x80, 0xFA, 0xFF, 0xFF,
+    0x1C, 0x27, 0x00, 0x00, 0x00, 0x40, 0x00, 0x00
     };
 
 scoped_ptr<Value> MakeSID64(uint64 psid,
@@ -2940,6 +2952,30 @@ TEST(EtwRawDecoderTest, StackWalkStackV2) {
 
   EXPECT_STREQ("StackWalk", category.c_str());
   EXPECT_STREQ("Stack", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, PageFaultHardFaultV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kPageFaultProviderId,
+          kVersion2, kPageFaultHardFaultOpcode, k64bit,
+          reinterpret_cast<const char*>(&kPageFaultHardFaultPayloadV2[0]),
+          sizeof(kPageFaultHardFaultPayloadV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<ULongValue>("InitialTime", 107701904733ULL);
+  expected->AddField<ULongValue>("ReadOffset", 150687744ULL);
+  expected->AddField<ULongValue>("VirtualAddress", 408352ULL);
+  expected->AddField<ULongValue>("FileObject", 18446738026691582464ULL);
+  expected->AddField<UIntValue>("TThreadId", 10012U);
+  expected->AddField<UIntValue>("ByteCount", 16384U);
+
+  EXPECT_STREQ("PageFault", category.c_str());
+  EXPECT_STREQ("HardFault", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 

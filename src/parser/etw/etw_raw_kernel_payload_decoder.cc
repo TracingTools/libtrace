@@ -136,6 +136,10 @@ const unsigned char kRegistryConfigOpcode = 35;
 const std::string kStackWalkProviderId = "DEF2FE46-7BD6-4B80-BD94-F57FE20D0CE3";
 const unsigned char kStackWalkStackOpcode = 32;
 
+// Constants for PageFault events.
+const std::string kPageFaultProviderId = "3D6FA8D3-FE05-11D0-9DDA-00C04FD7BA7C";
+const unsigned char kPageFaultHardFaultOpcode = 32;
+
 bool DecodeImagePayload(Decoder* decoder,
                         unsigned char version,
                         unsigned char opcode,
@@ -1516,6 +1520,60 @@ bool DecodeStackWalkPayload(Decoder* decoder,
   return true;
 }
 
+bool DecodePageFaultHardPageFaultPayload(Decoder* decoder,
+                                         unsigned char version,
+                                         unsigned char opcode,
+                                         bool is_64_bit,
+                                         std::string* operation,
+                                         StructValue* fields) {
+  DCHECK(decoder != NULL);
+  DCHECK(opcode == kPageFaultHardFaultOpcode);
+  DCHECK(is_64_bit);
+  DCHECK(operation != NULL);
+  DCHECK(fields != NULL);
+
+  if (version != 2)
+    return false;
+
+  // Set the operation name.
+  *operation = "HardFault";
+
+  // Decode the payload.
+  if (!Decode<ULongValue>("InitialTime", decoder, fields) ||
+      !Decode<ULongValue>("ReadOffset", decoder, fields) ||
+      !DecodeUInteger("VirtualAddress", is_64_bit, decoder, fields) ||
+      !DecodeUInteger("FileObject", is_64_bit, decoder, fields) ||
+      !Decode<UIntValue>("TThreadId", decoder, fields) ||
+      !Decode<UIntValue>("ByteCount", decoder, fields)) {
+    return false;
+  }
+
+  return true;
+}
+
+bool DecodePageFaultPayload(Decoder* decoder,
+                            unsigned char version,
+                            unsigned char opcode,
+                            bool is_64_bit,
+                            std::string* operation,
+                            StructValue* fields) {
+  DCHECK(decoder != NULL);
+  DCHECK(operation != NULL);
+  DCHECK(fields != NULL);
+
+  if (!is_64_bit)
+    return false;
+
+  switch (opcode) {
+    case kPageFaultHardFaultOpcode:
+      return DecodePageFaultHardPageFaultPayload(
+          decoder, version, opcode, is_64_bit, operation, fields);
+
+    default:
+      return false;
+  }
+}
+
 }  // namespace
 
 bool DecodeRawETWKernelPayload(const std::string& provider_id,
@@ -1593,6 +1651,14 @@ bool DecodeRawETWKernelPayload(const std::string& provider_id,
       *category = "StackWalk";
     } else {
       LOG(WARNING) << "Error while decoding StackWalk payload.";
+    }
+    return false;
+  } else if (provider_id == kPageFaultProviderId) {
+    if (DecodePageFaultPayload(&decoder, version, opcode, is_64_bit,
+                               operation, fields.get())) {
+      *category = "PageFault";
+    } else {
+      LOG(WARNING) << "Error while decoding PageFault payload.";
       return false;
     }
   } else {
