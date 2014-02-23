@@ -1651,8 +1651,8 @@ bool DecodeRawETWKernelPayload(const std::string& provider_id,
       *category = "StackWalk";
     } else {
       LOG(WARNING) << "Error while decoding StackWalk payload.";
+      return false;
     }
-    return false;
   } else if (provider_id == kPageFaultProviderId) {
     if (DecodePageFaultPayload(&decoder, version, opcode, is_64_bit,
                                operation, fields.get())) {
