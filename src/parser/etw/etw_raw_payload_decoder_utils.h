@@ -104,6 +104,17 @@ bool DecodeW16String(const std::string& name,
                      Decoder* decoder,
                      event::StructValue* fields);
 
+// Decode a string of 16-bit char and add it as a field into |fields|.
+// @param name the name of the field to be added.
+// @param length the length of the array holding the string.
+// @param decoder the decoder processing the payload.
+// @param fields the structure to receive the field.
+// @returns true on sucess, false otherwise.
+bool DecodeFixedW16String(const std::string& name,
+                          size_t length,
+                          Decoder* decoder,
+                          event::StructValue* fields);
+
 // Decode a SID (Secure ID) structure.
 // @param name the name of the field to be added.
 // @param is_64_bit the flag to enable decoding of 64-bit integer.
@@ -114,6 +125,24 @@ bool DecodeSID(const std::string& name,
                bool is_64_bit,
                Decoder* decoder,
                event::StructValue* fields);
+
+// Decode a SystemTime structure and add it as a field into |fields|.
+// @param name the name of the field to be added.
+// @param decoder the decoder processing the payload.
+// @param fields the structure to receive the field.
+// @returns true on sucess, false otherwise.
+bool DecodeSystemTime(const std::string& name,
+                      Decoder* decoder,
+                      event::StructValue* fields);
+
+// Decode a TimeZone information structure and add it as a field into |fields|.
+// @param name the name of the field to be added.
+// @param decoder the decoder processing the payload.
+// @param fields the structure to receive the field.
+// @returns true on sucess, false otherwise.
+bool DecodeTimeZoneInformation(const std::string& name,
+                               Decoder* decoder,
+                               event::StructValue* fields);
 
 }  // namespace etw
 }  // namespace parser

@@ -128,6 +128,11 @@ class Decoder {
   // @returns the decoded string.
   scoped_ptr<WStringValue> DecodeW16String();
 
+  // Decode a string of 16-bit chars with a fixed length.
+  // @param length the length of the fixed array holding the string.
+  // @returns the decoded string.
+  scoped_ptr<WStringValue> DecodeFixedW16String(size_t length);
+
   // Advances the current read position by the specified number of bytes.
   // @param size number of bytes to skip.
   // @returns true if the bytes have been skipped, false if there is not
@@ -137,7 +142,7 @@ class Decoder {
   // Look ahead for a character into the sequence of bytes.
   // @param offset the offset from the current position to look.
   // @returns the requested character.
-  unsigned char lookup(size_t offset);
+  unsigned char Lookup(size_t offset);
 
  private:
   // The sequence of bytes to decode.

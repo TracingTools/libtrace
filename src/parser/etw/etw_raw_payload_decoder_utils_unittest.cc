@@ -158,9 +158,10 @@ TEST(EtwDecoderUtilsTest, DecodeSID) {
   Decoder decoder(&original_sid[0], sizeof(original_sid));
   StructValue fields;
   EXPECT_TRUE(DecodeSID("sid", true, &decoder, &fields));
+  EXPECT_EQ(0U, decoder.RemainingBytes());
 
   const StructValue* sid = NULL;
-  EXPECT_TRUE(fields.GetFieldAs<StructValue>("sid", &sid));
+  ASSERT_TRUE(fields.GetFieldAs<StructValue>("sid", &sid));
 
   uint64 psid = 0;
   EXPECT_TRUE(sid->GetFieldAsULong("PSid", &psid));
@@ -169,6 +170,105 @@ TEST(EtwDecoderUtilsTest, DecodeSID) {
   uint32 attributes = 0;
   EXPECT_TRUE(sid->GetFieldAsUInteger("Attributes", &attributes));
   EXPECT_EQ(0x02030405, attributes);
+}
+
+TEST(EtwDecoderUtilsTest, DecodeSystemTime) {
+  const int8 buffer[] = { 1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6, 0, 7, 0, 8, 0};
+
+  Decoder decoder(&buffer[0], sizeof(buffer));
+  StructValue fields;
+  EXPECT_TRUE(DecodeSystemTime("time", &decoder, &fields));
+  EXPECT_EQ(0U, decoder.RemainingBytes());
+
+  const StructValue* time = NULL;
+  ASSERT_TRUE(fields.GetFieldAs<StructValue>("time", &time));
+
+  int32 wYear = 0;
+  int32 wMonth = 0;
+  int32 wDayOfWeek = 0;
+  int32 wDay = 0;
+  int32 wHour = 0;
+  int32 wMinute = 0;
+  int32 wSecond = 0;
+  int32 wMilliseconds = 0;
+
+  EXPECT_TRUE(time->GetFieldAsInteger("wYear", &wYear));
+  EXPECT_TRUE(time->GetFieldAsInteger("wMonth", &wMonth));
+  EXPECT_TRUE(time->GetFieldAsInteger("wDayOfWeek", &wDayOfWeek));
+  EXPECT_TRUE(time->GetFieldAsInteger("wDay", &wDay));
+  EXPECT_TRUE(time->GetFieldAsInteger("wHour", &wHour));
+  EXPECT_TRUE(time->GetFieldAsInteger("wMinute", &wMinute));
+  EXPECT_TRUE(time->GetFieldAsInteger("wSecond", &wSecond));
+  EXPECT_TRUE(time->GetFieldAsInteger("wMilliseconds", &wMilliseconds));
+
+  EXPECT_EQ(1, wYear);
+  EXPECT_EQ(2, wMonth);
+  EXPECT_EQ(3, wDayOfWeek);
+  EXPECT_EQ(4, wDay);
+  EXPECT_EQ(5, wHour);
+  EXPECT_EQ(6, wMinute);
+  EXPECT_EQ(7, wSecond);
+  EXPECT_EQ(8, wMilliseconds);
+}
+
+TEST(EtwDecoderUtilsTest, DecodeTimeZoneInformation) {
+  const int8 buffer[] = {
+      // Bias
+      1, 2, 3, 4,
+      // StandardName
+      97, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      // StandardDate
+      1, 0, 2, 0, 3, 0, 4, 0,
+      5, 0, 6, 0, 7, 0, 8, 0,
+      // StandardBias
+      4, 3, 2, 1,
+      // DaylightName
+      98, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      // DaylightDate
+      1, 0, 2, 0, 3, 0, 4, 0,
+      5, 0, 6, 0, 7, 0, 8, 0,
+      // DaylightBias
+      8, 8, 8, 8
+  };
+
+  Decoder decoder(&buffer[0], sizeof(buffer));
+  StructValue fields;
+  EXPECT_TRUE(DecodeTimeZoneInformation("info", &decoder, &fields));
+  EXPECT_EQ(0U, decoder.RemainingBytes());
+
+  const StructValue* info = NULL;
+  ASSERT_TRUE(fields.GetFieldAs<StructValue>("info", &info));
+
+  int32 bias = 0;
+  int32 standard_bias = 0;
+  int32 daylight_bias = 0;
+  EXPECT_TRUE(info->GetFieldAsInteger("Bias", &bias));
+  EXPECT_TRUE(info->GetFieldAsInteger("StandardBias", &standard_bias));
+  EXPECT_TRUE(info->GetFieldAsInteger("DaylightBias", &daylight_bias));
+  EXPECT_EQ(0x04030201, bias);
+  EXPECT_EQ(0x01020304, standard_bias);
+  EXPECT_EQ(0x08080808, daylight_bias);
+
+  std::string standard_name;
+  std::string daylight_name;
+  EXPECT_TRUE(info->GetFieldAsString("StandardName", &standard_name));
+  EXPECT_TRUE(info->GetFieldAsString("DaylightName", &daylight_name));
+  EXPECT_STREQ("a", standard_name.c_str());
+  EXPECT_STREQ("b", daylight_name.c_str());
 }
 
 }  // namespace etw

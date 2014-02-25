@@ -30,9 +30,11 @@ namespace etw {
 
 namespace {
 
+using event::IntValue;
 using event::UCharValue;
 using event::UIntValue;
 using event::ULongValue;
+using event::ShortValue;
 using event::StructValue;
 using event::WStringValue;
 using event::Value;
@@ -55,6 +57,23 @@ bool DecodeW16String(const std::string& name,
   DCHECK(fields != NULL);
 
   scoped_ptr<WStringValue> decoded(decoder->DecodeW16String());
+
+  if (decoded.get() == NULL ||
+      !fields->AddField(name, decoded.PassAs<Value>())) {
+    return false;
+  }
+
+  return true;
+}
+
+bool DecodeFixedW16String(const std::string& name,
+                          size_t length,
+                          Decoder* decoder,
+                          StructValue* fields) {
+  DCHECK(decoder != NULL);
+  DCHECK(fields != NULL);
+
+  scoped_ptr<WStringValue> decoded(decoder->DecodeFixedW16String(length));
 
   if (decoded.get() == NULL ||
       !fields->AddField(name, decoded.PassAs<Value>())) {
@@ -87,8 +106,8 @@ bool DecodeSID(const std::string& name,
   }
 
   // Decode the SID structure.
-  unsigned char revision = decoder->lookup(0);
-  unsigned char subAuthorityCount = decoder->lookup(1);
+  unsigned char revision = decoder->Lookup(0);
+  unsigned char subAuthorityCount = decoder->Lookup(1);
   const int kSID_REVISION = 1;
   const int kSID_MAX_SUB_AUTHORITIES = 15;
   DCHECK_EQ(revision, kSID_REVISION);
@@ -100,6 +119,46 @@ bool DecodeSID(const std::string& name,
 
   // Returns a struct containing all decoded fields.
   return fields->AddField(name, sid.PassAs<Value>());
+}
+
+bool DecodeSystemTime(const std::string& name,
+                      Decoder* decoder,
+                      StructValue* fields) {
+  // Decode the SystemTime structure.
+  scoped_ptr<StructValue> system_time(new StructValue);
+  if (!Decode<ShortValue>("wYear", decoder, system_time.get()) ||
+      !Decode<ShortValue>("wMonth", decoder, system_time.get()) ||
+      !Decode<ShortValue>("wDayOfWeek", decoder, system_time.get()) ||
+      !Decode<ShortValue>("wDay", decoder, system_time.get()) ||
+      !Decode<ShortValue>("wHour", decoder, system_time.get()) ||
+      !Decode<ShortValue>("wMinute", decoder, system_time.get()) ||
+      !Decode<ShortValue>("wSecond", decoder, system_time.get()) ||
+      !Decode<ShortValue>("wMilliseconds", decoder, system_time.get())) {
+    return false;
+  }
+
+  // Returns a struct containing all decoded fields.
+  return fields->AddField(name, system_time.PassAs<Value>());
+}
+
+bool DecodeTimeZoneInformation(const std::string& name,
+                               Decoder* decoder,
+                               StructValue* fields) {
+
+  // Decode the TimeZone structure.
+  scoped_ptr<StructValue> timezone(new StructValue);
+  if (!Decode<IntValue>("Bias", decoder, timezone.get()) ||
+      !DecodeFixedW16String("StandardName", 32, decoder, timezone.get()) ||
+      !DecodeSystemTime("StandardDate", decoder, timezone.get()) ||
+      !Decode<IntValue>("StandardBias", decoder, timezone.get()) ||
+      !DecodeFixedW16String("DaylightName", 32, decoder, timezone.get()) ||
+      !DecodeSystemTime("DaylightDate",  decoder, timezone.get()) ||
+      !Decode<IntValue>("DaylightBias", decoder, timezone.get())) {
+    return false;
+  }
+
+  // Returns a struct containing all decoded fields.
+  return fields->AddField(name, timezone.PassAs<Value>());
 }
 
 }  // namespace etw

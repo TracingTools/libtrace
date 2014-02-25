@@ -95,6 +95,39 @@ scoped_ptr<WStringValue> Decoder::DecodeW16String() {
   return result.Pass();
 }
 
+scoped_ptr<WStringValue> Decoder::DecodeFixedW16String(size_t length) {
+  // The decoding cannot use native wchar_t because it can be 2 bytes or
+  // 4 bytes.
+  scoped_ptr<WStringValue> result;
+  std::wstringstream ss;
+
+  // Check whether there is enough characters.
+  if (RemainingBytes() < 2 * length)
+    return result.Pass();
+
+  // Compute the position after consuming the array.
+  size_t next_position = position_ + 2 * length;
+
+  // Consume the array.
+  for (size_t i = 0; i < length; ++i) {
+    wchar_t c = buffer_[position_] | (buffer_[position_ + 1]  << 8);
+    position_ += 2;
+
+    if (c == 0)
+      break;
+
+    ss << c;
+  }
+
+  // Move the decoder forward after the fixed length array.
+  position_ = next_position;
+
+  // Create and return the resulting value.
+  result.reset(new WStringValue(ss.str()));
+
+  return result.Pass();
+}
+
 bool Decoder::Skip(size_t size) {
   size_t new_position = position_ + size;
   if (new_position > buffer_size_)
@@ -103,7 +136,7 @@ bool Decoder::Skip(size_t size) {
   return true;
 }
 
-unsigned char Decoder::lookup(size_t offset) {
+unsigned char Decoder::Lookup(size_t offset) {
   if (position_ + offset >= buffer_size_)
     return 0;
   return static_cast<unsigned char>(buffer_[position_ + offset]);

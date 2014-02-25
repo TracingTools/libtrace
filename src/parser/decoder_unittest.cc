@@ -157,4 +157,14 @@ TEST(DecoderTest, DecodeW16String) {
   EXPECT_EQ(0, WStringValue::GetValue(value.get()).compare(expected));
 }
 
+TEST(DecoderTest, DecodeFixedW16String) {
+  const char original[] = "T\0e\0s\0t\0.\0\0\0\0\0\0";
+  const wchar_t expected[] = L"Test.";
+  Decoder decoder(&original[0], sizeof(original) / sizeof(char));
+  scoped_ptr<WStringValue> value(decoder.DecodeFixedW16String(8));
+  EXPECT_EQ(event::VALUE_WSTRING, value->GetType());
+  EXPECT_EQ(0U, decoder.RemainingBytes());
+  EXPECT_EQ(0, WStringValue::GetValue(value.get()).compare(expected));
+}
+
 }  // namespace parser
