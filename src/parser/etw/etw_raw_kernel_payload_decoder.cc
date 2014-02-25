@@ -138,7 +138,31 @@ const unsigned char kStackWalkStackOpcode = 32;
 
 // Constants for PageFault events.
 const std::string kPageFaultProviderId = "3D6FA8D3-FE05-11D0-9DDA-00C04FD7BA7C";
+const unsigned char kPageFaultTransitionFaultOpcode = 10;
+const unsigned char kPageFaultDemandZeroFaultOpcode = 11;
+const unsigned char kPageFaultCopyOnWriteOpcode = 12;
+const unsigned char kPageFaultGuardPageFaultOpcode = 13;
+const unsigned char kPageFaultHardPageFaultOpcode = 14;
+const unsigned char kPageFaultAccessViolationOpcode = 15;
 const unsigned char kPageFaultHardFaultOpcode = 32;
+const unsigned char kPageFaultUnknown33Opcode = 33;
+const unsigned char kPageFaultUnknown34Opcode = 34;
+const unsigned char kPageFaultUnknown35Opcode = 35;
+const unsigned char kPageFaultUnknown36Opcode = 36;
+const unsigned char kPageFaultUnknown47Opcode = 46;
+const unsigned char kPageFaultUnknown73Opcode = 73;
+const unsigned char kPageFaultUnknown76Opcode = 76;
+const unsigned char kPageFaultVirtualAllocOpcode = 98;
+const unsigned char kPageFaultVirtualFreeOpcode = 99;
+const unsigned char kPageFaultHRRundownOpcode = 100;
+const unsigned char kPageFaultHRCreateOpcode = 101;
+const unsigned char kPageFaultHRReserveOpcode = 102;
+const unsigned char kPageFaultHRReleaseOpcode = 103;
+const unsigned char kPageFaultHRDestroyOpcode = 104;
+const unsigned char kPageFaultImageLoadBackedOpcode = 105;
+const unsigned char kPageFaultUnknown112Opcode = 112;
+const unsigned char kPageFaultVirtualAllocDCStartOpcode = 128;
+const unsigned char kPageFaultVirtualAllocDCEndpcode = 129;
 
 bool DecodeImagePayload(Decoder* decoder,
                         unsigned char version,
@@ -1551,6 +1575,43 @@ bool DecodePageFaultHardPageFaultPayload(Decoder* decoder,
   return true;
 }
 
+bool DecodePageFaultVirtualAllocFreePayload(Decoder* decoder,
+                                            unsigned char version,
+                                            unsigned char opcode,
+                                            bool is_64_bit,
+                                            std::string* operation,
+                                            StructValue* fields) {
+  DCHECK(decoder != NULL);
+  DCHECK(is_64_bit);
+  DCHECK(operation != NULL);
+  DCHECK(fields != NULL);
+
+  if (version != 2)
+    return false;
+
+  // Set the operation name.
+  switch (opcode) {
+    case kPageFaultVirtualAllocOpcode:
+      *operation = "VirtualAlloc";
+      break;
+    case kPageFaultVirtualFreeOpcode:
+      *operation = "VirtualFree";
+      break;
+    default:
+      return false;
+  }
+
+  // Decode the payload.
+  if (!DecodeUInteger("BaseAddress", is_64_bit, decoder, fields) ||
+      !DecodeUInteger("RegionSize", is_64_bit, decoder, fields) ||
+      !Decode<UIntValue>("ProcessId", decoder, fields) ||
+      !Decode<UIntValue>("Flags", decoder, fields)) {
+    return false;
+  }
+
+  return true;
+}
+
 bool DecodePageFaultPayload(Decoder* decoder,
                             unsigned char version,
                             unsigned char opcode,
@@ -1567,6 +1628,11 @@ bool DecodePageFaultPayload(Decoder* decoder,
   switch (opcode) {
     case kPageFaultHardFaultOpcode:
       return DecodePageFaultHardPageFaultPayload(
+          decoder, version, opcode, is_64_bit, operation, fields);
+
+    case kPageFaultVirtualAllocOpcode:
+    case kPageFaultVirtualFreeOpcode:
+      return DecodePageFaultVirtualAllocFreePayload(
           decoder, version, opcode, is_64_bit, operation, fields);
 
     default:

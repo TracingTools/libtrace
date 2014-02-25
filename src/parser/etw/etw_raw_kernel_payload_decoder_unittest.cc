@@ -145,6 +145,8 @@ const unsigned char kStackWalkStackOpcode = 32;
 // Constants for PageFault events.
 const std::string kPageFaultProviderId = "3D6FA8D3-FE05-11D0-9DDA-00C04FD7BA7C";
 const unsigned char kPageFaultHardFaultOpcode = 32;
+const unsigned char kPageFaultVirtualAllocOpcode = 98;
+const unsigned char kPageFaultVirtualFreeOpcode = 99;
 
 const unsigned char kImageUnloadPayloadV2[] = {
     0x00, 0x00, 0x78, 0xF7, 0xFE, 0x07, 0x00, 0x00,
@@ -1051,6 +1053,18 @@ const unsigned char kPageFaultHardFaultPayloadV2[] = {
     0x20, 0x3B, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x5A, 0xA4, 0x11, 0x80, 0xFA, 0xFF, 0xFF,
     0x1C, 0x27, 0x00, 0x00, 0x00, 0x40, 0x00, 0x00
+    };
+
+const unsigned char kPageFaultVirtualAllocPayloadV2[] = {
+    0x00, 0x40, 0x3B, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x60, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x04, 0x18, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00
+    };
+
+const unsigned char kPageFaultVirtualFreePayloadV2[] = {
+    0x00, 0x40, 0x3B, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0xF0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x04, 0x18, 0x00, 0x00, 0x00, 0x40, 0x00, 0x00
     };
 
 scoped_ptr<Value> MakeSID64(uint64 psid,
@@ -2976,6 +2990,50 @@ TEST(EtwRawDecoderTest, PageFaultHardFaultV2) {
 
   EXPECT_STREQ("PageFault", category.c_str());
   EXPECT_STREQ("HardFault", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, PageFaultVirtualAllocV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kPageFaultProviderId,
+          kVersion2, kPageFaultVirtualAllocOpcode, k64bit,
+          reinterpret_cast<const char*>(&kPageFaultVirtualAllocPayloadV2[0]),
+          sizeof(kPageFaultVirtualAllocPayloadV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<ULongValue>("BaseAddress", 0x003B4000ULL);
+  expected->AddField<ULongValue>("RegionSize", 0x6000ULL);
+  expected->AddField<UIntValue>("ProcessId", 0x1804);
+  expected->AddField<UIntValue>("Flags", 0x1000);
+
+  EXPECT_STREQ("PageFault", category.c_str());
+  EXPECT_STREQ("VirtualAlloc", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, PageFaultVirtualFreeV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kPageFaultProviderId,
+          kVersion2, kPageFaultVirtualFreeOpcode, k64bit,
+          reinterpret_cast<const char*>(&kPageFaultVirtualFreePayloadV2[0]),
+          sizeof(kPageFaultVirtualFreePayloadV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<ULongValue>("BaseAddress", 0x003B4000ULL);
+  expected->AddField<ULongValue>("RegionSize", 0x0000F000ULL);
+  expected->AddField<UIntValue>("ProcessId", 0x1804);
+  expected->AddField<UIntValue>("Flags", 0x4000);
+
+  EXPECT_STREQ("PageFault", category.c_str());
+  EXPECT_STREQ("VirtualFree", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
