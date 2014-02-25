@@ -60,6 +60,12 @@ const unsigned char kVersion5 = 5;
 // Flag indicating to decode 64-bit integer.
 bool k64bit = true;
 
+// Constants for EventTrace events.
+const std::string kEventTraceEventProviderId =
+    "68FDD900-4A3E-11D1-84F4-0000F80464E3";
+const unsigned char kEventTraceEventHeaderOpcode = 0;
+const unsigned char kEventTraceEventExtensionOpcode = 5;
+
 // Constants for Image events.
 const std::string kImageProviderId = "2CB15D1D-5FC1-11D2-ABE1-00A0C911F518";
 const unsigned char kImageUnloadOpcode = 2;
@@ -147,6 +153,56 @@ const std::string kPageFaultProviderId = "3D6FA8D3-FE05-11D0-9DDA-00C04FD7BA7C";
 const unsigned char kPageFaultHardFaultOpcode = 32;
 const unsigned char kPageFaultVirtualAllocOpcode = 98;
 const unsigned char kPageFaultVirtualFreeOpcode = 99;
+
+const unsigned char kEventTraceEventHeaderPayloadV2[] = {
+    0x00, 0x00, 0x01, 0x00, 0x06, 0x01, 0x01, 0x05,
+    0xB1, 0x1D, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00,
+    0x3B, 0x2E, 0xCD, 0x14, 0x58, 0x2C, 0xCF, 0x01,
+    0x61, 0x61, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x01, 0x00, 0x01, 0x00, 0xB6, 0x01, 0x00, 0x00,
+    0x01, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00,
+    0x1F, 0x00, 0x00, 0x00, 0xA0, 0x06, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x2C, 0x01, 0x00, 0x00, 0x40, 0x00, 0x74, 0x00,
+    0x7A, 0x00, 0x72, 0x00, 0x65, 0x00, 0x73, 0x00,
+    0x2E, 0x00, 0x64, 0x00, 0x6C, 0x00, 0x6C, 0x00,
+    0x2C, 0x00, 0x2D, 0x00, 0x31, 0x00, 0x31, 0x00,
+    0x32, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0B, 0x00,
+    0x00, 0x00, 0x01, 0x00, 0x02, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x40, 0x00, 0x74, 0x00, 0x7A, 0x00, 0x72, 0x00,
+    0x65, 0x00, 0x73, 0x00, 0x2E, 0x00, 0x64, 0x00,
+    0x6C, 0x00, 0x6C, 0x00, 0x2C, 0x00, 0x2D, 0x00,
+    0x31, 0x00, 0x31, 0x00, 0x31, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x02, 0x00,
+    0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0xC4, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00,
+    0x59, 0x43, 0x25, 0xA2, 0xC0, 0x2B, 0xCF, 0x01,
+    0x7D, 0x46, 0x19, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x2D, 0x64, 0x99, 0x04, 0x58, 0x2C, 0xCF, 0x01,
+    0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x52, 0x00, 0x65, 0x00, 0x6C, 0x00, 0x6F, 0x00,
+    0x67, 0x00, 0x67, 0x00, 0x65, 0x00, 0x72, 0x00,
+    0x00, 0x00, 0x43, 0x00, 0x3A, 0x00, 0x5C, 0x00,
+    0x6B, 0x00, 0x65, 0x00, 0x72, 0x00, 0x6E, 0x00,
+    0x65, 0x00, 0x6C, 0x00, 0x2E, 0x00, 0x65, 0x00,
+    0x74, 0x00, 0x6C, 0x00, 0x00, 0x00 };
+
+const unsigned char kEventTraceEventExtensionPayloadV2[] = {
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x19, 0x00, 0x00, 0x00 };
 
 const unsigned char kImageUnloadPayloadV2[] = {
     0x00, 0x00, 0x78, 0xF7, 0xFE, 0x07, 0x00, 0x00,
@@ -1082,7 +1138,111 @@ scoped_ptr<Value> MakeSID64(uint64 psid,
   return sid_struct.PassAs<Value>();
 }
 
+scoped_ptr<Value> MakeSystemTime(int16 year, int16 month, int16 dayOfWeek,
+    int16 day, int16 hour, int16 minute, int16 second, int16 milliseconds) {
+  scoped_ptr<StructValue> systemtime_struct(new StructValue());
+  systemtime_struct->AddField<ShortValue>("wYear", year);
+  systemtime_struct->AddField<ShortValue>("wMonth", month);
+  systemtime_struct->AddField<ShortValue>("wDayOfWeek", dayOfWeek);
+  systemtime_struct->AddField<ShortValue>("wDay", day);
+  systemtime_struct->AddField<ShortValue>("wHour", hour);
+  systemtime_struct->AddField<ShortValue>("wMinute", minute);
+  systemtime_struct->AddField<ShortValue>("wSecond", second);
+  systemtime_struct->AddField<ShortValue>("wMilliseconds", milliseconds);
+
+  return systemtime_struct.PassAs<Value>();
+}
+
 }  // namespace
+
+TEST(EtwRawDecoderTest, EventTraceHeaderV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kEventTraceEventProviderId,
+          kVersion2, kEventTraceEventHeaderOpcode, k64bit,
+          reinterpret_cast<const char*>(&kEventTraceEventHeaderPayloadV2[0]),
+          sizeof(kEventTraceEventHeaderPayloadV2),
+          &operation, &category, &fields));
+
+  // Expected TimeZone structure.
+  scoped_ptr<StructValue> timezone(new StructValue);
+  timezone->AddField<IntValue>("Bias", 0x12C);
+  std::wstring standard_name = L"@tzres.dll,-112";
+  timezone->AddField<WStringValue>("StandardName", standard_name);
+  timezone->AddField("StandardDate",
+      MakeSystemTime(0, 11, 0, 1, 2, 0, 0, 0).Pass());
+  timezone->AddField<IntValue>("StandardBias", 0);
+  std::wstring daylight_name = L"@tzres.dll,-111";
+  timezone->AddField<WStringValue>("DaylightName", daylight_name);
+  timezone->AddField("DaylightDate",
+      MakeSystemTime(0, 3, 0, 2, 2, 0, 0, 0).Pass());
+  timezone->AddField<IntValue>("DaylightBias", -60);
+
+  // Expected structure.
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<UIntValue>("BufferSize", 65536);
+  expected->AddField<UIntValue>("Version", 83951878);
+  expected->AddField<UIntValue>("ProviderVersion", 7601);
+  expected->AddField<UIntValue>("NumberOfProcessors", 4);
+  expected->AddField<ULongValue>("EndTime", 130371671034768955ULL);
+  expected->AddField<UIntValue>("TimerResolution", 156001);
+  expected->AddField<UIntValue>("MaxFileSize", 0);
+  expected->AddField<UIntValue>("LogFileMode", 0x10001);
+  expected->AddField<UIntValue>("BuffersWritten", 438);
+  expected->AddField<UIntValue>("StartBuffers", 1);
+  expected->AddField<UIntValue>("PointerSize", 8);
+  expected->AddField<UIntValue>("EventsLost", 31);
+  expected->AddField<UIntValue>("CPUSpeed", 1696);
+  expected->AddField<ULongValue>("LoggerName", 0);
+  expected->AddField<ULongValue>("LogFileName", 0);
+  expected->AddField("TimeZoneInformation", timezone.Pass());
+  expected->AddField<UIntValue>("Padding", 0);
+  expected->AddField<ULongValue>("BootTime", 130371020571099993ULL);
+  expected->AddField<ULongValue>("PerfFreq", 1656445);
+  expected->AddField<ULongValue>("StartTime", 130371670762939437ULL);
+  expected->AddField<UIntValue>("ReservedFlags", 0x1);
+  expected->AddField<UIntValue>("BuffersLost", 0);
+
+  const std::wstring session_name = L"Relogger";
+  expected->AddField<WStringValue>("SessionNameString", session_name);
+  const std::wstring logfile_name = L"C:\\kernel.etl";
+  expected->AddField<WStringValue>("LogFileNameString", logfile_name);
+
+  EXPECT_STREQ("EventTraceEvent", category.c_str());
+  EXPECT_STREQ("Header", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, EventTraceExtensionV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kEventTraceEventProviderId,
+          kVersion2, kEventTraceEventExtensionOpcode, k64bit,
+          reinterpret_cast<const char*>(
+              &kEventTraceEventExtensionPayloadV2[0]),
+          sizeof(kEventTraceEventExtensionPayloadV2),
+          &operation, &category, &fields));
+
+  // Expected structure.
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<UIntValue>("GroupMask1", 0);
+  expected->AddField<UIntValue>("GroupMask2", 0);
+  expected->AddField<UIntValue>("GroupMask3", 0);
+  expected->AddField<UIntValue>("GroupMask4", 0);
+  expected->AddField<UIntValue>("GroupMask5", 0);
+  expected->AddField<UIntValue>("GroupMask6", 0);
+  expected->AddField<UIntValue>("GroupMask7", 0);
+  expected->AddField<UIntValue>("GroupMask8", 0);
+  expected->AddField<UIntValue>("KernelEventVersion", 25);
+
+  EXPECT_STREQ("EventTraceEvent", category.c_str());
+  EXPECT_STREQ("Extension", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
 
 TEST(EtwRawDecoderTest, ImageUnloadV2) {
   std::string operation;

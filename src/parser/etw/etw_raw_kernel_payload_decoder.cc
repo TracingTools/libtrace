@@ -47,6 +47,13 @@ using event::ULongValue;
 using event::UShortValue;
 using event::Value;
 
+// Constants for EventTraceEvent events.
+const std::string kEventTraceEventProviderId =
+    "68FDD900-4A3E-11D1-84F4-0000F80464E3";
+const unsigned char kEventTraceEventHeaderOpcode = 0;
+const unsigned char kEventTraceEventExtensionOpcode = 5;
+const unsigned char kEventTraceEndExtensionOpcode = 32;
+
 // Constants for Image events.
 const std::string kImageProviderId = "2CB15D1D-5FC1-11D2-ABE1-00A0C911F518";
 const unsigned char kImageUnloadOpcode = 2;
@@ -163,6 +170,118 @@ const unsigned char kPageFaultImageLoadBackedOpcode = 105;
 const unsigned char kPageFaultUnknown112Opcode = 112;
 const unsigned char kPageFaultVirtualAllocDCStartOpcode = 128;
 const unsigned char kPageFaultVirtualAllocDCEndpcode = 129;
+
+bool DecodeEventTraceHeaderPayload(Decoder* decoder,
+                                   unsigned char version,
+                                   unsigned char opcode,
+                                   bool is_64_bit,
+                                   std::string* operation,
+                                   StructValue* fields) {
+  DCHECK(decoder != NULL);
+  DCHECK(opcode == kEventTraceEventHeaderOpcode);
+  DCHECK(is_64_bit);
+  DCHECK(operation != NULL);
+  DCHECK(fields != NULL);
+
+  if (version != 2)
+    return false;
+
+  // Set the operation name.
+  *operation = "Header";
+
+  // Decode the payload.
+  if (!Decode<UIntValue>("BufferSize", decoder, fields) ||
+      !Decode<UIntValue>("Version", decoder, fields) ||
+      !Decode<UIntValue>("ProviderVersion", decoder, fields) ||
+      !Decode<UIntValue>("NumberOfProcessors", decoder, fields) ||
+      !Decode<ULongValue>("EndTime", decoder, fields) ||
+      !Decode<UIntValue>("TimerResolution", decoder, fields) ||
+      !Decode<UIntValue>("MaxFileSize", decoder, fields) ||
+      !Decode<UIntValue>("LogFileMode", decoder, fields) ||
+      !Decode<UIntValue>("BuffersWritten", decoder, fields) ||
+      !Decode<UIntValue>("StartBuffers", decoder, fields) ||
+      !Decode<UIntValue>("PointerSize", decoder, fields) ||
+      !Decode<UIntValue>("EventsLost", decoder, fields) ||
+      !Decode<UIntValue>("CPUSpeed", decoder, fields) ||
+      !DecodeUInteger("LoggerName", is_64_bit, decoder, fields) ||
+      !DecodeUInteger("LogFileName", is_64_bit, decoder, fields) ||
+      !DecodeTimeZoneInformation("TimeZoneInformation", decoder, fields) ||
+      !Decode<UIntValue>("Padding", decoder, fields) ||
+      !Decode<ULongValue>("BootTime", decoder, fields) ||
+      !Decode<ULongValue>("PerfFreq", decoder, fields) ||
+      !Decode<ULongValue>("StartTime", decoder, fields) ||
+      !Decode<UIntValue>("ReservedFlags", decoder, fields) ||
+      !Decode<UIntValue>("BuffersLost", decoder, fields) ||
+      !DecodeW16String("SessionNameString", decoder, fields) ||
+      !DecodeW16String("LogFileNameString", decoder, fields)) {
+    return false;
+  }
+
+  return true;
+}
+
+bool DecodeEventTraceExtensionPayload(Decoder* decoder,
+                                      unsigned char version,
+                                      unsigned char opcode,
+                                      bool is_64_bit,
+                                      std::string* operation,
+                                      StructValue* fields) {
+  DCHECK(decoder != NULL);
+  DCHECK(opcode == kEventTraceEventExtensionOpcode);
+  DCHECK(is_64_bit);
+  DCHECK(operation != NULL);
+  DCHECK(fields != NULL);
+
+  if (version > 2)
+    return false;
+
+  // Set the operation name.
+  *operation = "Extension";
+
+  // Decode the payload.
+  if (!Decode<UIntValue>("GroupMask1", decoder, fields) ||
+      !Decode<UIntValue>("GroupMask2", decoder, fields) ||
+      !Decode<UIntValue>("GroupMask3", decoder, fields) ||
+      !Decode<UIntValue>("GroupMask4", decoder, fields) ||
+      !Decode<UIntValue>("GroupMask5", decoder, fields) ||
+      !Decode<UIntValue>("GroupMask6", decoder, fields) ||
+      !Decode<UIntValue>("GroupMask7", decoder, fields) ||
+      !Decode<UIntValue>("GroupMask8", decoder, fields)) {
+    return false;
+  }
+
+  if (version == 2) {
+    if (!Decode<UIntValue>("KernelEventVersion", decoder, fields))
+      return false;
+  }
+
+  return true;
+}
+
+bool DecodeEventTracePayload(Decoder* decoder,
+                             unsigned char version,
+                             unsigned char opcode,
+                             bool is_64_bit,
+                             std::string* operation,
+                             StructValue* fields) {
+  DCHECK(decoder != NULL);
+  DCHECK(operation != NULL);
+  DCHECK(fields != NULL);
+
+  if (!is_64_bit)
+    return false;
+
+  switch (opcode) {
+    case kEventTraceEventHeaderOpcode:
+      return DecodeEventTraceHeaderPayload(
+          decoder, version, opcode, is_64_bit, operation, fields);
+    case kEventTraceEventExtensionOpcode:
+      return DecodeEventTraceExtensionPayload(
+          decoder, version, opcode, is_64_bit, operation, fields);
+    default:
+      return false;
+  }
+}
 
 bool DecodeImagePayload(Decoder* decoder,
                         unsigned char version,
@@ -1661,7 +1780,15 @@ bool DecodeRawETWKernelPayload(const std::string& provider_id,
   scoped_ptr<StructValue> fields(new StructValue);
 
   // Dispatch event by provider (GUID).
-  if (provider_id == kImageProviderId) {
+  if (provider_id == kEventTraceEventProviderId) {
+    if (DecodeEventTracePayload(&decoder, version, opcode, is_64_bit,
+                                operation, fields.get())) {
+      *category = "EventTraceEvent";
+    } else {
+      LOG(WARNING) << "Error while decoding EventTraceEvent payload.";
+      return false;
+    }
+  } else if (provider_id == kImageProviderId) {
     if (DecodeImagePayload(&decoder, version, opcode, is_64_bit,
                            operation, fields.get())) {
       *category = "Image";
