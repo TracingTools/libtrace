@@ -1197,7 +1197,7 @@ TEST(EtwRawDecoderTest, EventTraceHeaderV2) {
   expected->AddField<UIntValue>("CPUSpeed", 1696);
   expected->AddField<ULongValue>("LoggerName", 0);
   expected->AddField<ULongValue>("LogFileName", 0);
-  expected->AddField("TimeZoneInformation", timezone.Pass());
+  expected->AddField("TimeZoneInformation", timezone.PassAs<Value>());
   expected->AddField<UIntValue>("Padding", 0);
   expected->AddField<ULongValue>("BootTime", 130371020571099993ULL);
   expected->AddField<ULongValue>("PerfFreq", 1656445);
