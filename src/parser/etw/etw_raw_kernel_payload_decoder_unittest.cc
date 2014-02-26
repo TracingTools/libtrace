@@ -1290,7 +1290,7 @@ TEST(EtwRawDecoderTest, EventTraceHeaderV2) {
   timezone->AddField("StandardDate",
       MakeSystemTime(0, 11, 0, 1, 2, 0, 0, 0).Pass());
   timezone->AddField<IntValue>("StandardBias", 0);
-  std::wstring daylight_name = L"@tzres.dll,-111";
+  const std::wstring daylight_name = L"@tzres.dll,-111";
   timezone->AddField<WStringValue>("DaylightName", daylight_name);
   timezone->AddField("DaylightDate",
       MakeSystemTime(0, 3, 0, 2, 2, 0, 0, 0).Pass());
@@ -1445,7 +1445,7 @@ TEST(EtwRawDecoderTest, ImageUnloadV2) {
   expected->AddField<UIntValue>("Reserved2", 0U);
   expected->AddField<UIntValue>("Reserved3", 0U);
   expected->AddField<UIntValue>("Reserved4", 0U);
-  std::wstring filename = L"\\Windows\\System32\\wbem\\fastprox.dll";
+  const std::wstring filename = L"\\Windows\\System32\\wbem\\fastprox.dll";
   expected->AddField<WStringValue>("ImageFileName", filename);
 
   EXPECT_STREQ("Image", category.c_str());
@@ -1478,7 +1478,7 @@ TEST(EtwRawDecoderTest, ImageUnloadV3) {
   expected->AddField<UIntValue>("Reserved2", 0U);
   expected->AddField<UIntValue>("Reserved3", 0U);
   expected->AddField<UIntValue>("Reserved4", 0U);
-  std::wstring filename = L"\\Windows\\System32\\wbem\\fastprox.dll";
+  const std::wstring filename = L"\\Windows\\System32\\wbem\\fastprox.dll";
   expected->AddField<WStringValue>("ImageFileName", filename);
 
   EXPECT_STREQ("Image", category.c_str());
@@ -1588,7 +1588,7 @@ TEST(EtwRawDecoderTest, ImageDCStartV2) {
   expected->AddField<UIntValue>("Reserved2", 0U);
   expected->AddField<UIntValue>("Reserved3", 0U);
   expected->AddField<UIntValue>("Reserved4", 0U);
-  std::wstring filename = L"\\SystemRoot\\system32\\ntoskrnl.exe";
+  const std::wstring filename = L"\\SystemRoot\\system32\\ntoskrnl.exe";
   expected->AddField<WStringValue>("ImageFileName", filename);
 
   EXPECT_STREQ("Image", category.c_str());
@@ -1621,7 +1621,7 @@ TEST(EtwRawDecoderTest, ImageDCStartV3) {
   expected->AddField<UIntValue>("Reserved2", 0U);
   expected->AddField<UIntValue>("Reserved3", 0U);
   expected->AddField<UIntValue>("Reserved4", 0U);
-  std::wstring filename =
+  const std::wstring filename =
       L"\\Device\\HarddiskVolume4\\Windows\\SysWOW64\\ntdll.dll";
   expected->AddField<WStringValue>("ImageFileName", filename);
 
@@ -1653,7 +1653,7 @@ TEST(EtwRawDecoderTest, ImageDCEndV2) {
   expected->AddField<UIntValue>("Reserved2", 0U);
   expected->AddField<UIntValue>("Reserved3", 0U);
   expected->AddField<UIntValue>("Reserved4", 0U);
-  std::wstring filename = L"\\SystemRoot\\system32\\ntoskrnl.exe";
+  const std::wstring filename = L"\\SystemRoot\\system32\\ntoskrnl.exe";
   expected->AddField<WStringValue>("ImageFileName", filename);
 
   EXPECT_STREQ("Image", category.c_str());
@@ -1686,7 +1686,7 @@ TEST(EtwRawDecoderTest, ImageDCEndV3) {
   expected->AddField<UIntValue>("Reserved2", 0U);
   expected->AddField<UIntValue>("Reserved3", 0U);
   expected->AddField<UIntValue>("Reserved4", 0U);
-  std::wstring filename = L"\\SystemRoot\\system32\\ntoskrnl.exe";
+  const std::wstring filename = L"\\SystemRoot\\system32\\ntoskrnl.exe";
   expected->AddField<WStringValue>("ImageFileName", filename);
 
   EXPECT_STREQ("Image", category.c_str());
@@ -1717,7 +1717,7 @@ TEST(EtwRawDecoderTest, ImageLoadV2) {
   expected->AddField<UIntValue>("Reserved2", 0U);
   expected->AddField<UIntValue>("Reserved3", 0U);
   expected->AddField<UIntValue>("Reserved4", 0U);
-  std::wstring filename = L"\\Windows\\SysWOW64\\wscisvif.dll";
+  const std::wstring filename = L"\\Windows\\SysWOW64\\wscisvif.dll";
   expected->AddField<WStringValue>("ImageFileName", filename);
 
   EXPECT_STREQ("Image", category.c_str());
@@ -1750,7 +1750,8 @@ TEST(EtwRawDecoderTest, ImageLoadV3) {
   expected->AddField<UIntValue>("Reserved2", 0U);
   expected->AddField<UIntValue>("Reserved3", 0U);
   expected->AddField<UIntValue>("Reserved4", 0U);
-  std::wstring filename = L"\\Device\\HarddiskVolume4\\Program Files (x86)\\"
+  const std::wstring filename =
+      L"\\Device\\HarddiskVolume4\\Program Files (x86)\\"
       L"Windows Kits\\8.0\\Windows Performance Toolkit\\xperf.exe";
   expected->AddField<WStringValue>("ImageFileName", filename);
 
@@ -1804,9 +1805,9 @@ TEST(EtwRawDecoderTest, ProcessStartV3) {
                                           0,
                                           &sid[0],
                                           sizeof(sid)).Pass());
-  std::string filename = "xperf.exe";
+  const std::string filename = "xperf.exe";
   expected->AddField<StringValue>("ImageFileName", filename);
-  std::wstring commandline = L"xperf  -d out.etl";
+  const std::wstring commandline = L"xperf  -d out.etl";
   expected->AddField<WStringValue>("CommandLine", commandline);
 
   EXPECT_STREQ("Process", category.c_str());
@@ -1880,9 +1881,9 @@ TEST(EtwRawDecoderTest, ProcessEndV3) {
                                           0,
                                           &sid[0],
                                           sizeof(sid)).Pass());
-  std::string filename = "xperf.exe";
+  const std::string filename = "xperf.exe";
   expected->AddField<StringValue>("ImageFileName", filename);
-  std::wstring commandline =
+  const std::wstring commandline =
      L"xperf  -on PROC_THREAD+LOADER+CSWITCH -stackwalk ImageLoad+ImageUnload";
   expected->AddField<WStringValue>("CommandLine", commandline);
 
@@ -1961,9 +1962,9 @@ TEST(EtwRawDecoderTest, ProcessDCStartV3) {
                                           0,
                                           &sid[0],
                                           sizeof(sid)).Pass());
-  std::string filename = "Idle";
+  const std::string filename = "Idle";
   expected->AddField<StringValue>("ImageFileName", filename);
-  std::wstring commandline = L"";
+  const std::wstring commandline = L"";
   expected->AddField<WStringValue>("CommandLine", commandline);
 
   EXPECT_STREQ("Process", category.c_str());
