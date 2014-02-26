@@ -179,7 +179,6 @@ bool DecodeEventTraceHeaderPayload(Decoder* decoder,
                                    StructValue* fields) {
   DCHECK(decoder != NULL);
   DCHECK(opcode == kEventTraceEventHeaderOpcode);
-  DCHECK(is_64_bit);
   DCHECK(operation != NULL);
   DCHECK(fields != NULL);
 
@@ -267,9 +266,6 @@ bool DecodeEventTracePayload(Decoder* decoder,
   DCHECK(decoder != NULL);
   DCHECK(operation != NULL);
   DCHECK(fields != NULL);
-
-  if (!is_64_bit)
-    return false;
 
   switch (opcode) {
     case kEventTraceEventHeaderOpcode:
