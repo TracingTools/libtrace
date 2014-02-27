@@ -328,11 +328,11 @@ bool DecodeImagePayload(Decoder* decoder,
   if (opcode == kImageKernelBaseOpcode)
     return true;
 
-  if (is_64_bit && version != 0) {
-    if (!Decode<ULongValue>("ModuleSize", decoder, fields))
+  if (version == 0) {
+    if (!Decode<UIntValue>("ModuleSize", decoder, fields))
       return false;
   } else {
-    if (!Decode<UIntValue>("ModuleSize", decoder, fields))
+    if (!DecodeUInteger("ModuleSize", is_64_bit, decoder, fields))
       return false;
   }
 
