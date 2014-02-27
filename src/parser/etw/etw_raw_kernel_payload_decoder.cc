@@ -222,12 +222,11 @@ bool DecodeEventTraceHeaderPayload(Decoder* decoder,
 bool DecodeEventTraceExtensionPayload(Decoder* decoder,
                                       unsigned char version,
                                       unsigned char opcode,
-                                      bool is_64_bit,
+                                      bool /* is_64_bit */,
                                       std::string* operation,
                                       StructValue* fields) {
   DCHECK(decoder != NULL);
   DCHECK(opcode == kEventTraceEventExtensionOpcode);
-  DCHECK(is_64_bit);
   DCHECK(operation != NULL);
   DCHECK(fields != NULL);
 

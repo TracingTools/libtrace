@@ -259,6 +259,13 @@ const unsigned char kEventTraceEventHeaderPayload32bitsV2[] = {
     0x76, 0x00, 0x30, 0x00, 0x2E, 0x00, 0x65, 0x00,
     0x74, 0x00, 0x6C, 0x00, 0x00, 0x00 };
 
+const unsigned char kEventTraceEventExtensionPayload32bitsV2[] = {
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x19, 0x00, 0x00, 0x00 };
+
 const unsigned char kEventTraceEventExtensionPayloadV2[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -1493,6 +1500,35 @@ TEST(EtwRawDecoderTest, EventTraceHeader32bitsV2) {
 
   EXPECT_STREQ("EventTraceEvent", category.c_str());
   EXPECT_STREQ("Header", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, EventTraceExtension32bitsV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kEventTraceEventProviderId,
+          kVersion2, kEventTraceEventExtensionOpcode, k32bit,
+          reinterpret_cast<const char*>(
+              &kEventTraceEventExtensionPayload32bitsV2[0]),
+          sizeof(kEventTraceEventExtensionPayload32bitsV2),
+          &operation, &category, &fields));
+
+  // Expected structure.
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<UIntValue>("GroupMask1", 0);
+  expected->AddField<UIntValue>("GroupMask2", 0);
+  expected->AddField<UIntValue>("GroupMask3", 0);
+  expected->AddField<UIntValue>("GroupMask4", 0);
+  expected->AddField<UIntValue>("GroupMask5", 0);
+  expected->AddField<UIntValue>("GroupMask6", 0);
+  expected->AddField<UIntValue>("GroupMask7", 0);
+  expected->AddField<UIntValue>("GroupMask8", 0);
+  expected->AddField<UIntValue>("KernelEventVersion", 25);
+
+  EXPECT_STREQ("EventTraceEvent", category.c_str());
+  EXPECT_STREQ("Extension", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
