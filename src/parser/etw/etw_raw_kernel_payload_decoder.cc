@@ -1054,7 +1054,6 @@ bool DecodeProcessStartEndDefunctPayload(Decoder* decoder,
                                          bool is_64_bit,
                                          std::string* operation,
                                          StructValue* fields) {
-  DCHECK(is_64_bit);
   DCHECK(decoder != NULL);
   DCHECK(operation != NULL);
   DCHECK(fields != NULL);
@@ -1063,7 +1062,7 @@ bool DecodeProcessStartEndDefunctPayload(Decoder* decoder,
     if (version < 3 || version > 5)
       return false;
   } else {
-    if (version < 3 || version > 4)
+    if (version > 4)
       return false;
   }
 
@@ -1095,12 +1094,29 @@ bool DecodeProcessStartEndDefunctPayload(Decoder* decoder,
   }
 
   // Decode the payload.
-  if (!Decode<ULongValue>("UniqueProcessKey", decoder, fields) ||
-      !Decode<UIntValue>("ProcessId", decoder, fields) ||
-      !Decode<UIntValue>("ParentId", decoder, fields) ||
+  if (version == 1 &&
+      !DecodeUInteger("PageDirectoryBase", is_64_bit, decoder, fields)) {
+    return false;
+  }
+
+  if (version >= 2 &&
+      !DecodeUInteger("UniqueProcessKey", is_64_bit, decoder, fields)) {
+    return false;
+  }
+
+  if (!Decode<UIntValue>("ProcessId", decoder, fields) ||
+      !Decode<UIntValue>("ParentId", decoder, fields)) {
+    return false;
+  }
+
+  if (version >= 1 &&
       !Decode<UIntValue>("SessionId", decoder, fields) ||
-      !Decode<IntValue>("ExitStatus", decoder, fields) ||
-      !Decode<ULongValue>("DirectoryTableBase", decoder, fields)) {
+      !Decode<IntValue>("ExitStatus", decoder, fields)) {
+    return false;
+  }
+
+  if (version >= 3 &&
+      !DecodeUInteger("DirectoryTableBase", is_64_bit, decoder, fields)) {
     return false;
   }
 
@@ -1109,8 +1125,15 @@ bool DecodeProcessStartEndDefunctPayload(Decoder* decoder,
     return false;
   }
 
-  if (!DecodeSID("UserSID", is_64_bit, decoder, fields) ||
-      !Decode<StringValue>("ImageFileName", decoder, fields) ||
+  if (!DecodeSID("UserSID", is_64_bit, decoder, fields))
+    return false;
+
+  if (version >= 1 &&
+      !Decode<StringValue>("ImageFileName", decoder, fields)) {
+    return false;
+  }
+
+  if (version >= 2 &&
       !DecodeW16String("CommandLine", decoder, fields)) {
     return false;
   }
@@ -1121,7 +1144,7 @@ bool DecodeProcessStartEndDefunctPayload(Decoder* decoder,
     return false;
   }
 
-  if (version == 5 && opcode == kProcessDefunctOpcode &&
+  if (version >= 5 &&
       !Decode<ULongValue>("ExitTime", decoder, fields)) {
     return false;
   }
@@ -1214,9 +1237,6 @@ bool DecodeProcessPayload(Decoder* decoder,
   DCHECK(decoder != NULL);
   DCHECK(operation != NULL);
   DCHECK(fields != NULL);
-
-  if (!is_64_bit)
-    return false;
 
   switch (opcode) {
     case kProcessDCStartOpcode:
