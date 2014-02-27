@@ -152,6 +152,12 @@ const unsigned char kStackWalkStackOpcode = 32;
 
 // Constants for PageFault events.
 const std::string kPageFaultProviderId = "3D6FA8D3-FE05-11D0-9DDA-00C04FD7BA7C";
+const unsigned char kPageFaultTransitionFaultOpcode = 10;
+const unsigned char kPageFaultDemandZeroFaultOpcode = 11;
+const unsigned char kPageFaultCopyOnWriteOpcode = 12;
+const unsigned char kPageFaultGuardPageFaultOpcode = 13;
+const unsigned char kPageFaultHardPageFaultOpcode = 14;
+const unsigned char kPageFaultAccessViolationOpcode = 15;
 const unsigned char kPageFaultHardFaultOpcode = 32;
 const unsigned char kPageFaultVirtualAllocOpcode = 98;
 const unsigned char kPageFaultVirtualFreeOpcode = 99;
@@ -1312,6 +1318,42 @@ const unsigned char kStackWalkStackPayloadV2[] = {
     0xE2, 0xF3, 0x19, 0x60, 0xFB, 0x7F, 0x00, 0x00,
     0xCD, 0x15, 0x52, 0x7A, 0xFB, 0x7F, 0x00, 0x00,
     0xD1, 0x43, 0xFB, 0x7A, 0xFB, 0x7F, 0x00, 0x00
+    };
+
+const unsigned char kPageFaultTransitionFaultPayload32bitsV2[] = {
+    0x2D, 0x8E, 0x38, 0x77, 0x2D, 0x8E, 0x38, 0x77
+    };
+
+const unsigned char kPageFaultTransitionFaultPayloadV2[] = {
+    0x26, 0x2C, 0xE6, 0xFD, 0xFE, 0x07, 0x00, 0x00,
+    0x26, 0x2C, 0xE6, 0xFD, 0xFE, 0x07, 0x00, 0x00
+    };
+
+const unsigned char kPageFaultDemandZeroFaultPayloadV2[] = {
+    0x20, 0xE0, 0xFA, 0xFF, 0xFF, 0x07, 0x00, 0x00,
+    0xD6, 0xFE, 0x17, 0x03, 0x00, 0xF8, 0xFF, 0xFF
+    };
+
+const unsigned char kPageFaultCopyOnWritePayloadV2[] = {
+    0x28, 0xB2, 0xFF, 0xFD, 0xFE, 0x07, 0x00, 0x00,
+    0x69, 0x54, 0x5D, 0x77, 0x00, 0x00, 0x00, 0x00
+    };
+
+const unsigned char kPageFaultAccessViolationPayloadV2[] = {
+    0x00, 0x00, 0xFF, 0xFF, 0xFF, 0x07, 0x00, 0x00,
+    0x8A, 0xCD, 0x22, 0x00, 0x60, 0xF9, 0xFF, 0xFF
+    };
+
+const unsigned char kPageFaultHardPageFaultPayloadV2[] = {
+    0x00, 0xC0, 0x66, 0x49, 0x80, 0xF9, 0xFF, 0xFF,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+    };
+
+const unsigned char kPageFaultHardFaultPayload32bitsV2[] = {
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x40, 0x6B, 0x02, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x40, 0x5B, 0xA5, 0x08, 0xB0, 0xB1, 0x85,
+    0x90, 0x13, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00
     };
 
 const unsigned char kPageFaultHardFaultPayloadV2[] = {
@@ -3698,6 +3740,152 @@ TEST(EtwRawDecoderTest, StackWalkStackV2) {
 
   EXPECT_STREQ("StackWalk", category.c_str());
   EXPECT_STREQ("Stack", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, PageFaultTransitionFault32bitsV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kPageFaultProviderId,
+          kVersion2, kPageFaultTransitionFaultOpcode, k32bit,
+          reinterpret_cast<const char*>(
+              &kPageFaultTransitionFaultPayload32bitsV2[0]),
+          sizeof(kPageFaultTransitionFaultPayload32bitsV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<UIntValue>("VirtualAddress", 0x77388E2D);
+  expected->AddField<UIntValue>("ProgramCounter", 0x77388E2D);
+
+  EXPECT_STREQ("PageFault", category.c_str());
+  EXPECT_STREQ("TransitionFault", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, PageFaultTransitionFaultV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kPageFaultProviderId,
+          kVersion2, kPageFaultTransitionFaultOpcode, k64bit,
+          reinterpret_cast<const char*>(&kPageFaultTransitionFaultPayloadV2[0]),
+          sizeof(kPageFaultTransitionFaultPayloadV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<ULongValue>("VirtualAddress", 0x000007FEFDE62C26ULL);
+  expected->AddField<ULongValue>("ProgramCounter", 0x000007FEFDE62C26ULL);
+
+  EXPECT_STREQ("PageFault", category.c_str());
+  EXPECT_STREQ("TransitionFault", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, PageFaultDemandZeroFaultV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kPageFaultProviderId,
+          kVersion2, kPageFaultDemandZeroFaultOpcode, k64bit,
+          reinterpret_cast<const char*>(&kPageFaultDemandZeroFaultPayloadV2[0]),
+          sizeof(kPageFaultDemandZeroFaultPayloadV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<ULongValue>("VirtualAddress", 0x000007FFFFFAE020ULL);
+  expected->AddField<ULongValue>("ProgramCounter", 0xFFFFF8000317FED6ULL);
+
+  EXPECT_STREQ("PageFault", category.c_str());
+  EXPECT_STREQ("DemandZeroFault", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, PageFaultCopyOnWriteV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kPageFaultProviderId,
+          kVersion2, kPageFaultCopyOnWriteOpcode, k64bit,
+          reinterpret_cast<const char*>(&kPageFaultCopyOnWritePayloadV2[0]),
+          sizeof(kPageFaultCopyOnWritePayloadV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<ULongValue>("VirtualAddress", 0x000007FEFDFFB228ULL);
+  expected->AddField<ULongValue>("ProgramCounter", 0x00000000775D5469ULL);
+
+  EXPECT_STREQ("PageFault", category.c_str());
+  EXPECT_STREQ("CopyOnWrite", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, PageFaultAccessViolationV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kPageFaultProviderId,
+          kVersion2, kPageFaultAccessViolationOpcode, k64bit,
+          reinterpret_cast<const char*>(&kPageFaultAccessViolationPayloadV2[0]),
+          sizeof(kPageFaultAccessViolationPayloadV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<ULongValue>("VirtualAddress", 0x000007FFFFFF0000ULL);
+  expected->AddField<ULongValue>("ProgramCounter", 0xFFFFF9600022CD8AULL);
+
+  EXPECT_STREQ("PageFault", category.c_str());
+  EXPECT_STREQ("AccessViolation", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, PageFaultHardPageFaultV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kPageFaultProviderId,
+          kVersion2, kPageFaultHardPageFaultOpcode, k64bit,
+          reinterpret_cast<const char*>(&kPageFaultHardPageFaultPayloadV2[0]),
+          sizeof(kPageFaultHardPageFaultPayloadV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<ULongValue>("VirtualAddress", 0xFFFFF9804966C000ULL);
+  expected->AddField<ULongValue>("ProgramCounter", 0);
+
+  EXPECT_STREQ("PageFault", category.c_str());
+  EXPECT_STREQ("HardPageFault", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, PageFaultHardFault32bitsV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kPageFaultProviderId,
+          kVersion2, kPageFaultHardFaultOpcode, k32bit,
+          reinterpret_cast<const char*>(
+              &kPageFaultHardFaultPayload32bitsV2[0]),
+          sizeof(kPageFaultHardFaultPayload32bitsV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<ULongValue>("InitialTime", 0);
+  expected->AddField<ULongValue>("ReadOffset", 0x00000000026b4000ULL);
+  expected->AddField<UIntValue>("VirtualAddress", 0xa55b4000);
+  expected->AddField<UIntValue>("FileObject", 0x85b1b008);
+  expected->AddField<UIntValue>("TThreadId", 5008);
+  expected->AddField<UIntValue>("ByteCount", 0x1000);
+
+  EXPECT_STREQ("PageFault", category.c_str());
+  EXPECT_STREQ("HardFault", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 

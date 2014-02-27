@@ -1677,6 +1677,52 @@ bool DecodeStackWalkPayload(Decoder* decoder,
   return true;
 }
 
+bool DecodePageFaultCommonPageFaultPayload(Decoder* decoder,
+                                           unsigned char version,
+                                           unsigned char opcode,
+                                           bool is_64_bit,
+                                           std::string* operation,
+                                           StructValue* fields) {
+  DCHECK(decoder != NULL);
+  DCHECK(operation != NULL);
+  DCHECK(fields != NULL);
+
+  if (version != 2)
+    return false;
+
+  // Set the operation name.
+  switch (opcode) {
+    case kPageFaultTransitionFaultOpcode:
+      *operation = "TransitionFault";
+      break;
+    case kPageFaultDemandZeroFaultOpcode:
+      *operation = "DemandZeroFault";
+      break;
+    case kPageFaultCopyOnWriteOpcode:
+      *operation = "CopyOnWrite";
+      break;
+    case kPageFaultGuardPageFaultOpcode:
+      *operation = "GuardPageFault";
+      break;
+    case kPageFaultHardPageFaultOpcode:
+      *operation = "HardPageFault";
+      break;
+    case kPageFaultAccessViolationOpcode:
+      *operation = "AccessViolation";
+      break;
+    default:
+      return false;
+  }
+
+  // Decode the payload.
+  if (!DecodeUInteger("VirtualAddress", is_64_bit, decoder, fields) ||
+      !DecodeUInteger("ProgramCounter", is_64_bit, decoder, fields)) {
+    return false;
+  }
+
+  return true;
+}
+
 bool DecodePageFaultHardPageFaultPayload(Decoder* decoder,
                                          unsigned char version,
                                          unsigned char opcode,
@@ -1685,7 +1731,6 @@ bool DecodePageFaultHardPageFaultPayload(Decoder* decoder,
                                          StructValue* fields) {
   DCHECK(decoder != NULL);
   DCHECK(opcode == kPageFaultHardFaultOpcode);
-  DCHECK(is_64_bit);
   DCHECK(operation != NULL);
   DCHECK(fields != NULL);
 
@@ -1715,9 +1760,13 @@ bool DecodePageFaultVirtualAllocFreePayload(Decoder* decoder,
                                             std::string* operation,
                                             StructValue* fields) {
   DCHECK(decoder != NULL);
-  DCHECK(is_64_bit);
   DCHECK(operation != NULL);
   DCHECK(fields != NULL);
+
+  if (!is_64_bit) {
+    LOG(ERROR) << "Event VirtualAllocFree unsupported in 32 bit.";
+    return false;
+  }
 
   if (version != 2)
     return false;
@@ -1755,10 +1804,16 @@ bool DecodePageFaultPayload(Decoder* decoder,
   DCHECK(operation != NULL);
   DCHECK(fields != NULL);
 
-  if (!is_64_bit)
-    return false;
-
   switch (opcode) {
+    case kPageFaultTransitionFaultOpcode:
+    case kPageFaultDemandZeroFaultOpcode:
+    case kPageFaultCopyOnWriteOpcode:
+    case kPageFaultGuardPageFaultOpcode:
+    case kPageFaultHardPageFaultOpcode:
+    case kPageFaultAccessViolationOpcode:
+      return DecodePageFaultCommonPageFaultPayload(
+          decoder, version, opcode, is_64_bit, operation, fields);
+
     case kPageFaultHardFaultOpcode:
       return DecodePageFaultHardPageFaultPayload(
           decoder, version, opcode, is_64_bit, operation, fields);
