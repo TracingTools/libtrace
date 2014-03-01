@@ -686,6 +686,11 @@ bool DecodeThreadAutoBoostPayload(Decoder* decoder,
   DCHECK(operation != NULL);
   DCHECK(fields != NULL);
 
+  if (!is_64_bit) {
+    LOG(ERROR) << "Event ThreadAutoBoost unsupported in 32 bit.";
+    return false;
+  }
+
   if (version != 2)
     return false;
 
@@ -731,10 +736,14 @@ bool DecodeThreadAutoBoostSetFloorPayload(Decoder* decoder,
                                           std::string* operation,
                                           StructValue* fields) {
   DCHECK(opcode == kThreadAutoBoostSetFloorOpcode);
-  DCHECK(is_64_bit);
   DCHECK(decoder != NULL);
   DCHECK(operation != NULL);
   DCHECK(fields != NULL);
+
+  if (!is_64_bit) {
+    LOG(ERROR) << "Event AutoBoostSetFloor unsupported in 32 bit.";
+    return false;
+  }
 
   if (version != 2)
     return false;
@@ -761,10 +770,14 @@ bool DecodeThreadSetPriorityPayload(Decoder* decoder,
                                     bool is_64_bit,
                                     std::string* operation,
                                     StructValue* fields) {
-  DCHECK(is_64_bit);
   DCHECK(decoder != NULL);
   DCHECK(operation != NULL);
   DCHECK(fields != NULL);
+
+  if (!is_64_bit) {
+    LOG(ERROR) << "Event ThreadSetPriority unsupported in 32 bit.";
+    return false;
+  }
 
   if (version != 3)
     return false;
@@ -806,11 +819,10 @@ bool DecodeThreadSetPriorityPayload(Decoder* decoder,
 bool DecodeThreadCSwitchPayload(Decoder* decoder,
                                 unsigned char version,
                                 unsigned char opcode,
-                                bool is_64_bit,
+                                bool /* is_64_bit */,
                                 std::string* operation,
                                 StructValue* fields) {
   DCHECK(opcode == kThreadCSwitchOpcode);
-  DCHECK(is_64_bit);
   DCHECK(decoder != NULL);
   DCHECK(operation != NULL);
   DCHECK(fields != NULL);
@@ -843,11 +855,10 @@ bool DecodeThreadCSwitchPayload(Decoder* decoder,
 bool DecodeThreadCompCSPayload(Decoder* decoder,
                                unsigned char version,
                                unsigned char opcode,
-                               bool is_64_bit,
+                               bool /* is_64_bit */,
                                std::string* operation,
                                StructValue* fields) {
   DCHECK(opcode == kThreadCompCSOpcode);
-  DCHECK(is_64_bit);
   DCHECK(decoder != NULL);
   DCHECK(operation != NULL);
   DCHECK(fields != NULL);
@@ -901,9 +912,13 @@ bool DecodeThreadSpinLockPayload(Decoder* decoder,
                                 StructValue* fields) {
   DCHECK(decoder != NULL);
   DCHECK(opcode == kThreadSpinLockOpcode);
-  DCHECK(is_64_bit);
   DCHECK(operation != NULL);
   DCHECK(fields != NULL);
+
+  if (!is_64_bit) {
+    LOG(ERROR) << "Event ThreadSpinLock unsupported in 32 bit.";
+    return false;
+  }
 
   if (version != 2)
     return false;
@@ -937,12 +952,8 @@ bool DecodeThreadStartEndPayload(Decoder* decoder,
                                  std::string* operation,
                                  StructValue* fields) {
   DCHECK(decoder != NULL);
-  DCHECK(is_64_bit);
   DCHECK(operation != NULL);
   DCHECK(fields != NULL);
-
-  if (version != 3)
-    return false;
 
   // Set the operation name.
   switch (opcode) {
@@ -969,19 +980,50 @@ bool DecodeThreadStartEndPayload(Decoder* decoder,
 
   // Decode the payload.
   if (!Decode<UIntValue>("ProcessId", decoder, fields) ||
-      !Decode<UIntValue>("TThreadId", decoder, fields) ||
-      !Decode<ULongValue>("StackBase", decoder, fields) ||
-      !Decode<ULongValue>("StackLimit", decoder, fields) ||
-      !Decode<ULongValue>("UserStackBase", decoder, fields) ||
-      !Decode<ULongValue>("UserStackLimit", decoder, fields) ||
-      !Decode<ULongValue>("Affinity", decoder, fields) ||
-      !Decode<ULongValue>("Win32StartAddr", decoder, fields) ||
-      !Decode<ULongValue>("TebBase", decoder, fields) ||
-      !Decode<UIntValue>("SubProcessTag", decoder, fields) ||
-      !Decode<UCharValue>("BasePriority", decoder, fields) ||
-      !Decode<UCharValue>("PagePriority", decoder, fields) ||
-      !Decode<UCharValue>("IoPriority", decoder, fields) ||
-      !Decode<UCharValue>("ThreadFlags", decoder, fields)) {
+      !Decode<UIntValue>("TThreadId", decoder, fields)) {
+    return false;
+  }
+
+  if (version == 1) {
+    if ((opcode == kThreadStartOpcode || opcode == kThreadDCStartOpcode) && (
+        !DecodeUInteger("StackBase", is_64_bit, decoder, fields) ||
+        !DecodeUInteger("StackLimit", is_64_bit, decoder, fields) ||
+        !DecodeUInteger("UserStackBase", is_64_bit, decoder, fields) ||
+        !DecodeUInteger("UserStackLimit", is_64_bit, decoder, fields) ||
+        !DecodeUInteger("StartAddr", is_64_bit, decoder, fields) ||
+        !DecodeUInteger("Win32StartAddr", is_64_bit, decoder, fields) ||
+        // This field is a signed char, but is padded to an integer 32-bit.
+        !Decode<CharValue>("WaitMode", decoder, fields) ||
+        !decoder->Skip(3))) {
+      return false;
+    }
+  } else if (version == 2) {
+    if (!DecodeUInteger("StackBase", is_64_bit, decoder, fields) ||
+        !DecodeUInteger("StackLimit", is_64_bit, decoder, fields) ||
+        !DecodeUInteger("UserStackBase", is_64_bit, decoder, fields) ||
+        !DecodeUInteger("UserStackLimit", is_64_bit, decoder, fields) ||
+        !DecodeUInteger("StartAddr", is_64_bit, decoder, fields) ||
+        !DecodeUInteger("Win32StartAddr", is_64_bit, decoder, fields) ||
+        !DecodeUInteger("TebBase", is_64_bit, decoder, fields) ||
+        !Decode<UIntValue>("SubProcessTag", decoder, fields)) {
+      return false;
+    }
+  } else if (version == 3) {
+    if (!DecodeUInteger("StackBase", is_64_bit, decoder, fields) ||
+        !DecodeUInteger("StackLimit", is_64_bit, decoder, fields) ||
+        !DecodeUInteger("UserStackBase", is_64_bit, decoder, fields) ||
+        !DecodeUInteger("UserStackLimit", is_64_bit, decoder, fields) ||
+        !DecodeUInteger("Affinity", is_64_bit, decoder, fields) ||
+        !DecodeUInteger("Win32StartAddr", is_64_bit, decoder, fields) ||
+        !DecodeUInteger("TebBase", is_64_bit, decoder, fields) ||
+        !Decode<UIntValue>("SubProcessTag", decoder, fields) ||
+        !Decode<UCharValue>("BasePriority", decoder, fields) ||
+        !Decode<UCharValue>("PagePriority", decoder, fields) ||
+        !Decode<UCharValue>("IoPriority", decoder, fields) ||
+        !Decode<UCharValue>("ThreadFlags", decoder, fields)) {
+      return false;
+    }
+  } else {
     return false;
   }
 
@@ -997,9 +1039,6 @@ bool DecodeThreadPayload(Decoder* decoder,
   DCHECK(decoder != NULL);
   DCHECK(operation != NULL);
   DCHECK(fields != NULL);
-
-  if (!is_64_bit)
-    return false;
 
   switch (opcode) {
     case kThreadCSwitchOpcode:

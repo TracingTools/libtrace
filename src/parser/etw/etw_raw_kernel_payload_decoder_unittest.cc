@@ -924,6 +924,21 @@ const unsigned char kProcessDefunctPayloadV5[] = {
     0x00, 0x8D, 0x49, 0xA2, 0xF9, 0xEC, 0xFA, 0xCE,
     0x01 };
 
+const unsigned char kThreadStartPayload32bitsV1[] = {
+    0x04, 0x00, 0x00, 0x00, 0x4C, 0x07, 0x00, 0x00,
+    0x00, 0x60, 0xB7, 0xF3, 0x00, 0x30, 0xB7, 0xF3,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x85, 0xDB, 0x1E, 0xF7, 0x00, 0x00, 0x00, 0x00,
+    0xFF, 0x00, 0x00, 0x00 };
+
+const unsigned char kThreadStartPayload32bitsV3[] = {
+    0x2C, 0x02, 0x00, 0x00, 0x2C, 0x13, 0x00, 0x00,
+    0x00, 0x50, 0x98, 0xB1, 0x00, 0x20, 0x98, 0xB1,
+    0x00, 0x00, 0xD5, 0x00, 0x00, 0xC0, 0xD4, 0x00,
+    0x03, 0x00, 0x00, 0x00, 0xE9, 0x03, 0xAB, 0x77,
+    0x00, 0xE0, 0xFD, 0x7F, 0x00, 0x00, 0x00, 0x00,
+    0x09, 0x05, 0x02, 0x00 };
+
 const unsigned char kThreadStartPayloadV3[] = {
     0x78, 0x21, 0x00, 0x00, 0x94, 0x14, 0x00, 0x00,
     0x00, 0x30, 0x0E, 0x27, 0x00, 0xD0, 0xFF, 0xFF,
@@ -936,6 +951,18 @@ const unsigned char kThreadStartPayloadV3[] = {
     0x00, 0x00, 0x00, 0x00, 0x08, 0x05, 0x02, 0x00
     };
 
+const unsigned char kThreadEndPayload32bitsV1[] = {
+    0x04, 0x00, 0x00, 0x00, 0xB4, 0x00, 0x00, 0x00
+    };
+
+const unsigned char kThreadEndPayload32bitsV3[] = {
+    0xC4, 0x12, 0x00, 0x00, 0x64, 0x13, 0x00, 0x00,
+    0x00, 0x50, 0x55, 0xAA, 0x00, 0x20, 0x55, 0xAA,
+    0x00, 0x00, 0x9C, 0x00, 0x00, 0xE0, 0x9B, 0x00,
+    0x03, 0x00, 0x00, 0x00, 0xE9, 0x03, 0xAB, 0x77,
+    0x00, 0xD0, 0xFD, 0x7F, 0x00, 0x00, 0x00, 0x00,
+    0x08, 0x05, 0x02, 0x00 };
+
 const unsigned char kThreadEndPayloadV3[] = {
     0xF8, 0x07, 0x00, 0x00, 0xD8, 0x0C, 0x00, 0x00,
     0x00, 0x70, 0x8C, 0x29, 0x00, 0xD0, 0xFF, 0xFF,
@@ -947,6 +974,17 @@ const unsigned char kThreadEndPayloadV3[] = {
     0x00, 0x80, 0xB3, 0x39, 0xF7, 0x7F, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x08, 0x05, 0x02, 0x00
     };
+
+const unsigned char kThreadDCStartPayloadV2[] = {
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x60, 0xF5, 0x02, 0x00, 0xF8, 0xFF, 0xFF,
+    0x00, 0x00, 0xF5, 0x02, 0x00, 0xF8, 0xFF, 0xFF,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x80, 0x25, 0xC7, 0x01, 0x00, 0xF8, 0xFF, 0xFF,
+    0x80, 0x25, 0xC7, 0x01, 0x00, 0xF8, 0xFF, 0xFF,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00 };
 
 const unsigned char kThreadDCStartPayloadV3[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -970,6 +1008,12 @@ const unsigned char kThreadDCEndPayloadV3[] = {
     0x90, 0x07, 0x9C, 0x74, 0x00, 0xF8, 0xFF, 0xFF,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00
+    };
+
+const unsigned char kThreadCSwitchPayload32bitsV2[] = {
+    0x00, 0x00, 0x00, 0x00, 0x2C, 0x11, 0x00, 0x00,
+    0x00, 0x09, 0x00, 0x00, 0x17, 0x00, 0x01, 0x00,
+    0x12, 0x00, 0x00, 0x00, 0x26, 0x48, 0x00, 0x00,
     };
 
 const unsigned char kThreadCSwitchPayloadV2[] = {
@@ -2777,6 +2821,65 @@ TEST(EtwRawDecoderTest, PerfInfoCollectionEndSecondV3) {
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
+TEST(EtwRawDecoderTest, ThreadStart32bitsV1) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kThreadProviderId,
+          kVersion1, kThreadStartOpcode, k32bit,
+          reinterpret_cast<const char*>(&kThreadStartPayload32bitsV1[0]),
+          sizeof(kThreadStartPayload32bitsV1),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<UIntValue>("ProcessId", 4);
+  expected->AddField<UIntValue>("TThreadId", 1868);
+  expected->AddField<UIntValue>("StackBase", 4088881152);
+  expected->AddField<UIntValue>("StackLimit", 4088868864);
+  expected->AddField<UIntValue>("UserStackBase", 0);
+  expected->AddField<UIntValue>("UserStackLimit", 0);
+  expected->AddField<UIntValue>("StartAddr", 4145994629);
+  expected->AddField<UIntValue>("Win32StartAddr", 0);
+  expected->AddField<CharValue>("WaitMode", -1);
+
+  EXPECT_STREQ("Thread", category.c_str());
+  EXPECT_STREQ("Start", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, ThreadStart32bitsV3) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kThreadProviderId,
+          kVersion3, kThreadStartOpcode, k32bit,
+          reinterpret_cast<const char*>(&kThreadStartPayload32bitsV3[0]),
+          sizeof(kThreadStartPayload32bitsV3),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<UIntValue>("ProcessId", 556);
+  expected->AddField<UIntValue>("TThreadId", 4908);
+  expected->AddField<UIntValue>("StackBase", 0xb1985000);
+  expected->AddField<UIntValue>("StackLimit", 0xb1982000);
+  expected->AddField<UIntValue>("UserStackBase", 0x00d50000);
+  expected->AddField<UIntValue>("UserStackLimit", 0x00d4c000);
+  expected->AddField<UIntValue>("Affinity", 3);
+  expected->AddField<UIntValue>("Win32StartAddr", 0x77ab03e9);
+  expected->AddField<UIntValue>("TebBase", 0x7ffde000);
+  expected->AddField<UIntValue>("SubProcessTag", 0U);
+  expected->AddField<UCharValue>("BasePriority", 9);
+  expected->AddField<UCharValue>("PagePriority", 5);
+  expected->AddField<UCharValue>("IoPriority", 2);
+  expected->AddField<UCharValue>("ThreadFlags", 0);
+
+  EXPECT_STREQ("Thread", category.c_str());
+  EXPECT_STREQ("Start", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
 TEST(EtwRawDecoderTest, ThreadStartV3) {
   std::string operation;
   std::string category;
@@ -2809,6 +2912,58 @@ TEST(EtwRawDecoderTest, ThreadStartV3) {
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
+TEST(EtwRawDecoderTest, ThreadEnd32bitsV1) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kThreadProviderId,
+          kVersion1, kThreadEndOpcode, k32bit,
+          reinterpret_cast<const char*>(&kThreadEndPayload32bitsV1[0]),
+          sizeof(kThreadEndPayload32bitsV1),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<UIntValue>("ProcessId", 0x00000004);
+  expected->AddField<UIntValue>("TThreadId", 0x000000B4);
+
+  EXPECT_STREQ("Thread", category.c_str());
+  EXPECT_STREQ("End", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, ThreadEnd32bitsV3) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kThreadProviderId,
+          kVersion3, kThreadEndOpcode, k32bit,
+          reinterpret_cast<const char*>(&kThreadEndPayload32bitsV3[0]),
+          sizeof(kThreadEndPayload32bitsV3),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<UIntValue>("ProcessId", 0x000012c4);
+  expected->AddField<UIntValue>("TThreadId", 0x00001364);
+  expected->AddField<UIntValue>("StackBase", 0xaa555000);
+  expected->AddField<UIntValue>("StackLimit", 0xaa552000);
+  expected->AddField<UIntValue>("UserStackBase", 0x009c0000);
+  expected->AddField<UIntValue>("UserStackLimit", 0x009be000);
+  expected->AddField<UIntValue>("Affinity", 3);
+  expected->AddField<UIntValue>("Win32StartAddr", 0x77ab03e9);
+  expected->AddField<UIntValue>("TebBase", 0x7ffdd000);
+  expected->AddField<UIntValue>("SubProcessTag", 0U);
+  expected->AddField<UCharValue>("BasePriority", 8);
+  expected->AddField<UCharValue>("PagePriority", 5);
+  expected->AddField<UCharValue>("IoPriority", 2);
+  expected->AddField<UCharValue>("ThreadFlags", 0);
+
+  EXPECT_STREQ("Thread", category.c_str());
+  EXPECT_STREQ("End", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
 TEST(EtwRawDecoderTest, ThreadEndV3) {
   std::string operation;
   std::string category;
@@ -2838,6 +2993,34 @@ TEST(EtwRawDecoderTest, ThreadEndV3) {
 
   EXPECT_STREQ("Thread", category.c_str());
   EXPECT_STREQ("End", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, ThreadDCStartV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kThreadProviderId,
+          kVersion2, kThreadDCStartOpcode, k64bit,
+          reinterpret_cast<const char*>(&kThreadDCStartPayloadV2[0]),
+          sizeof(kThreadDCStartPayloadV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<UIntValue>("ProcessId", 0U);
+  expected->AddField<UIntValue>("TThreadId", 0U);
+  expected->AddField<ULongValue>("StackBase", 18446735277666164736ULL);
+  expected->AddField<ULongValue>("StackLimit", 18446735277666140160ULL);
+  expected->AddField<ULongValue>("UserStackBase", 0ULL);
+  expected->AddField<ULongValue>("UserStackLimit", 0ULL);
+  expected->AddField<ULongValue>("StartAddr", 18446735277646357888ULL);
+  expected->AddField<ULongValue>("Win32StartAddr", 18446735277646357888ULL);
+  expected->AddField<ULongValue>("TebBase", 0ULL);
+  expected->AddField<UIntValue>("SubProcessTag", 0U);
+
+  EXPECT_STREQ("Thread", category.c_str());
+  EXPECT_STREQ("DCStart", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
@@ -2902,6 +3085,36 @@ TEST(EtwRawDecoderTest, ThreadDCEndV3) {
 
   EXPECT_STREQ("Thread", category.c_str());
   EXPECT_STREQ("DCEnd", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, ThreadCSwitch32bitsV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kThreadProviderId,
+          kVersion2, kThreadCSwitchOpcode, k32bit,
+          reinterpret_cast<const char*>(&kThreadCSwitchPayload32bitsV2[0]),
+          sizeof(kThreadCSwitchPayload32bitsV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<UIntValue>("NewThreadId", 0);
+  expected->AddField<UIntValue>("OldThreadId", 4396);
+  expected->AddField<CharValue>("NewThreadPriority", 0);
+  expected->AddField<CharValue>("OldThreadPriority", 9);
+  expected->AddField<UCharValue>("PreviousCState", 0);
+  expected->AddField<CharValue>("SpareByte", 0);
+  expected->AddField<CharValue>("OldThreadWaitReason", 23);
+  expected->AddField<CharValue>("OldThreadWaitMode", 0);
+  expected->AddField<CharValue>("OldThreadState", 1);
+  expected->AddField<CharValue>("OldThreadWaitIdealProcessor", 0);
+  expected->AddField<UIntValue>("NewThreadWaitTime", 18);
+  expected->AddField<UIntValue>("Reserved", 18470);
+
+  EXPECT_STREQ("Thread", category.c_str());
+  EXPECT_STREQ("CSwitch", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
