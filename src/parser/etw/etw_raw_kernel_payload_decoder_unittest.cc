@@ -865,6 +865,16 @@ const unsigned char kProcessDCEndPayloadV4[] = {
 const unsigned char kProcessTerminatePayloadV2[] = {
     0xF8, 0x07, 0x00, 0x00 };
 
+const unsigned char kProcessPerfCtrPayload32bitsV2[] = {
+    0xC4, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x10, 0x63, 0x02, 0x00, 0xC0, 0x53, 0x00,
+    0x00, 0x90, 0x22, 0x00, 0x9C, 0x20, 0x01, 0x00,
+    0xCC, 0x13, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00 };
+
 const unsigned char kProcessPerfCtrPayloadV2[] = {
     0xF8, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -1412,6 +1422,11 @@ const unsigned char kPageFaultVirtualAllocPayloadV2[] = {
     0x00, 0x40, 0x3B, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x60, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x04, 0x18, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00
+    };
+
+const unsigned char kPageFaultVirtualFreePayload32bitsV2[] = {
+    0x00, 0x00, 0x42, 0x01, 0x00, 0x00, 0x04, 0x00,
+    0xD8, 0x0D, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00
     };
 
 const unsigned char kPageFaultVirtualFreePayloadV2[] = {
@@ -2461,6 +2476,39 @@ TEST(EtwRawDecoderTest, ProcessTerminateV2) {
 
   EXPECT_STREQ("Process", category.c_str());
   EXPECT_STREQ("Terminate", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, ProcessPerfCtr32bitsV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kProcessProviderId,
+          kVersion2, kProcessPerfCtrOpcode, k32bit,
+          reinterpret_cast<const char*>(&kProcessPerfCtrPayload32bitsV2[0]),
+          sizeof(kProcessPerfCtrPayload32bitsV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<UIntValue>("ProcessId", 4804);
+  expected->AddField<UIntValue>("PageFaultCount", 0U);
+  expected->AddField<UIntValue>("HandleCount", 0U);
+  expected->AddField<UIntValue>("Reserved", 0U);
+  expected->AddField<UIntValue>("PeakVirtualSize", 40046592);
+  expected->AddField<UIntValue>("PeakWorkingSetSize", 5488640);
+  expected->AddField<UIntValue>("PeakPagefileUsage", 2265088);
+  expected->AddField<UIntValue>("QuotaPeakPagedPoolUsage", 73884);
+  expected->AddField<UIntValue>("QuotaPeakNonPagedPoolUsage", 5068);
+  expected->AddField<UIntValue>("VirtualSize", 0);
+  expected->AddField<UIntValue>("WorkingSetSize", 0);
+  expected->AddField<UIntValue>("PagefileUsage", 0);
+  expected->AddField<UIntValue>("QuotaPagedPoolUsage", 0);
+  expected->AddField<UIntValue>("QuotaNonPagedPoolUsage", 0);
+  expected->AddField<UIntValue>("PrivatePageCount", 0ULL);
+
+  EXPECT_STREQ("Process", category.c_str());
+  EXPECT_STREQ("PerfCtr", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
@@ -4145,6 +4193,29 @@ TEST(EtwRawDecoderTest, PageFaultVirtualAllocV2) {
 
   EXPECT_STREQ("PageFault", category.c_str());
   EXPECT_STREQ("VirtualAlloc", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, PageFaultVirtualFree32bitsV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kPageFaultProviderId,
+          kVersion2, kPageFaultVirtualFreeOpcode, k32bit,
+          reinterpret_cast<const char*>(
+              &kPageFaultVirtualFreePayload32bitsV2[0]),
+          sizeof(kPageFaultVirtualFreePayload32bitsV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<UIntValue>("BaseAddress", 0x01420000);
+  expected->AddField<UIntValue>("RegionSize", 0x00040000);
+  expected->AddField<UIntValue>("ProcessId", 0x00000dd8);
+  expected->AddField<UIntValue>("Flags", 0x00008000);
+
+  EXPECT_STREQ("PageFault", category.c_str());
+  EXPECT_STREQ("VirtualFree", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 

@@ -1220,7 +1220,6 @@ bool DecodeProcessPerfCtrPayload(Decoder* decoder,
                                  bool is_64_bit,
                                  std::string* operation,
                                  StructValue* fields) {
-  DCHECK(is_64_bit);
   DCHECK(decoder != NULL);
   DCHECK(operation != NULL);
   DCHECK(fields != NULL);
@@ -1248,17 +1247,18 @@ bool DecodeProcessPerfCtrPayload(Decoder* decoder,
       !Decode<UIntValue>("PageFaultCount", decoder, fields) ||
       !Decode<UIntValue>("HandleCount", decoder, fields) ||
       !Decode<UIntValue>("Reserved", decoder, fields) ||
-      !Decode<ULongValue>("PeakVirtualSize", decoder, fields) ||
-      !Decode<ULongValue>("PeakWorkingSetSize", decoder, fields) ||
-      !Decode<ULongValue>("PeakPagefileUsage", decoder, fields) ||
-      !Decode<ULongValue>("QuotaPeakPagedPoolUsage", decoder, fields) ||
-      !Decode<ULongValue>("QuotaPeakNonPagedPoolUsage", decoder, fields) ||
-      !Decode<ULongValue>("VirtualSize", decoder, fields) ||
-      !Decode<ULongValue>("WorkingSetSize", decoder, fields) ||
-      !Decode<ULongValue>("PagefileUsage", decoder, fields) ||
-      !Decode<ULongValue>("QuotaPagedPoolUsage", decoder, fields) ||
-      !Decode<ULongValue>("QuotaNonPagedPoolUsage", decoder, fields) ||
-      !Decode<ULongValue>("PrivatePageCount", decoder, fields)) {
+      !DecodeUInteger("PeakVirtualSize", is_64_bit, decoder, fields) ||
+      !DecodeUInteger("PeakWorkingSetSize", is_64_bit, decoder, fields) ||
+      !DecodeUInteger("PeakPagefileUsage", is_64_bit, decoder, fields) ||
+      !DecodeUInteger("QuotaPeakPagedPoolUsage",is_64_bit,  decoder, fields) ||
+      !DecodeUInteger("QuotaPeakNonPagedPoolUsage", is_64_bit, decoder,
+                      fields) ||
+      !DecodeUInteger("VirtualSize", is_64_bit, decoder, fields) ||
+      !DecodeUInteger("WorkingSetSize", is_64_bit, decoder, fields) ||
+      !DecodeUInteger("PagefileUsage", is_64_bit, decoder, fields) ||
+      !DecodeUInteger("QuotaPagedPoolUsage", is_64_bit, decoder, fields) ||
+      !DecodeUInteger("QuotaNonPagedPoolUsage", is_64_bit, decoder, fields) ||
+      !DecodeUInteger("PrivatePageCount", is_64_bit, decoder, fields)) {
     return false;
   }
 
@@ -1801,11 +1801,6 @@ bool DecodePageFaultVirtualAllocFreePayload(Decoder* decoder,
   DCHECK(decoder != NULL);
   DCHECK(operation != NULL);
   DCHECK(fields != NULL);
-
-  if (!is_64_bit) {
-    LOG(ERROR) << "Event VirtualAllocFree unsupported in 32 bit.";
-    return false;
-  }
 
   if (version != 2)
     return false;
