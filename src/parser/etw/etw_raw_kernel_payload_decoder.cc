@@ -68,12 +68,14 @@ const unsigned char kPerfInfoSampleProfOpcode = 46;
 const unsigned char kPerfInfoISRMSIOpcode = 50;
 const unsigned char kPerfInfoSysClEnterOpcode = 51;
 const unsigned char kPerfInfoSysClExitOpcode = 52;
+const unsigned char kPerfInfoThreadedDPCOpcode = 66;
 const unsigned char kPerfInfoISROpcode = 67;
 const unsigned char kPerfInfoDPCOpcode = 68;
 const unsigned char kPerfInfoTimerDPCOpcode = 69;
-const unsigned char kPerfInfoCollectionStartSecondOpcode = 73;
+const unsigned char kPerfInfoCollectionSetIntervalOpcode = 72;
+const unsigned char kPerfInfoCollectionStartOpcode = 73;
 const unsigned char kPerfInfoCollectionEndOpcode = 74;
-const unsigned char kPerfInfoCollectionStartOpcode = 75;
+const unsigned char kPerfInfoCollectionStartSecondOpcode = 75;
 const unsigned char kPerfInfoCollectionEndSecondOpcode = 76;
 const unsigned char kPerfInfoUnknown80Opcode = 80;
 const unsigned char kPerfInfoUnknown81Opcode = 81;
@@ -375,10 +377,56 @@ bool DecodeImagePayload(Decoder* decoder,
 bool DecodePerfInfoCollectionPayload(Decoder* decoder,
                                      unsigned char version,
                                      unsigned char opcode,
-                                     bool is_64_bit,
+                                     bool /* is_64_bit */,
                                      std::string* operation,
                                      StructValue* fields) {
-  DCHECK(is_64_bit);
+  DCHECK(decoder != NULL);
+  DCHECK(operation != NULL);
+  DCHECK(fields != NULL);
+
+  if (version < 2 || version > 3)
+    return false;
+
+  // Set the operation name.
+  switch (opcode) {
+    case kPerfInfoCollectionSetIntervalOpcode:
+      *operation = "SetInterval";
+      break;
+
+    case kPerfInfoCollectionStartOpcode:
+      *operation = "CollectionStart";
+      break;
+
+    case kPerfInfoCollectionEndOpcode:
+      *operation = "CollectionEnd";
+      break;
+
+    default:
+      // TODO(fdoray): NOTREACHED() macro.
+      return false;
+  }
+
+  // Decode the payload.
+  if (!Decode<UIntValue>("Source", decoder, fields) ||
+      !Decode<UIntValue>("NewInterval", decoder, fields) ||
+      !Decode<UIntValue>("OldInterval", decoder, fields)) {
+    return false;
+  }
+
+  if (version >= 3 &&
+      !DecodeW16String("SourceName", decoder, fields)) {
+    return false;
+  }
+
+  return true;
+}
+
+bool DecodePerfInfoCollectionSecondPayload(Decoder* decoder,
+                                           unsigned char version,
+                                           unsigned char opcode,
+                                           bool /* is_64_bit */,
+                                           std::string* operation,
+                                           StructValue* fields) {
   DCHECK(decoder != NULL);
   DCHECK(operation != NULL);
   DCHECK(fields != NULL);
@@ -388,11 +436,12 @@ bool DecodePerfInfoCollectionPayload(Decoder* decoder,
 
   // Set the operation name.
   switch (opcode) {
-    case kPerfInfoCollectionStartOpcode:
+
+    case kPerfInfoCollectionStartSecondOpcode:
       *operation = "CollectionStart";
       break;
 
-    case kPerfInfoCollectionEndOpcode:
+    case kPerfInfoCollectionEndSecondOpcode:
       *operation = "CollectionEnd";
       break;
 
@@ -418,7 +467,6 @@ bool DecodePerfInfoISRPayload(Decoder* decoder,
                               bool is_64_bit,
                               std::string* operation,
                               StructValue* fields) {
-  DCHECK(is_64_bit);
   DCHECK(decoder != NULL);
   DCHECK(operation != NULL);
   DCHECK(fields != NULL);
@@ -443,7 +491,7 @@ bool DecodePerfInfoISRPayload(Decoder* decoder,
 
   // Decode the payload.
   if (!Decode<ULongValue>("InitialTime", decoder, fields) ||
-      !Decode<ULongValue>("Routine", decoder, fields) ||
+      !DecodeUInteger("Routine", is_64_bit, decoder, fields) ||
       !Decode<UCharValue>("ReturnValue", decoder, fields) ||
       !Decode<UShortValue>("Vector", decoder, fields) ||
       !Decode<UCharValue>("Reserved", decoder, fields)) {
@@ -458,53 +506,12 @@ bool DecodePerfInfoISRPayload(Decoder* decoder,
   return true;
 }
 
-bool DecodePerfInfoCollectionSecondPayload(Decoder* decoder,
-                                           unsigned char version,
-                                           unsigned char opcode,
-                                           bool is_64_bit,
-                                           std::string* operation,
-                                           StructValue* fields) {
-  DCHECK(is_64_bit);
-  DCHECK(decoder != NULL);
-  DCHECK(operation != NULL);
-  DCHECK(fields != NULL);
-
-  if (version != 3)
-    return false;
-
-  // Set the operation name.
-  switch (opcode) {
-    case kPerfInfoCollectionStartSecondOpcode:
-      *operation = "CollectionStart";
-      break;
-
-    case kPerfInfoCollectionEndSecondOpcode:
-      *operation = "CollectionEnd";
-      break;
-
-    default:
-      // TODO(fdoray): NOTREACHED() macro.
-      return false;
-  }
-
-  // Decode the payload.
-  if (!Decode<UIntValue>("Source", decoder, fields) ||
-      !Decode<UIntValue>("NewInterval", decoder, fields) ||
-      !Decode<UIntValue>("OldInterval", decoder, fields) ||
-      !DecodeW16String("SourceName", decoder, fields)) {
-    return false;
-  }
-
-  return true;
-}
-
 bool DecodePerfInfoDPCPayload(Decoder* decoder,
                               unsigned char version,
                               unsigned char opcode,
                               bool is_64_bit,
                               std::string* operation,
                               StructValue* fields) {
-  DCHECK(is_64_bit);
   DCHECK(decoder != NULL);
   DCHECK(operation != NULL);
   DCHECK(fields != NULL);
@@ -514,6 +521,10 @@ bool DecodePerfInfoDPCPayload(Decoder* decoder,
 
   // Set the operation name.
   switch (opcode) {
+    case kPerfInfoThreadedDPCOpcode:
+      *operation = "ThreadedDPC";
+      break;
+
     case kPerfInfoDPCOpcode:
       *operation = "DPC";
       break;
@@ -529,7 +540,7 @@ bool DecodePerfInfoDPCPayload(Decoder* decoder,
 
   // Decode the payload.
   if (!Decode<ULongValue>("InitialTime", decoder, fields) ||
-      !Decode<ULongValue>("Routine", decoder, fields)) {
+      !DecodeUInteger("Routine", is_64_bit, decoder, fields)) {
     return false;
   }
 
@@ -543,7 +554,6 @@ bool DecodePerfInfoSysClEnterPayload(Decoder* decoder,
                                      std::string* operation,
                                      StructValue* fields) {
   DCHECK(opcode == kPerfInfoSysClEnterOpcode);
-  DCHECK(is_64_bit);
   DCHECK(decoder != NULL);
   DCHECK(operation != NULL);
   DCHECK(fields != NULL);
@@ -555,7 +565,7 @@ bool DecodePerfInfoSysClEnterPayload(Decoder* decoder,
   *operation = "SysClEnter";
 
   // Decode the payload.
-  if (!Decode<ULongValue>("SysCallAddress", decoder, fields))
+  if (!DecodeUInteger("SysCallAddress", is_64_bit, decoder, fields))
     return false;
 
   return true;
@@ -564,11 +574,10 @@ bool DecodePerfInfoSysClEnterPayload(Decoder* decoder,
 bool DecodePerfInfoSysClExitPayload(Decoder* decoder,
                                     unsigned char version,
                                     unsigned char opcode,
-                                    bool is_64_bit,
+                                    bool /* is_64_bit */,
                                     std::string* operation,
                                     StructValue* fields) {
   DCHECK(opcode == kPerfInfoSysClExitOpcode);
-  DCHECK(is_64_bit);
   DCHECK(decoder != NULL);
   DCHECK(operation != NULL);
   DCHECK(fields != NULL);
@@ -593,7 +602,6 @@ bool DecodePerfInfoSampleProfPayload(Decoder* decoder,
                                      std::string* operation,
                                      StructValue* fields) {
   DCHECK(opcode == kPerfInfoSampleProfOpcode);
-  DCHECK(is_64_bit);
   DCHECK(decoder != NULL);
   DCHECK(operation != NULL);
   DCHECK(fields != NULL);
@@ -605,7 +613,7 @@ bool DecodePerfInfoSampleProfPayload(Decoder* decoder,
   *operation = "SampleProf";
 
   // Decode the payload.
-  if (!Decode<ULongValue>("InstructionPointer", decoder, fields) ||
+  if (!DecodeUInteger("InstructionPointer", is_64_bit, decoder, fields) ||
       !Decode<UIntValue>("ThreadId", decoder, fields) ||
       !Decode<UShortValue>("Count", decoder, fields) ||
       !Decode<UShortValue>("Reserved", decoder, fields)) {
@@ -625,10 +633,8 @@ bool DecodePerfInfoPayload(Decoder* decoder,
   DCHECK(operation != NULL);
   DCHECK(fields != NULL);
 
-  if (!is_64_bit)
-    return false;
-
   switch (opcode) {
+    case kPerfInfoCollectionSetIntervalOpcode:
     case kPerfInfoCollectionStartOpcode:
     case kPerfInfoCollectionEndOpcode:
       return DecodePerfInfoCollectionPayload(
@@ -644,6 +650,7 @@ bool DecodePerfInfoPayload(Decoder* decoder,
       return DecodePerfInfoISRPayload(
           decoder, version, opcode, is_64_bit, operation, fields);
 
+    case kPerfInfoThreadedDPCOpcode:
     case kPerfInfoDPCOpcode:
     case kPerfInfoTimerDPCOpcode:
       return DecodePerfInfoDPCPayload(

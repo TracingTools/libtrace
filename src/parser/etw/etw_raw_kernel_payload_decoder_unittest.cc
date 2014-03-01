@@ -82,12 +82,13 @@ const unsigned char kPerfInfoSampleProfOpcode = 46;
 const unsigned char kPerfInfoISRMSIOpcode = 50;
 const unsigned char kPerfInfoSysClEnterOpcode = 51;
 const unsigned char kPerfInfoSysClExitOpcode = 52;
+const unsigned char kPerfInfoThreadedDPCOpcode = 66;
 const unsigned char kPerfInfoISROpcode = 67;
 const unsigned char kPerfInfoDPCOpcode = 68;
 const unsigned char kPerfInfoTimerDPCOpcode = 69;
-const unsigned char kPerfInfoCollectionStartSecondOpcode = 73;
+const unsigned char kPerfInfoCollectionStartOpcode = 73;
 const unsigned char kPerfInfoCollectionEndOpcode = 74;
-const unsigned char kPerfInfoCollectionStartOpcode = 75;
+const unsigned char kPerfInfoCollectionStartSecondOpcode = 75;
 const unsigned char kPerfInfoCollectionEndSecondOpcode = 76;
 
 // Constants for Process events.
@@ -519,10 +520,19 @@ const unsigned char kImageKernelBasePayloadV2[] = {
     0x00, 0x90, 0xE1, 0x02, 0x00, 0xF8, 0xFF, 0xFF
     };
 
+const unsigned char kPerfInfoSampleProfPayload32bitsV2[] = {
+    0x45, 0x1A, 0xFC, 0x82, 0xB4, 0x0C, 0x00, 0x00,
+    0x01, 0x00, 0x00, 0x00 };
+
 const unsigned char kPerfInfoSampleProfPayloadV2[] = {
     0x4B, 0xAB, 0x8C, 0x74, 0x00, 0xF8, 0xFF, 0xFF,
     0x70, 0x1F, 0x00, 0x00, 0x01, 0x00, 0x40, 0x00
     };
+
+const unsigned char kPerfInfoISRMSIPayload32bitsV2[] = {
+    0xF8, 0x4F, 0xDE, 0x91, 0xAB, 0x02, 0x00, 0x00,
+    0x0E, 0xA9, 0x8C, 0x8B, 0x01, 0xB0, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00 };
 
 const unsigned char kPerfInfoISRMSIPayloadV2[] = {
     0xEB, 0xED, 0x3A, 0xA8, 0x66, 0x04, 0x00, 0x00,
@@ -530,48 +540,79 @@ const unsigned char kPerfInfoISRMSIPayloadV2[] = {
     0x01, 0x91, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
+const unsigned char kPerfInfoSysClEnterPayload32bitsV2[] = {
+    0x4F, 0x87, 0xA7, 0x82 };
+
 const unsigned char kPerfInfoSysClEnterPayloadV2[] = {
     0x24, 0x1D, 0x90, 0x74, 0x00, 0xF8, 0xFF, 0xFF
     };
 
+const unsigned char kPerfInfoSysClExitPayload32bitsV2[] = {
+    0x03, 0x01, 0x00, 0x00 };
+
 const unsigned char kPerfInfoSysClExitPayloadV2[] = {
     0x00, 0x00, 0x00, 0x00 };
+
+const unsigned char kPerfInfoISRPayload32bitsV2[] = {
+    0xD4, 0xC0, 0xB1, 0x91, 0xAB, 0x02, 0x00, 0x00,
+    0x00, 0xEF, 0xDC, 0x94, 0x00, 0xB2, 0x00, 0x00
+    };
 
 const unsigned char kPerfInfoISRPayloadV2[] = {
     0xAC, 0x4D, 0x42, 0xA8, 0x66, 0x04, 0x00, 0x00,
     0xC0, 0x15, 0xF9, 0x02, 0x00, 0xF8, 0xFF, 0xFF,
     0x00, 0x81, 0x00, 0x00 };
 
+const unsigned char kPerfInfoThreadedDPCPayload32bitsV2[] = {
+    0x0A, 0x4D, 0xFD, 0x91, 0xAB, 0x02, 0x00, 0x00,
+    0x07, 0x71, 0x83, 0x82 };
+
+const unsigned char kPerfInfoDPCPayload32bitsV2[] = {
+    0x34, 0xC1, 0xB1, 0x91, 0xAB, 0x02, 0x00, 0x00,
+    0x1D, 0xEB, 0x0C, 0x90 };
+
 const unsigned char kPerfInfoDPCPayloadV2[] = {
     0xCD, 0xEC, 0x3A, 0xA8, 0x66, 0x04, 0x00, 0x00,
     0xE4, 0xBC, 0x96, 0x74, 0x00, 0xF8, 0xFF, 0xFF
     };
+
+const unsigned char kPerfInfoTimerDPCPayload32bitsV2[] = {
+    0xC3, 0x3B, 0xB1, 0x91, 0xAB, 0x02, 0x00, 0x00,
+    0xB0, 0x27, 0xFE, 0x93 };
 
 const unsigned char kPerfInfoTimerDPCPayloadV2[] = {
     0x75, 0x24, 0x3C, 0xA8, 0x66, 0x04, 0x00, 0x00,
     0xD8, 0x04, 0x11, 0x03, 0x00, 0xF8, 0xFF, 0xFF
     };
 
-const unsigned char kPerfInfoCollectionStartSecondPayloadV3[] = {
+const unsigned char kPerfInfoCollectionStartPayload32bitsV2[] = {
+    0x00, 0x00, 0x00, 0x00, 0x10, 0x27, 0x00, 0x00,
+    0x10, 0x27, 0x00, 0x00 };
+
+const unsigned char kPerfInfoCollectionStartPayloadV3[] = {
     0x00, 0x00, 0x00, 0x00, 0x10, 0x27, 0x00, 0x00,
     0x10, 0x27, 0x00, 0x00, 0x54, 0x00, 0x69, 0x00,
     0x6D, 0x00, 0x65, 0x00, 0x72, 0x00, 0x00, 0x00
     };
 
-const unsigned char kPerfInfoCollectionStartPayloadV3[] = {
-    0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
-    0xE8, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-    };
+const unsigned char kPerfInfoCollectionEndPayload32bitsV2[] = {
+    0x00, 0x00, 0x00, 0x00, 0x10, 0x27, 0x00, 0x00,
+    0x10, 0x27, 0x00, 0x00 };
 
 const unsigned char kPerfInfoCollectionEndPayloadV3[] = {
+    0x00, 0x00, 0x00, 0x00, 0x10, 0x27, 0x00, 0x00,
+    0x10, 0x27, 0x00, 0x00, 0x54, 0x00, 0x69, 0x00,
+    0x6D, 0x00, 0x65, 0x00, 0x72, 0x00, 0x00, 0x00
+    };
+
+const unsigned char kPerfInfoCollectionStartSecondPayloadV3[] = {
     0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
     0xE8, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
 const unsigned char kPerfInfoCollectionEndSecondPayloadV3[] = {
-    0x00, 0x00, 0x00, 0x00, 0x10, 0x27, 0x00, 0x00,
-    0x10, 0x27, 0x00, 0x00, 0x54, 0x00, 0x69, 0x00,
-    0x6D, 0x00, 0x65, 0x00, 0x72, 0x00, 0x00, 0x00
+    0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
+    0xE8, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
 const unsigned char kProcessStartPayload32bitsV1[] = {
@@ -2651,6 +2692,29 @@ TEST(EtwRawDecoderTest, ProcessDefunctV5) {
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
+TEST(EtwRawDecoderTest, PerfInfoSampleProf32bitsV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kPerfInfoProviderId,
+          kVersion2, kPerfInfoSampleProfOpcode, k32bit,
+          reinterpret_cast<const char*>(
+              &kPerfInfoSampleProfPayload32bitsV2[0]),
+          sizeof(kPerfInfoSampleProfPayload32bitsV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<UIntValue>("InstructionPointer", 0x82fc1a45);
+  expected->AddField<UIntValue>("ThreadId", 3252);
+  expected->AddField<UShortValue>("Count", 1);
+  expected->AddField<UShortValue>("Reserved", 0);
+
+  EXPECT_STREQ("PerfInfo", category.c_str());
+  EXPECT_STREQ("SampleProf", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
 TEST(EtwRawDecoderTest, PerfInfoSampleProfV2) {
   std::string operation;
   std::string category;
@@ -2671,6 +2735,30 @@ TEST(EtwRawDecoderTest, PerfInfoSampleProfV2) {
 
   EXPECT_STREQ("PerfInfo", category.c_str());
   EXPECT_STREQ("SampleProf", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, PerfInfoISRMSI32bitsV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kPerfInfoProviderId,
+          kVersion2, kPerfInfoISRMSIOpcode, k32bit,
+          reinterpret_cast<const char*>(&kPerfInfoISRMSIPayload32bitsV2[0]),
+          sizeof(kPerfInfoISRMSIPayload32bitsV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<ULongValue>("InitialTime", 0x000002AB91DE4FF8ULL);
+  expected->AddField<UIntValue>("Routine", 0x8B8CA90E);
+  expected->AddField<UCharValue>("ReturnValue", 1);
+  expected->AddField<UShortValue>("Vector", 176);
+  expected->AddField<UCharValue>("Reserved", 0);
+  expected->AddField<UIntValue>("MessageNumber", 0U);
+
+  EXPECT_STREQ("PerfInfo", category.c_str());
+  EXPECT_STREQ("ISR-MSI", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
@@ -2698,6 +2786,26 @@ TEST(EtwRawDecoderTest, PerfInfoISRMSIV2) {
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
+TEST(EtwRawDecoderTest, PerfInfoSysClEnter32bitsV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kPerfInfoProviderId,
+          kVersion2, kPerfInfoSysClEnterOpcode, k32bit,
+          reinterpret_cast<const char*>(
+              &kPerfInfoSysClEnterPayload32bitsV2[0]),
+          sizeof(kPerfInfoSysClEnterPayload32bitsV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<UIntValue>("SysCallAddress", 0x82A7874F);
+
+  EXPECT_STREQ("PerfInfo", category.c_str());
+  EXPECT_STREQ("SysClEnter", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
 TEST(EtwRawDecoderTest, PerfInfoSysClEnterV2) {
   std::string operation;
   std::string category;
@@ -2717,6 +2825,25 @@ TEST(EtwRawDecoderTest, PerfInfoSysClEnterV2) {
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
+TEST(EtwRawDecoderTest, PerfInfoSysClExit32bitsV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kPerfInfoProviderId,
+          kVersion2, kPerfInfoSysClExitOpcode, k32bit,
+          reinterpret_cast<const char*>(&kPerfInfoSysClExitPayload32bitsV2[0]),
+          sizeof(kPerfInfoSysClExitPayload32bitsV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<UIntValue>("SysCallNtStatus", 0x103U);
+
+  EXPECT_STREQ("PerfInfo", category.c_str());
+  EXPECT_STREQ("SysClExit", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
 TEST(EtwRawDecoderTest, PerfInfoSysClExitV2) {
   std::string operation;
   std::string category;
@@ -2733,6 +2860,29 @@ TEST(EtwRawDecoderTest, PerfInfoSysClExitV2) {
 
   EXPECT_STREQ("PerfInfo", category.c_str());
   EXPECT_STREQ("SysClExit", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, PerfInfoISR32bitsV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kPerfInfoProviderId,
+          kVersion2, kPerfInfoISROpcode, k32bit,
+          reinterpret_cast<const char*>(&kPerfInfoISRPayload32bitsV2[0]),
+          sizeof(kPerfInfoISRPayload32bitsV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<ULongValue>("InitialTime", 0x000002AB91B1C0D4);
+  expected->AddField<UIntValue>("Routine", 0x94DCEF00);
+  expected->AddField<UCharValue>("ReturnValue", 0);
+  expected->AddField<UShortValue>("Vector", 178);
+  expected->AddField<UCharValue>("Reserved", 0);
+
+  EXPECT_STREQ("PerfInfo", category.c_str());
+  EXPECT_STREQ("ISR", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
@@ -2759,6 +2909,47 @@ TEST(EtwRawDecoderTest, PerfInfoISRV2) {
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
+TEST(EtwRawDecoderTest, PerfInfoThreadesDPC32bitsV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kPerfInfoProviderId,
+          kVersion2, kPerfInfoThreadedDPCOpcode, k32bit,
+          reinterpret_cast<const char*>(
+              &kPerfInfoThreadedDPCPayload32bitsV2[0]),
+          sizeof(kPerfInfoThreadedDPCPayload32bitsV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<ULongValue>("InitialTime", 0x000002AB91FD4D0A);
+  expected->AddField<UIntValue>("Routine", 0x82837107);
+
+  EXPECT_STREQ("PerfInfo", category.c_str());
+  EXPECT_STREQ("ThreadedDPC", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, PerfInfoDPC32bitsV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kPerfInfoProviderId,
+          kVersion2, kPerfInfoDPCOpcode, k32bit,
+          reinterpret_cast<const char*>(&kPerfInfoDPCPayload32bitsV2[0]),
+          sizeof(kPerfInfoDPCPayload32bitsV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<ULongValue>("InitialTime", 0x000002AB91B1C134);
+  expected->AddField<UIntValue>("Routine", 0x900CEB1D);
+
+  EXPECT_STREQ("PerfInfo", category.c_str());
+  EXPECT_STREQ("DPC", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
 TEST(EtwRawDecoderTest, PerfInfoDPCV2) {
   std::string operation;
   std::string category;
@@ -2779,23 +2970,62 @@ TEST(EtwRawDecoderTest, PerfInfoDPCV2) {
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
-TEST(EtwRawDecoderTest, PerfInfoCollectionStartSecondV3) {
+TEST(EtwRawDecoderTest, PerfInfoTimerDPC32bitsV2) {
   std::string operation;
   std::string category;
   scoped_ptr<Value> fields;
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kPerfInfoProviderId,
-          kVersion3, kPerfInfoCollectionStartSecondOpcode, k64bit,
+          kVersion2, kPerfInfoTimerDPCOpcode, k32bit,
+          reinterpret_cast<const char*>(&kPerfInfoTimerDPCPayload32bitsV2[0]),
+          sizeof(kPerfInfoTimerDPCPayload32bitsV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<ULongValue>("InitialTime", 0x000002AB91B13BC3);
+  expected->AddField<UIntValue>("Routine", 0x93FE27B0);
+
+  EXPECT_STREQ("PerfInfo", category.c_str());
+  EXPECT_STREQ("TimerDPC", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, PerfInfoTimerDPCV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kPerfInfoProviderId,
+          kVersion2, kPerfInfoTimerDPCOpcode, k64bit,
+          reinterpret_cast<const char*>(&kPerfInfoTimerDPCPayloadV2[0]),
+          sizeof(kPerfInfoTimerDPCPayloadV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<ULongValue>("InitialTime", 0x00000466A83C2475);
+  expected->AddField<ULongValue>("Routine", 0xFFFFF800031104D8);
+
+  EXPECT_STREQ("PerfInfo", category.c_str());
+  EXPECT_STREQ("TimerDPC", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, PerfInfoCollectionStart32bitsV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kPerfInfoProviderId,
+          kVersion2, kPerfInfoCollectionStartOpcode, k32bit,
           reinterpret_cast<const char*>(
-              &kPerfInfoCollectionStartSecondPayloadV3[0]),
-          sizeof(kPerfInfoCollectionStartSecondPayloadV3),
+              &kPerfInfoCollectionStartPayload32bitsV2[0]),
+          sizeof(kPerfInfoCollectionStartPayload32bitsV2),
           &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<UIntValue>("Source", 0U);
   expected->AddField<UIntValue>("NewInterval", 10000U);
   expected->AddField<UIntValue>("OldInterval", 10000U);
-  expected->AddField<WStringValue>("SourceName", L"Timer");
 
   EXPECT_STREQ("PerfInfo", category.c_str());
   EXPECT_STREQ("CollectionStart", operation.c_str());
@@ -2809,18 +3039,41 @@ TEST(EtwRawDecoderTest, PerfInfoCollectionStartV3) {
   EXPECT_TRUE(
       DecodeRawETWKernelPayload(kPerfInfoProviderId,
           kVersion3, kPerfInfoCollectionStartOpcode, k64bit,
-          reinterpret_cast<const char*>(&kPerfInfoCollectionStartPayloadV3[0]),
+          reinterpret_cast<const char*>(
+              &kPerfInfoCollectionStartPayloadV3[0]),
           sizeof(kPerfInfoCollectionStartPayloadV3),
           &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
-  expected->AddField<UIntValue>("SpinLockSpinThreshold", 1U);
-  expected->AddField<UIntValue>("SpinLockContentionSampleRate", 1U);
-  expected->AddField<UIntValue>("SpinLockAcquireSampleRate", 1000U);
-  expected->AddField<UIntValue>("SpinLockHoldThreshold", 0U);
+  expected->AddField<UIntValue>("Source", 0U);
+  expected->AddField<UIntValue>("NewInterval", 10000U);
+  expected->AddField<UIntValue>("OldInterval", 10000U);
+  expected->AddField<WStringValue>("SourceName", L"Timer");
 
   EXPECT_STREQ("PerfInfo", category.c_str());
   EXPECT_STREQ("CollectionStart", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, PerfInfoCollectionEnd32bitsV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kPerfInfoProviderId,
+          kVersion2, kPerfInfoCollectionEndOpcode, k32bit,
+          reinterpret_cast<const char*>(
+              &kPerfInfoCollectionEndPayload32bitsV2[0]),
+          sizeof(kPerfInfoCollectionEndPayload32bitsV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<UIntValue>("Source", 0U);
+  expected->AddField<UIntValue>("NewInterval", 10000U);
+  expected->AddField<UIntValue>("OldInterval", 10000U);
+
+  EXPECT_STREQ("PerfInfo", category.c_str());
+  EXPECT_STREQ("CollectionEnd", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
@@ -2836,13 +3089,36 @@ TEST(EtwRawDecoderTest, PerfInfoCollectionEndV3) {
           &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<UIntValue>("Source", 0U);
+  expected->AddField<UIntValue>("NewInterval", 10000U);
+  expected->AddField<UIntValue>("OldInterval", 10000U);
+  expected->AddField<WStringValue>("SourceName", L"Timer");
+
+  EXPECT_STREQ("PerfInfo", category.c_str());
+  EXPECT_STREQ("CollectionEnd", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, PerfInfoCollectionStartSecondV3) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kPerfInfoProviderId,
+          kVersion3, kPerfInfoCollectionStartSecondOpcode, k64bit,
+          reinterpret_cast<const char*>(
+              &kPerfInfoCollectionStartSecondPayloadV3[0]),
+          sizeof(kPerfInfoCollectionStartSecondPayloadV3),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<UIntValue>("SpinLockSpinThreshold", 1U);
   expected->AddField<UIntValue>("SpinLockContentionSampleRate", 1U);
   expected->AddField<UIntValue>("SpinLockAcquireSampleRate", 1000U);
   expected->AddField<UIntValue>("SpinLockHoldThreshold", 0U);
 
   EXPECT_STREQ("PerfInfo", category.c_str());
-  EXPECT_STREQ("CollectionEnd", operation.c_str());
+  EXPECT_STREQ("CollectionStart", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
@@ -2859,10 +3135,10 @@ TEST(EtwRawDecoderTest, PerfInfoCollectionEndSecondV3) {
           &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
-  expected->AddField<UIntValue>("Source", 0U);
-  expected->AddField<UIntValue>("NewInterval", 10000U);
-  expected->AddField<UIntValue>("OldInterval", 10000U);
-  expected->AddField<WStringValue>("SourceName", L"Timer");
+  expected->AddField<UIntValue>("SpinLockSpinThreshold", 1U);
+  expected->AddField<UIntValue>("SpinLockContentionSampleRate", 1U);
+  expected->AddField<UIntValue>("SpinLockAcquireSampleRate", 1000U);
+  expected->AddField<UIntValue>("SpinLockHoldThreshold", 0U);
 
   EXPECT_STREQ("PerfInfo", category.c_str());
   EXPECT_STREQ("CollectionEnd", operation.c_str());
