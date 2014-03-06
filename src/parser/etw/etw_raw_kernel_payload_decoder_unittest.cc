@@ -1068,7 +1068,7 @@ const unsigned char kThreadDCEndPayloadV3[] = {
 const unsigned char kThreadCSwitchPayload32bitsV2[] = {
     0x00, 0x00, 0x00, 0x00, 0x2C, 0x11, 0x00, 0x00,
     0x00, 0x09, 0x00, 0x00, 0x17, 0x00, 0x01, 0x00,
-    0x12, 0x00, 0x00, 0x00, 0x26, 0x48, 0x00, 0x00,
+    0x12, 0x00, 0x00, 0x00, 0x26, 0x48, 0x00, 0x00
     };
 
 const unsigned char kThreadCSwitchPayloadV2[] = {
@@ -1199,7 +1199,7 @@ const unsigned char kRegistryCountersPayloadV2[] = {
     0xC0, 0x77, 0x34, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
 const unsigned char kRegistryClosePayloadV2[] = {
@@ -1298,7 +1298,7 @@ const unsigned char kRegistryKCBDeletePayloadV2[] = {
     0x76, 0x00, 0x61, 0x00, 0x6C, 0x00, 0x75, 0x00,
     0x65, 0x00, 0x2E, 0x00, 0x20, 0x00, 0x46, 0x00,
     0x61, 0x00, 0x6B, 0x00, 0x65, 0x00, 0x20, 0x00,
-    0x63, 0x00, 0x68, 0x00, 0x61, 0x00, 0x00, 0x00,
+    0x63, 0x00, 0x68, 0x00, 0x61, 0x00, 0x00, 0x00
     };
 
 const unsigned char kRegistryKCBCreatePayloadV2[] = {
@@ -1388,7 +1388,7 @@ const unsigned char kRegistryCreatePayloadV2[] = {
     0x61, 0x00, 0x63, 0x00, 0x74, 0x00, 0x65, 0x00,
     0x72, 0x00, 0x73, 0x00, 0x2E, 0x00, 0x20, 0x00,
     0x41, 0x00, 0x6E, 0x00, 0x6F, 0x00, 0x6E, 0x00,
-    0x79, 0x00, 0x6D, 0x00, 0x69, 0x00, 0x00, 0x00,
+    0x79, 0x00, 0x6D, 0x00, 0x69, 0x00, 0x00, 0x00
     };
 
 const unsigned char kRegistryQuerySecurityPayloadV2[] = {
@@ -1598,10 +1598,10 @@ TEST(EtwRawDecoderTest, EventTraceHeaderV2) {
   expected->AddField<UIntValue>("ReservedFlags", 0x1);
   expected->AddField<UIntValue>("BuffersLost", 0);
 
-  const std::wstring session_name = L"Relogger";
-  expected->AddField<WStringValue>("SessionNameString", session_name);
-  const std::wstring logfile_name = L"C:\\kernel.etl";
-  expected->AddField<WStringValue>("LogFileNameString", logfile_name);
+  const std::wstring kSessionName = L"Relogger";
+  expected->AddField<WStringValue>("SessionNameString", kSessionName);
+  const std::wstring kLogfileName = L"C:\\kernel.etl";
+  expected->AddField<WStringValue>("LogFileNameString", kLogfileName);
 
   EXPECT_STREQ("EventTraceEvent", category.c_str());
   EXPECT_STREQ("Header", operation.c_str());
@@ -1623,13 +1623,13 @@ TEST(EtwRawDecoderTest, EventTraceHeader32bitsV2) {
   // Expected TimeZone structure.
   scoped_ptr<StructValue> timezone(new StructValue);
   timezone->AddField<IntValue>("Bias", 300);
-  const std::wstring standard_name = L"@tzres.dll,-112";
-  timezone->AddField<WStringValue>("StandardName", standard_name);
+  const std::wstring kStandardName = L"@tzres.dll,-112";
+  timezone->AddField<WStringValue>("StandardName", kStandardName);
   timezone->AddField("StandardDate",
       MakeSystemTime(0, 11, 0, 1, 2, 0, 0, 0).Pass());
   timezone->AddField<IntValue>("StandardBias", 0);
-  std::wstring daylight_name = L"@tzres.dll,-111";
-  timezone->AddField<WStringValue>("DaylightName", daylight_name);
+  const std::wstring kDaylightName = L"@tzres.dll,-111";
+  timezone->AddField<WStringValue>("DaylightName", kDaylightName);
   timezone->AddField("DaylightDate",
       MakeSystemTime(0, 3, 0, 2, 2, 0, 0, 0).Pass());
   timezone->AddField<IntValue>("DaylightBias", -60);
@@ -1659,11 +1659,11 @@ TEST(EtwRawDecoderTest, EventTraceHeader32bitsV2) {
   expected->AddField<UIntValue>("ReservedFlags", 0x1);
   expected->AddField<UIntValue>("BuffersLost", 0);
 
-  const std::wstring session_name = L"Make Test Data Session";
-  expected->AddField<WStringValue>("SessionNameString", session_name);
-  const std::wstring logfile_name = L"c:\\src\\sawbuck\\trunk\\src\\sawbuck\\"
+  const std::wstring kSessionName = L"Make Test Data Session";
+  expected->AddField<WStringValue>("SessionNameString", kSessionName);
+  const std::wstring kLogfileName = L"c:\\src\\sawbuck\\trunk\\src\\sawbuck\\"
       L"log_lib\\test_data\\image_data_32_v0.etl";
-  expected->AddField<WStringValue>("LogFileNameString", logfile_name);
+  expected->AddField<WStringValue>("LogFileNameString", kLogfileName);
 
   EXPECT_STREQ("EventTraceEvent", category.c_str());
   EXPECT_STREQ("Header", operation.c_str());
@@ -1751,8 +1751,8 @@ TEST(EtwRawDecoderTest, ImageUnloadV2) {
   expected->AddField<UIntValue>("Reserved2", 0U);
   expected->AddField<UIntValue>("Reserved3", 0U);
   expected->AddField<UIntValue>("Reserved4", 0U);
-  const std::wstring filename = L"\\Windows\\System32\\wbem\\fastprox.dll";
-  expected->AddField<WStringValue>("ImageFileName", filename);
+  const std::wstring kFilename = L"\\Windows\\System32\\wbem\\fastprox.dll";
+  expected->AddField<WStringValue>("ImageFileName", kFilename);
 
   EXPECT_STREQ("Image", category.c_str());
   EXPECT_STREQ("Unload", operation.c_str());
@@ -1784,8 +1784,8 @@ TEST(EtwRawDecoderTest, ImageUnloadV3) {
   expected->AddField<UIntValue>("Reserved2", 0U);
   expected->AddField<UIntValue>("Reserved3", 0U);
   expected->AddField<UIntValue>("Reserved4", 0U);
-  const std::wstring filename = L"\\Windows\\System32\\wbem\\fastprox.dll";
-  expected->AddField<WStringValue>("ImageFileName", filename);
+  const std::wstring kFilename = L"\\Windows\\System32\\wbem\\fastprox.dll";
+  expected->AddField<WStringValue>("ImageFileName", kFilename);
 
   EXPECT_STREQ("Image", category.c_str());
   EXPECT_STREQ("Unload", operation.c_str());
@@ -1806,9 +1806,9 @@ TEST(EtwRawDecoderTest, ImageDCStart32bitsV0) {
   scoped_ptr<StructValue> expected(new StructValue());
   expected->AddField<UIntValue>("BaseAddress", 0x1160000);
   expected->AddField<UIntValue>("ModuleSize", 1695744);
-  const std::wstring filename =
+  const std::wstring kFilename =
       L"C:\\code\\sawbuck\\src\\sawbuck\\Debug\\test_program.exe";
-  expected->AddField<WStringValue>("ImageFileName", filename);
+  expected->AddField<WStringValue>("ImageFileName", kFilename);
 
   EXPECT_STREQ("Image", category.c_str());
   EXPECT_STREQ("DCStart", operation.c_str());
@@ -1830,9 +1830,9 @@ TEST(EtwRawDecoderTest, ImageDCStart32bitsV1) {
   expected->AddField<UIntValue>("BaseAddress", 0x1160000);
   expected->AddField<UIntValue>("ModuleSize", 0x19E000);
   expected->AddField<UIntValue>("ProcessId", 7644);
-  const std::wstring filename =
+  const std::wstring kFilename =
       L"C:\\code\\sawbuck\\src\\sawbuck\\Debug\\test_program.exe";
-  expected->AddField<WStringValue>("ImageFileName", filename);
+  expected->AddField<WStringValue>("ImageFileName", kFilename);
 
   EXPECT_STREQ("Image", category.c_str());
   EXPECT_STREQ("DCStart", operation.c_str());
@@ -1862,9 +1862,9 @@ TEST(EtwRawDecoderTest, ImageDCStart32bitsV2) {
   expected->AddField<UIntValue>("Reserved2", 0U);
   expected->AddField<UIntValue>("Reserved3", 0U);
   expected->AddField<UIntValue>("Reserved4", 0U);
-  const std::wstring filename =
+  const std::wstring kFilename =
       L"C:\\code\\sawbuck\\src\\sawbuck\\Debug\\test_program.exe";
-  expected->AddField<WStringValue>("ImageFileName", filename);
+  expected->AddField<WStringValue>("ImageFileName", kFilename);
 
   EXPECT_STREQ("Image", category.c_str());
   EXPECT_STREQ("DCStart", operation.c_str());
@@ -1894,8 +1894,8 @@ TEST(EtwRawDecoderTest, ImageDCStartV2) {
   expected->AddField<UIntValue>("Reserved2", 0U);
   expected->AddField<UIntValue>("Reserved3", 0U);
   expected->AddField<UIntValue>("Reserved4", 0U);
-  const std::wstring filename = L"\\SystemRoot\\system32\\ntoskrnl.exe";
-  expected->AddField<WStringValue>("ImageFileName", filename);
+  const std::wstring kFilename = L"\\SystemRoot\\system32\\ntoskrnl.exe";
+  expected->AddField<WStringValue>("ImageFileName", kFilename);
 
   EXPECT_STREQ("Image", category.c_str());
   EXPECT_STREQ("DCStart", operation.c_str());
@@ -1927,9 +1927,9 @@ TEST(EtwRawDecoderTest, ImageDCStartV3) {
   expected->AddField<UIntValue>("Reserved2", 0U);
   expected->AddField<UIntValue>("Reserved3", 0U);
   expected->AddField<UIntValue>("Reserved4", 0U);
-  const std::wstring filename =
+  const std::wstring kFilename =
       L"\\Device\\HarddiskVolume4\\Windows\\SysWOW64\\ntdll.dll";
-  expected->AddField<WStringValue>("ImageFileName", filename);
+  expected->AddField<WStringValue>("ImageFileName", kFilename);
 
   EXPECT_STREQ("Image", category.c_str());
   EXPECT_STREQ("DCStart", operation.c_str());
@@ -1959,8 +1959,8 @@ TEST(EtwRawDecoderTest, ImageDCEndV2) {
   expected->AddField<UIntValue>("Reserved2", 0U);
   expected->AddField<UIntValue>("Reserved3", 0U);
   expected->AddField<UIntValue>("Reserved4", 0U);
-  const std::wstring filename = L"\\SystemRoot\\system32\\ntoskrnl.exe";
-  expected->AddField<WStringValue>("ImageFileName", filename);
+  const std::wstring kFilename = L"\\SystemRoot\\system32\\ntoskrnl.exe";
+  expected->AddField<WStringValue>("ImageFileName", kFilename);
 
   EXPECT_STREQ("Image", category.c_str());
   EXPECT_STREQ("DCEnd", operation.c_str());
@@ -1992,8 +1992,8 @@ TEST(EtwRawDecoderTest, ImageDCEndV3) {
   expected->AddField<UIntValue>("Reserved2", 0U);
   expected->AddField<UIntValue>("Reserved3", 0U);
   expected->AddField<UIntValue>("Reserved4", 0U);
-  const std::wstring filename = L"\\SystemRoot\\system32\\ntoskrnl.exe";
-  expected->AddField<WStringValue>("ImageFileName", filename);
+  const std::wstring kFilename = L"\\SystemRoot\\system32\\ntoskrnl.exe";
+  expected->AddField<WStringValue>("ImageFileName", kFilename);
 
   EXPECT_STREQ("Image", category.c_str());
   EXPECT_STREQ("DCEnd", operation.c_str());
@@ -2046,8 +2046,8 @@ TEST(EtwRawDecoderTest, ImageLoadV2) {
   expected->AddField<UIntValue>("Reserved2", 0U);
   expected->AddField<UIntValue>("Reserved3", 0U);
   expected->AddField<UIntValue>("Reserved4", 0U);
-  const std::wstring filename = L"\\Windows\\SysWOW64\\wscisvif.dll";
-  expected->AddField<WStringValue>("ImageFileName", filename);
+  const std::wstring kFilename = L"\\Windows\\SysWOW64\\wscisvif.dll";
+  expected->AddField<WStringValue>("ImageFileName", kFilename);
 
   EXPECT_STREQ("Image", category.c_str());
   EXPECT_STREQ("Load", operation.c_str());
@@ -2079,10 +2079,10 @@ TEST(EtwRawDecoderTest, ImageLoadV3) {
   expected->AddField<UIntValue>("Reserved2", 0U);
   expected->AddField<UIntValue>("Reserved3", 0U);
   expected->AddField<UIntValue>("Reserved4", 0U);
-  const std::wstring filename =
+  const std::wstring kFilename =
       L"\\Device\\HarddiskVolume4\\Program Files (x86)\\"
       L"Windows Kits\\8.0\\Windows Performance Toolkit\\xperf.exe";
-  expected->AddField<WStringValue>("ImageFileName", filename);
+  expected->AddField<WStringValue>("ImageFileName", kFilename);
 
   EXPECT_STREQ("Image", category.c_str());
   EXPECT_STREQ("Load", operation.c_str());
@@ -2362,11 +2362,11 @@ TEST(EtwRawDecoderTest, ProcessEndV3) {
                                           0,
                                           &sid[0],
                                           sizeof(sid)).Pass());
-  const std::string filename = "xperf.exe";
-  expected->AddField<StringValue>("ImageFileName", filename);
-  const std::wstring commandline =
+  const std::string kFilename = "xperf.exe";
+  expected->AddField<StringValue>("ImageFileName", kFilename);
+  const std::wstring kCommandLine =
      L"xperf  -on PROC_THREAD+LOADER+CSWITCH -stackwalk ImageLoad+ImageUnload";
-  expected->AddField<WStringValue>("CommandLine", commandline);
+  expected->AddField<WStringValue>("CommandLine", kCommandLine);
 
   EXPECT_STREQ("Process", category.c_str());
   EXPECT_STREQ("End", operation.c_str());
@@ -2443,10 +2443,10 @@ TEST(EtwRawDecoderTest, ProcessDCStartV3) {
                                           0,
                                           &sid[0],
                                           sizeof(sid)).Pass());
-  const std::string filename = "Idle";
-  expected->AddField<StringValue>("ImageFileName", filename);
-  const std::wstring commandline = L"";
-  expected->AddField<WStringValue>("CommandLine", commandline);
+  const std::string kFilename = "Idle";
+  expected->AddField<StringValue>("ImageFileName", kFilename);
+  const std::wstring kCommandLine = L"";
+  expected->AddField<WStringValue>("CommandLine", kCommandLine);
 
   EXPECT_STREQ("Process", category.c_str());
   EXPECT_STREQ("DCStart", operation.c_str());
