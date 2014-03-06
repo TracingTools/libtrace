@@ -64,14 +64,19 @@ const unsigned char kImageKernelBaseOpcode = 33;
 
 // Constants for PerfInfo events.
 const std::string kPerfInfoProviderId = "CE1DBFB4-137E-4DA6-87B0-3F59AA102CBC";
+const unsigned char kPerfInfoMarkOpcode = 34;
 const unsigned char kPerfInfoSampleProfOpcode = 46;
+const unsigned char kPerfInfoPmcCounterProfOpcode = 47;
+const unsigned char kPerfInfoPmcCtrConfigOpcode = 48;
 const unsigned char kPerfInfoISRMSIOpcode = 50;
 const unsigned char kPerfInfoSysClEnterOpcode = 51;
 const unsigned char kPerfInfoSysClExitOpcode = 52;
+const unsigned char kPerfInfoDebuggerEnabledOpcode = 58;
 const unsigned char kPerfInfoThreadedDPCOpcode = 66;
 const unsigned char kPerfInfoISROpcode = 67;
 const unsigned char kPerfInfoDPCOpcode = 68;
 const unsigned char kPerfInfoTimerDPCOpcode = 69;
+const unsigned char kPerfInfoIOTimerOpcode = 70;
 const unsigned char kPerfInfoCollectionSetIntervalOpcode = 72;
 const unsigned char kPerfInfoCollectionStartOpcode = 73;
 const unsigned char kPerfInfoCollectionEndOpcode = 74;
@@ -83,6 +88,12 @@ const unsigned char kPerfInfoUnknown82Opcode = 82;
 const unsigned char kPerfInfoUnknown83Opcode = 83;
 const unsigned char kPerfInfoUnknown84Opcode = 84;
 const unsigned char kPerfInfoUnknown85Opcode = 85;
+const unsigned char kPerfInfoISRUnexpectedOpcode = 92;
+const unsigned char kPerfInfoIoStartTimerOpcode = 93;
+const unsigned char kPerfInfoIoStopTimerOpcode = 94;
+const unsigned char kPerfInfoWdfISROpcode = 96;
+const unsigned char kPerfInfoWdfPassiveISROpcode = 97;
+const unsigned char kPerfInfoWdfDPCOpcode = 98;
 
 // Constants for Thread events.
 const std::string kThreadProviderId = "3D6FA8D1-FE05-11D0-9DDA-00C04FD7BA7C";
@@ -623,6 +634,26 @@ bool DecodePerfInfoSampleProfPayload(Decoder* decoder,
   return true;
 }
 
+bool DecodePerfInfoDebuggerEnabledPayload(Decoder* decoder,
+                                          unsigned char version,
+                                          unsigned char opcode,
+                                          bool /* is_64_bit */,
+                                          std::string* operation,
+                                          StructValue* fields) {
+  DCHECK(opcode == kPerfInfoDebuggerEnabledOpcode);
+  DCHECK(decoder != NULL);
+  DCHECK(operation != NULL);
+  DCHECK(fields != NULL);
+
+  if (version != 2)
+    return false;
+
+  // Set the operation name.
+  *operation = "DebuggerEnabled";
+
+  return true;
+}
+
 bool DecodePerfInfoPayload(Decoder* decoder,
                            unsigned char version,
                            unsigned char opcode,
@@ -676,6 +707,10 @@ bool DecodePerfInfoPayload(Decoder* decoder,
     case kPerfInfoUnknown85Opcode:
       // TODO(fdoray): Decode these events.
       return true;
+
+    case kPerfInfoDebuggerEnabledOpcode:
+      return DecodePerfInfoDebuggerEnabledPayload(
+          decoder, version, opcode, is_64_bit, operation, fields);
 
     default:
       return false;

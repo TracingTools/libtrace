@@ -82,6 +82,7 @@ const unsigned char kPerfInfoSampleProfOpcode = 46;
 const unsigned char kPerfInfoISRMSIOpcode = 50;
 const unsigned char kPerfInfoSysClEnterOpcode = 51;
 const unsigned char kPerfInfoSysClExitOpcode = 52;
+const unsigned char kPerfInfoDebuggerEnabledOpcode = 58;
 const unsigned char kPerfInfoThreadedDPCOpcode = 66;
 const unsigned char kPerfInfoISROpcode = 67;
 const unsigned char kPerfInfoDPCOpcode = 68;
@@ -557,6 +558,9 @@ const unsigned char kPerfInfoISRPayload32bitsV2[] = {
     0xD4, 0xC0, 0xB1, 0x91, 0xAB, 0x02, 0x00, 0x00,
     0x00, 0xEF, 0xDC, 0x94, 0x00, 0xB2, 0x00, 0x00
     };
+
+const unsigned char kPerfInfoDebuggerEnabledPayloadV2[] = {
+    0x00 };  // This byte is dummy. The payload is an empty array.
 
 const unsigned char kPerfInfoISRPayloadV2[] = {
     0xAC, 0x4D, 0x42, 0xA8, 0x66, 0x04, 0x00, 0x00,
@@ -2883,6 +2887,24 @@ TEST(EtwRawDecoderTest, PerfInfoISR32bitsV2) {
 
   EXPECT_STREQ("PerfInfo", category.c_str());
   EXPECT_STREQ("ISR", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, PerfInfoDebuggerEnabledV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kPerfInfoProviderId,
+          kVersion2, kPerfInfoDebuggerEnabledOpcode, k64bit,
+          reinterpret_cast<const char*>(&kPerfInfoDebuggerEnabledPayloadV2[0]),
+          0, // This payload is empty.
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+
+  EXPECT_STREQ("PerfInfo", category.c_str());
+  EXPECT_STREQ("DebuggerEnabled", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
