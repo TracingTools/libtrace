@@ -1160,7 +1160,7 @@ bool DecodeProcessStartEndDefunctPayload(Decoder* decoder,
   DCHECK(fields != NULL);
 
   if (opcode == kProcessDefunctOpcode) {
-    if (version < 3 || version > 5)
+    if (version < 2 || version > 5)
       return false;
   } else {
     if (version > 4)
