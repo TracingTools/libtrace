@@ -144,20 +144,35 @@ const unsigned char kTcplpDupACKIPV4Opcode = 22;
 const std::string kRegistryProviderId = "AE53722E-C863-11D2-8659-00C04FA321A1";
 const unsigned char kRegistryCreateOpcode = 10;
 const unsigned char kRegistryOpenOpcode = 11;
+const unsigned char kRegistryDeleteOpcode = 12;
 const unsigned char kRegistryQueryOpcode = 13;
 const unsigned char kRegistrySetValueOpcode = 14;
+const unsigned char kRegistryDeleteValueOpcode = 15;
 const unsigned char kRegistryQueryValueOpcode = 16;
 const unsigned char kRegistryEnumerateKeyOpcode = 17;
 const unsigned char kRegistryEnumerateValueKeyOpcode = 18;
+const unsigned char kRegistryQueryMultipleValueOpcode = 19;
 const unsigned char kRegistrySetInformationOpcode = 20;
+const unsigned char kRegistryFlushOpcode = 21;
 const unsigned char kRegistryKCBCreateOpcode = 22;
 const unsigned char kRegistryKCBDeleteOpcode = 23;
+const unsigned char kRegistryKCBRundownBeginOpcode = 24;
 const unsigned char kRegistryKCBRundownEndOpcode = 25;
+const unsigned char kRegistryVirtualizeOpcode = 26;
 const unsigned char kRegistryCloseOpcode = 27;
 const unsigned char kRegistrySetSecurityOpcode = 28;
 const unsigned char kRegistryQuerySecurityOpcode = 29;
+const unsigned char kRegistryTxRCommitOpcode = 30;
+const unsigned char kRegistryTxRPrepareOpcode = 31;
+const unsigned char kRegistryTxRRollbackOpcode = 32;
 const unsigned char kRegistryCountersOpcode = 34;
 const unsigned char kRegistryConfigOpcode = 35;
+const unsigned char kRegistryHiveInitOpcode = 36;
+const unsigned char kRegistryHiveDestroyOpcode = 37;
+const unsigned char kRegistryHiveLinkOpcode = 38;
+const unsigned char kRegistryHiveDCEndOpcode = 39;
+const unsigned char kRegistryHiveDirtyOpcode = 40;
+const unsigned char kRegistryChangeNotifyOpcode = 48;
 
 // Constants for StackWalk events.
 const std::string kStackWalkProviderId = "DEF2FE46-7BD6-4B80-BD94-F57FE20D0CE3";
@@ -1525,69 +1540,93 @@ bool DecodeRegistryGenericPayload(Decoder* decoder,
                                   std::string* operation,
                                   StructValue* fields) {
   DCHECK(decoder != NULL);
-  DCHECK(is_64_bit);
   DCHECK(operation != NULL);
   DCHECK(fields != NULL);
 
-  if (version != 2)
+  if (version < 1 || version > 2)
     return false;
 
   // Set the operation name.
   switch (opcode) {
-    case kRegistryQuerySecurityOpcode:
-      *operation = "QuerySecurity";
-      break;
 
-    case kRegistryQueryOpcode:
-      *operation = "Query";
-      break;
-
-    case kRegistryKCBDeleteOpcode:
-      *operation = "KCBDelete";
-      break;
-
-    case kRegistryKCBCreateOpcode:
-      *operation = "KCBCreate";
+    case kRegistryCreateOpcode:
+      *operation = "Create";
       break;
 
     case kRegistryOpenOpcode:
       *operation = "Open";
       break;
 
-    case kRegistrySetInformationOpcode:
-      *operation = "SetInformation";
+    case kRegistryDeleteOpcode:
+      *operation = "Delete";
       break;
 
-    case kRegistryEnumerateValueKeyOpcode:
-      *operation = "EnumerateValueKey";
-      break;
-
-    case kRegistryCloseOpcode:
-      *operation = "Close";
-      break;
-
-    case kRegistryEnumerateKeyOpcode:
-      *operation = "EnumerateKey";
-      break;
-
-    case kRegistryCreateOpcode:
-      *operation = "Create";
-      break;
-
-    case kRegistryQueryValueOpcode:
-      *operation = "QueryValue";
-      break;
-
-    case kRegistryKCBRundownEndOpcode:
-      *operation = "KCBRundownEnd";
+    case kRegistryQueryOpcode:
+      *operation = "Query";
       break;
 
     case kRegistrySetValueOpcode:
       *operation = "SetValue";
       break;
 
+    case kRegistryDeleteValueOpcode:
+      *operation = "DeleteValue";
+      break;
+
+    case kRegistryQueryValueOpcode:
+      *operation = "QueryValue";
+      break;
+
+    case kRegistryEnumerateKeyOpcode:
+      *operation = "EnumerateKey";
+      break;
+
+    case kRegistryEnumerateValueKeyOpcode:
+      *operation = "EnumerateValueKey";
+      break;
+
+    case kRegistryQueryMultipleValueOpcode:
+      *operation = "QueryMultipleValue";
+      break;
+
+    case kRegistrySetInformationOpcode:
+      *operation = "SetInformation";
+      break;
+
+    case kRegistryFlushOpcode:
+      *operation = "Flush";
+      break;
+
+    case kRegistryKCBCreateOpcode:
+      *operation = "KCBCreate";
+      break;
+
+    case kRegistryKCBDeleteOpcode:
+      *operation = "KCBDelete";
+      break;
+
+    case kRegistryKCBRundownBeginOpcode:
+      *operation = "KCBRundownBegin";
+      break;
+
+    case kRegistryKCBRundownEndOpcode:
+      *operation = "KCBRundownEnd";
+      break;
+
+    case kRegistryVirtualizeOpcode:
+      *operation = "Virtualize";
+      break;
+
+    case kRegistryCloseOpcode:
+      *operation = "Close";
+      break;
+
     case kRegistrySetSecurityOpcode:
       *operation = "SetSecurity";
+      break;
+
+    case kRegistryQuerySecurityOpcode:
+      *operation = "QuerySecurity";
       break;
 
     default:
@@ -1596,12 +1635,22 @@ bool DecodeRegistryGenericPayload(Decoder* decoder,
   }
 
   // Decode the payload.
-  if (!Decode<LongValue>("InitialTime", decoder, fields) ||
-      !Decode<UIntValue>("Status", decoder, fields) ||
-      !Decode<UIntValue>("Index", decoder, fields) ||
-      !Decode<ULongValue>("KeyHandle", decoder, fields) ||
-      !DecodeW16String("KeyName", decoder, fields)) {
-    return false;
+  if (version == 1) {
+    if (!Decode<UIntValue>("Status", decoder, fields) ||
+        !DecodeUInteger("KeyHandle", is_64_bit, decoder, fields) ||
+        !Decode<LongValue>("ElapsedTime", decoder, fields) ||
+        !Decode<UIntValue>("Index", decoder, fields) ||
+        !DecodeW16String("KeyName", decoder, fields)) {
+      return false;
+    }
+  } else {
+    if (!Decode<LongValue>("InitialTime", decoder, fields) ||
+        !Decode<UIntValue>("Status", decoder, fields) ||
+        !Decode<UIntValue>("Index", decoder, fields) ||
+        !DecodeUInteger("KeyHandle", is_64_bit, decoder, fields) ||
+        !DecodeW16String("KeyName", decoder, fields)) {
+      return false;
+    }
   }
 
   return true;
@@ -1610,12 +1659,11 @@ bool DecodeRegistryGenericPayload(Decoder* decoder,
 bool DecodeRegistryCountersPayload(Decoder* decoder,
                                    unsigned char version,
                                    unsigned char opcode,
-                                   bool is_64_bit,
+                                   bool /* is_64_bit */,
                                    std::string* operation,
                                    StructValue* fields) {
   DCHECK(decoder != NULL);
   DCHECK(opcode == kRegistryCountersOpcode);
-  DCHECK(is_64_bit);
   DCHECK(operation != NULL);
   DCHECK(fields != NULL);
 
@@ -1646,12 +1694,11 @@ bool DecodeRegistryCountersPayload(Decoder* decoder,
 bool DecodeRegistryConfigPayload(Decoder* decoder,
                                  unsigned char version,
                                  unsigned char opcode,
-                                 bool is_64_bit,
+                                 bool /* is_64_bit */,
                                  std::string* operation,
                                  StructValue* fields) {
   DCHECK(decoder != NULL);
   DCHECK(opcode == kRegistryConfigOpcode);
-  DCHECK(is_64_bit);
   DCHECK(operation != NULL);
   DCHECK(fields != NULL);
 
@@ -1678,24 +1725,27 @@ bool DecodeRegistryPayload(Decoder* decoder,
   DCHECK(operation != NULL);
   DCHECK(fields != NULL);
 
-  if (!is_64_bit)
-    return false;
-
   switch (opcode) {
-    case kRegistryQuerySecurityOpcode:
-    case kRegistryQueryOpcode:
-    case kRegistryKCBDeleteOpcode:
-    case kRegistryKCBCreateOpcode:
-    case kRegistryOpenOpcode:
-    case kRegistrySetInformationOpcode:
-    case kRegistryEnumerateValueKeyOpcode:
-    case kRegistryCloseOpcode:
-    case kRegistryEnumerateKeyOpcode:
     case kRegistryCreateOpcode:
-    case kRegistryQueryValueOpcode:
-    case kRegistryKCBRundownEndOpcode:
+    case kRegistryOpenOpcode:
+    case kRegistryDeleteOpcode:
+    case kRegistryQueryOpcode:
     case kRegistrySetValueOpcode:
+    case kRegistryDeleteValueOpcode:
+    case kRegistryQueryValueOpcode:
+    case kRegistryEnumerateKeyOpcode:
+    case kRegistryEnumerateValueKeyOpcode:
+    case kRegistryQueryMultipleValueOpcode:
+    case kRegistrySetInformationOpcode:
+    case kRegistryFlushOpcode:
+    case kRegistryKCBCreateOpcode:
+    case kRegistryKCBDeleteOpcode:
+    case kRegistryKCBRundownBeginOpcode:
+    case kRegistryKCBRundownEndOpcode:
+    case kRegistryVirtualizeOpcode:
+    case kRegistryCloseOpcode:
     case kRegistrySetSecurityOpcode:
+    case kRegistryQuerySecurityOpcode:
       return DecodeRegistryGenericPayload(
           decoder, version, opcode, is_64_bit, operation, fields);
 
