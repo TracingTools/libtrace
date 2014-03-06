@@ -131,7 +131,14 @@ const unsigned char kTcplpRecvIPV4Opcode = 11;
 const unsigned char kTcplpConnectIPV4Opcode = 12;
 const unsigned char kTcplpDisconnectIPV4Opcode = 13;
 const unsigned char kTcplpRetransmitIPV4Opcode = 14;
+const unsigned char kTcplpAcceptIPV4Opcode = 15;
+const unsigned char kTcplpReconnectIPV4Opcode = 16;
+const unsigned char kTcplpFailIPV4Opcode = 17;
 const unsigned char kTcplpTCPCopyIPV4Opcode = 18;
+const unsigned char kTcplpARPCopyIPV4Opcode = 19;
+const unsigned char kTcplpFullACKIPV4Opcode = 20;
+const unsigned char kTcplpPartACKIPV4Opcode = 21;
+const unsigned char kTcplpDupACKIPV4Opcode = 22;
 
 // Constants for Registry events.
 const std::string kRegistryProviderId = "AE53722E-C863-11D2-8659-00C04FA321A1";
@@ -1340,15 +1347,13 @@ bool DecodeProcessPayload(Decoder* decoder,
   }
 }
 
-bool DecodeTcplpConnectIPV4Payload(Decoder* decoder,
-                                   unsigned char version,
-                                   unsigned char opcode,
-                                   bool is_64_bit,
-                                   std::string* operation,
-                                   StructValue* fields) {
+bool DecodeTcplpGroup1IPV4Payload(Decoder* decoder,
+                                  unsigned char version,
+                                  unsigned char opcode,
+                                  bool is_64_bit,
+                                  std::string* operation,
+                                  StructValue* fields) {
   DCHECK(decoder != NULL);
-  DCHECK(opcode == kTcplpConnectIPV4Opcode);
-  DCHECK(is_64_bit);
   DCHECK(operation != NULL);
   DCHECK(fields != NULL);
 
@@ -1356,7 +1361,73 @@ bool DecodeTcplpConnectIPV4Payload(Decoder* decoder,
     return false;
 
   // Set the operation name.
-  *operation = "ConnectIPV4";
+  switch (opcode) {
+    case kTcplpRecvIPV4Opcode:
+      *operation = "RecvIPV4";
+      break;
+
+    case kTcplpDisconnectIPV4Opcode:
+      *operation = "DisconnectIPV4";
+      break;
+
+    case kTcplpRetransmitIPV4Opcode:
+      *operation = "RetransmitIPV4";
+      break;
+
+    case kTcplpReconnectIPV4Opcode:
+      *operation = "ReconnectIPV4";
+      break;
+
+    case kTcplpTCPCopyIPV4Opcode:
+      *operation = "TCPCopyIPV4";
+      break;
+
+    default:
+      // TODO(fdoray): NOTREACHED();
+      return false;
+  }
+
+  // Decode the payload.
+  if (!Decode<UIntValue>("PID", decoder, fields) ||
+      !Decode<UIntValue>("size", decoder, fields) ||
+      !Decode<UIntValue>("daddr", decoder, fields) ||
+      !Decode<UIntValue>("saddr", decoder, fields) ||
+      !Decode<UShortValue>("dport", decoder, fields) ||
+      !Decode<UShortValue>("sport", decoder, fields) ||
+      !Decode<UIntValue>("seqnum", decoder, fields) ||
+      !DecodeUInteger("connid", is_64_bit, decoder, fields)) {
+    return false;
+  }
+
+  return true;
+}
+
+
+bool DecodeTcplpGroup2IPV4Payload(Decoder* decoder,
+                                  unsigned char version,
+                                  unsigned char opcode,
+                                  bool is_64_bit,
+                                  std::string* operation,
+                                  StructValue* fields) {
+  DCHECK(decoder != NULL);
+  DCHECK(operation != NULL);
+  DCHECK(fields != NULL);
+
+  if (version != 2)
+    return false;
+
+  // Set the operation name.
+  switch (opcode) {
+    case kTcplpConnectIPV4Opcode:
+      *operation = "ConnectIPV4";
+      break;
+    case kTcplpAcceptIPV4Opcode:
+      *operation = "AcceptIPV4";
+      break;
+    default:
+      // TODO(fdoray): NOTREACHED();
+      return false;
+  }
 
   // Decode the payload.
   if (!Decode<UIntValue>("PID", decoder, fields) ||
@@ -1373,88 +1444,7 @@ bool DecodeTcplpConnectIPV4Payload(Decoder* decoder,
       !Decode<ShortValue>("rcvwinscale", decoder, fields) ||
       !Decode<ShortValue>("sndwinscale", decoder, fields) ||
       !Decode<UIntValue>("seqnum", decoder, fields) ||
-      !Decode<ULongValue>("connid", decoder, fields)) {
-    return false;
-  }
-
-  return true;
-}
-
-bool DecodeTcplpDisconnectIPV4Payload(Decoder* decoder,
-                                      unsigned char version,
-                                      unsigned char opcode,
-                                      bool is_64_bit,
-                                      std::string* operation,
-                                      StructValue* fields) {
-  DCHECK(decoder != NULL);
-  DCHECK(opcode == kTcplpDisconnectIPV4Opcode);
-  DCHECK(is_64_bit);
-  DCHECK(operation != NULL);
-  DCHECK(fields != NULL);
-
-  if (version != 2)
-    return false;
-
-  // Set the operation name.
-  *operation = "DisconnectIPV4";
-
-  // Decode the payload.
-  if (!Decode<UIntValue>("PID", decoder, fields) ||
-      !Decode<UIntValue>("size", decoder, fields) ||
-      !Decode<UIntValue>("daddr", decoder, fields) ||
-      !Decode<UIntValue>("saddr", decoder, fields) ||
-      !Decode<UShortValue>("dport", decoder, fields) ||
-      !Decode<UShortValue>("sport", decoder, fields) ||
-      !Decode<UIntValue>("seqnum", decoder, fields) ||
-      !Decode<ULongValue>("connid", decoder, fields)) {
-    return false;
-  }
-
-  return true;
-}
-
-bool DecodeTcplpTCPCopyRetransmitRecvIPV4Payload(Decoder* decoder,
-                                                 unsigned char version,
-                                                 unsigned char opcode,
-                                                 bool is_64_bit,
-                                                 std::string* operation,
-                                                 StructValue* fields) {
-  DCHECK(decoder != NULL);
-  DCHECK(is_64_bit);
-  DCHECK(operation != NULL);
-  DCHECK(fields != NULL);
-
-  if (version != 2)
-    return false;
-
-  // Set the operation name.
-  switch (opcode) {
-    case kTcplpTCPCopyIPV4Opcode:
-      *operation = "TCPCopyIPV4";
-      break;
-
-    case kTcplpRetransmitIPV4Opcode:
-      *operation = "RetransmitIPV4";
-      break;
-
-    case kTcplpRecvIPV4Opcode:
-      *operation = "RecvIPV4";
-      break;
-
-    default:
-      // TODO(fdoray): NOTREACHED();
-      return false;
-  }
-
-  // Decode the payload.
-  if (!Decode<UIntValue>("PID", decoder, fields) ||
-      !Decode<UIntValue>("size", decoder, fields) ||
-      !Decode<UIntValue>("daddr", decoder, fields) ||
-      !Decode<UIntValue>("saddr", decoder, fields) ||
-      !Decode<UShortValue>("dport", decoder, fields) ||
-      !Decode<UShortValue>("sport", decoder, fields) ||
-      !Decode<UIntValue>("seqnum", decoder, fields) ||
-      !Decode<ULongValue>("connid", decoder, fields)) {
+      !DecodeUInteger("connid", is_64_bit, decoder, fields)) {
     return false;
   }
 
@@ -1469,7 +1459,6 @@ bool DecodeTcplpSendIPV4Payload(Decoder* decoder,
                                 StructValue* fields) {
   DCHECK(decoder != NULL);
   DCHECK(opcode == kTcplpSendIPV4Opcode);
-  DCHECK(is_64_bit);
   DCHECK(operation != NULL);
   DCHECK(fields != NULL);
 
@@ -1489,7 +1478,7 @@ bool DecodeTcplpSendIPV4Payload(Decoder* decoder,
       !Decode<UIntValue>("startime", decoder, fields) ||
       !Decode<UIntValue>("endtime", decoder, fields) ||
       !Decode<UIntValue>("seqnum", decoder, fields) ||
-      !Decode<ULongValue>("connid", decoder, fields)) {
+      !DecodeUInteger("connid", is_64_bit, decoder, fields)) {
     return false;
   }
 
@@ -1506,22 +1495,18 @@ bool DecodeTcplpPayload(Decoder* decoder,
   DCHECK(operation != NULL);
   DCHECK(fields != NULL);
 
-  if (!is_64_bit)
-    return false;
-
   switch (opcode) {
-    case kTcplpConnectIPV4Opcode:
-      return DecodeTcplpConnectIPV4Payload(
-          decoder, version, opcode, is_64_bit, operation, fields);
-
-    case kTcplpDisconnectIPV4Opcode:
-      return DecodeTcplpDisconnectIPV4Payload(
-          decoder, version, opcode, is_64_bit, operation, fields);
-
-    case kTcplpTCPCopyIPV4Opcode:
-    case kTcplpRetransmitIPV4Opcode:
     case kTcplpRecvIPV4Opcode:
-      return DecodeTcplpTCPCopyRetransmitRecvIPV4Payload(
+    case kTcplpDisconnectIPV4Opcode:
+    case kTcplpRetransmitIPV4Opcode:
+    case kTcplpReconnectIPV4Opcode:
+    case kTcplpTCPCopyIPV4Opcode:
+      return DecodeTcplpGroup1IPV4Payload(
+          decoder, version, opcode, is_64_bit, operation, fields);
+
+    case kTcplpConnectIPV4Opcode:
+    case kTcplpAcceptIPV4Opcode:
+      return DecodeTcplpGroup2IPV4Payload(
           decoder, version, opcode, is_64_bit, operation, fields);
 
     case kTcplpSendIPV4Opcode:

@@ -1122,6 +1122,13 @@ const unsigned char kThreadAutoBoostEntryExhaustionPayloadV2[] = {
     0xBC, 0x0B, 0x00, 0x00, 0x00, 0xF8, 0xFF, 0xFF
     };
 
+const unsigned char kTcplpSendIPV4Payload32bitsV2[] = {
+    0xB8, 0x0E, 0x00, 0x00, 0x04, 0x02, 0x00, 0x00,
+    0x40, 0x04, 0x0B, 0x19, 0xAC, 0x1D, 0x0C, 0x7B,
+    0x00, 0x50, 0xFD, 0x59, 0xC1, 0x9C, 0xBF, 0x00,
+    0xC1, 0x9C, 0xBF, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00 };
+
 const unsigned char kTcplpSendIPV4PayloadV2[] = {
     0x34, 0x21, 0x00, 0x00, 0x1A, 0x00, 0x00, 0x00,
     0x02, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00,
@@ -1137,12 +1144,26 @@ const unsigned char kTcplpTCPCopyIPV4PayloadV2[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
+const unsigned char kTcplpRecvIPV4Payload32bitsV2[] = {
+    0xB8, 0x0E, 0x00, 0x00, 0xC2, 0x01, 0x00, 0x00,
+    0x40, 0x04, 0x0B, 0x19, 0xAC, 0x1D, 0x0C, 0x7B,
+    0x00, 0x50, 0xFD, 0x59, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00 };
+
 const unsigned char kTcplpRecvIPV4PayloadV2[] = {
     0x80, 0x1A, 0x00, 0x00, 0x55, 0x00, 0x00, 0x00,
     0x02, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00,
     0x08, 0x00, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
+
+const unsigned char kTcplpConnectIPV4Payload32bitsV2[] = {
+    0xB8, 0x0E, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x83, 0xFD, 0x0D, 0x15, 0xAC, 0x1D, 0x0C, 0x7B,
+    0x00, 0x50, 0xFD, 0x5A, 0xA0, 0x05, 0x01, 0x00,
+    0x00, 0x00, 0x01, 0x00, 0xC0, 0x02, 0x01, 0x00,
+    0x08, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00 };
 
 const unsigned char kTcplpConnectIPV4PayloadV2[] = {
     0x80, 0x1A, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -3707,6 +3728,34 @@ TEST(EtwRawDecoderTest, ThreadAutoBoostEntryExhaustionV2) {
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
+TEST(EtwRawDecoderTest, TcplpSendIPV432bitsV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kTcplpProviderId,
+          kVersion2, kTcplpSendIPV4Opcode, k32bit,
+          reinterpret_cast<const char*>(&kTcplpSendIPV4Payload32bitsV2[0]),
+          sizeof(kTcplpSendIPV4Payload32bitsV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<UIntValue>("PID", 3768);
+  expected->AddField<UIntValue>("size", 516);
+  expected->AddField<UIntValue>("daddr", 420152384);
+  expected->AddField<UIntValue>("saddr", 2064391596);
+  expected->AddField<UShortValue>("dport", 20480);
+  expected->AddField<UShortValue>("sport", 23037);
+  expected->AddField<UIntValue>("startime", 12557505);
+  expected->AddField<UIntValue>("endtime", 12557505);
+  expected->AddField<UIntValue>("seqnum", 0U);
+  expected->AddField<UIntValue>("connid", 0ULL);
+
+  EXPECT_STREQ("Tcplp", category.c_str());
+  EXPECT_STREQ("SendIPV4", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
 TEST(EtwRawDecoderTest, TcplpSendIPV4V2) {
   std::string operation;
   std::string category;
@@ -3761,6 +3810,32 @@ TEST(EtwRawDecoderTest, TcplpTCPCopyIPV4V2) {
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
+TEST(EtwRawDecoderTest, TcplpRecvIPV432bitsV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kTcplpProviderId,
+          kVersion2, kTcplpRecvIPV4Opcode, k32bit,
+          reinterpret_cast<const char*>(&kTcplpRecvIPV4Payload32bitsV2[0]),
+          sizeof(kTcplpRecvIPV4Payload32bitsV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<UIntValue>("PID", 3768);
+  expected->AddField<UIntValue>("size", 450);
+  expected->AddField<UIntValue>("daddr", 420152384);
+  expected->AddField<UIntValue>("saddr", 2064391596);
+  expected->AddField<UShortValue>("dport", 20480);
+  expected->AddField<UShortValue>("sport", 23037);
+  expected->AddField<UIntValue>("seqnum", 0U);
+  expected->AddField<UIntValue>("connid", 0ULL);
+
+  EXPECT_STREQ("Tcplp", category.c_str());
+  EXPECT_STREQ("RecvIPV4", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
 TEST(EtwRawDecoderTest, TcplpRecvIPV4V2) {
   std::string operation;
   std::string category;
@@ -3784,6 +3859,39 @@ TEST(EtwRawDecoderTest, TcplpRecvIPV4V2) {
 
   EXPECT_STREQ("Tcplp", category.c_str());
   EXPECT_STREQ("RecvIPV4", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, TcplpConnectIPV432bitsV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kTcplpProviderId,
+          kVersion2, kTcplpConnectIPV4Opcode, k32bit,
+          reinterpret_cast<const char*>(&kTcplpConnectIPV4Payload32bitsV2[0]),
+          sizeof(kTcplpConnectIPV4Payload32bitsV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<UIntValue>("PID", 3768);
+  expected->AddField<UIntValue>("size", 0U);
+  expected->AddField<UIntValue>("daddr", 353238403);
+  expected->AddField<UIntValue>("saddr", 2064391596);
+  expected->AddField<UShortValue>("dport",20480);
+  expected->AddField<UShortValue>("sport", 23293);
+  expected->AddField<UShortValue>("mss", 1440);
+  expected->AddField<UShortValue>("sackopt", 1);
+  expected->AddField<UShortValue>("tsopt", 0);
+  expected->AddField<UShortValue>("wsopt", 1);
+  expected->AddField<UIntValue>("rcvwin", 66240);
+  expected->AddField<ShortValue>("rcvwinscale", 8);
+  expected->AddField<ShortValue>("sndwinscale", 8);
+  expected->AddField<UIntValue>("seqnum", 0U);
+  expected->AddField<UIntValue>("connid", 0ULL);
+
+  EXPECT_STREQ("Tcplp", category.c_str());
+  EXPECT_STREQ("ConnectIPV4", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
