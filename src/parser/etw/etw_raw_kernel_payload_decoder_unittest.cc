@@ -3073,7 +3073,25 @@ TEST(EtwRawDecoderTest, PerfInfoDebuggerEnabledV2) {
       DecodeRawETWKernelPayload(kPerfInfoProviderId,
           kVersion2, kPerfInfoDebuggerEnabledOpcode, k64bit,
           reinterpret_cast<const char*>(&kPerfInfoDebuggerEnabledPayloadV2[0]),
-          0, // This payload is empty.
+          0,  // This payload is empty.
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+
+  EXPECT_STREQ("PerfInfo", category.c_str());
+  EXPECT_STREQ("DebuggerEnabled", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, PerfInfoDebuggerEnabledV2WithANullPayload) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kPerfInfoProviderId,
+          kVersion2, kPerfInfoDebuggerEnabledOpcode, k64bit,
+          NULL,
+          0,  // This payload is empty.
           &operation, &category, &fields));
 
   scoped_ptr<StructValue> expected(new StructValue());
