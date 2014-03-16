@@ -29,21 +29,17 @@
 
 namespace base {
 
-std::wstring StringToWString(const std::string& string) {
-  return std::wstring(string.begin(), string.end());
-}
+namespace {
 
-std::string WStringToString(const std::wstring& string) {
-  return std::string(string.begin(), string.end());
-}
-
-bool StringBeginsWith(const std::string& str, const std::string& starting) {
+template <typename T>
+bool StringBeginsWithInternal(const T& str, const T& starting) {
   if (str.compare(0, starting.length(), starting) == 0)
     return true;
   return false;
 }
 
-bool StringEndsWith(const std::string &str, const std::string &ending) {
+template <typename T>
+bool StringEndsWithInternal(const T& str, const T& ending) {
   if (ending.length() > str.length())
     return false;
 
@@ -54,6 +50,32 @@ bool StringEndsWith(const std::string &str, const std::string &ending) {
   }
 
   return false;
+}
+
+}  // namespace
+
+std::wstring StringToWString(const std::string& string) {
+  return std::wstring(string.begin(), string.end());
+}
+
+std::string WStringToString(const std::wstring& string) {
+  return std::string(string.begin(), string.end());
+}
+
+bool StringBeginsWith(const std::string& str, const std::string& starting) {
+  return StringBeginsWithInternal(str, starting);
+}
+
+bool WStringBeginsWith(const std::wstring& str, const std::wstring& starting) {
+  return StringBeginsWithInternal(str, starting);
+}
+
+bool StringEndsWith(const std::string &str, const std::string &ending) {
+  return StringEndsWithInternal(str, ending);
+}
+
+bool WStringEndsWith(const std::wstring& str, const std::wstring& ending) {
+  return StringEndsWithInternal(str, ending);
 }
 
 std::string StringEscapeSpecialCharacter(const std::string& str) {

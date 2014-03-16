@@ -35,9 +35,11 @@ std::string WStringToString(const std::wstring& string);
 
 // Returns true if |str| begins with |starting|, or false otherwise.
 bool StringBeginsWith(const std::string& str, const std::string& starting);
+bool WStringBeginsWith(const std::wstring& str, const std::wstring& starting);
 
 // Returns true if |str| ends with |ending|, or false otherwise.
 bool StringEndsWith(const std::string& str, const std::string& ending);
+bool WStringEndsWith(const std::wstring& str, const std::wstring& ending);
 
 // Escape the C special characters with a backslash.
 // @param str the string to be escaped.

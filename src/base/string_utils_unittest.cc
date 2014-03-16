@@ -51,6 +51,17 @@ TEST(StringUtilsTest, StringBeginsWith) {
   EXPECT_FALSE(StringBeginsWith("", "dummy"));
 }
 
+TEST(StringUtilsTest, WStringBeginsWith) {
+  EXPECT_TRUE(WStringBeginsWith(L"dummy", L"dum"));
+  EXPECT_TRUE(WStringBeginsWith(L"123 456", L""));
+  EXPECT_TRUE(WStringBeginsWith(L"empty", L""));
+  EXPECT_TRUE(WStringBeginsWith(L"", L""));
+
+  EXPECT_FALSE(WStringBeginsWith(L"dummy", L" dum"));
+  EXPECT_FALSE(WStringBeginsWith(L"my", L"duh"));
+  EXPECT_FALSE(WStringBeginsWith(L"", L"dummy"));
+}
+
 TEST(StringUtilsTest, StringEndsWith) {
   EXPECT_TRUE(StringEndsWith("dummy", "mmy"));
   EXPECT_TRUE(StringEndsWith("123 456", "6"));
@@ -60,6 +71,17 @@ TEST(StringUtilsTest, StringEndsWith) {
   EXPECT_FALSE(StringEndsWith("dummy", "mmy "));
   EXPECT_FALSE(StringEndsWith("my", "dummy "));
   EXPECT_FALSE(StringEndsWith("", "dummy"));
+}
+
+TEST(StringUtilsTest, WStringEndsWith) {
+  EXPECT_TRUE(WStringEndsWith(L"dummy", L"mmy"));
+  EXPECT_TRUE(WStringEndsWith(L"123 456", L"6"));
+  EXPECT_TRUE(WStringEndsWith(L"empty", L""));
+  EXPECT_TRUE(WStringEndsWith(L"", L""));
+
+  EXPECT_FALSE(WStringEndsWith(L"dummy", L"mmy "));
+  EXPECT_FALSE(WStringEndsWith(L"my", L"dummy "));
+  EXPECT_FALSE(WStringEndsWith(L"", L"dummy"));
 }
 
 TEST(StringUtilsTest, StringEscapeSpecialCharacter) {
