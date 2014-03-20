@@ -174,6 +174,29 @@ const unsigned char kRegistryHiveDCEndOpcode = 39;
 const unsigned char kRegistryHiveDirtyOpcode = 40;
 const unsigned char kRegistryChangeNotifyOpcode = 48;
 
+// Constants for FileIO events.
+const std::string kFileIOProviderId = "90CBDC39-4A3E-11D1-84F4-0000F80464E3";
+const unsigned char kFileIOFileCreateOpcode = 32;
+const unsigned char kFileIOFileDeleteOpcode = 35;
+const unsigned char kFileIOFileRundownOpcode = 36;
+const unsigned char kFileIOCreateOpcode = 64;
+const unsigned char kFileIOCleanupOpcode = 65;
+const unsigned char kFileIOCloseOpcode = 66;
+const unsigned char kFileIOReadOpcode = 67;
+const unsigned char kFileIOWriteOpcode = 68;
+const unsigned char kFileIOSetInfoOpcode = 69;
+const unsigned char kFileIODeleteOpcode = 70;
+const unsigned char kFileIORenameOpcode = 71;
+const unsigned char kFileIODirEnumOpcode = 72;
+const unsigned char kFileIOFlushOpcode = 73;
+const unsigned char kFileIOQueryInfoOpcode = 74;
+const unsigned char kFileIOFSControlOpcode = 75;
+const unsigned char kFileIOOperationEndOpcode = 76;
+const unsigned char kFileIODirNotifyOpcode = 77;
+const unsigned char kFileIOUnknown78Opcode = 78;
+const unsigned char kFileIODletePathOpcode = 79;
+const unsigned char kFileIORenamePathOpcode = 80;
+
 // Constants for StackWalk events.
 const std::string kStackWalkProviderId = "DEF2FE46-7BD6-4B80-BD94-F57FE20D0CE3";
 const unsigned char kStackWalkStackOpcode = 32;
@@ -469,7 +492,6 @@ bool DecodePerfInfoCollectionSecondPayload(Decoder* decoder,
 
   // Set the operation name.
   switch (opcode) {
-
     case kPerfInfoCollectionStartSecondOpcode:
       *operation = "CollectionStart";
       break;
@@ -1314,7 +1336,7 @@ bool DecodeProcessPerfCtrPayload(Decoder* decoder,
       !DecodeUInteger("PeakVirtualSize", is_64_bit, decoder, fields) ||
       !DecodeUInteger("PeakWorkingSetSize", is_64_bit, decoder, fields) ||
       !DecodeUInteger("PeakPagefileUsage", is_64_bit, decoder, fields) ||
-      !DecodeUInteger("QuotaPeakPagedPoolUsage",is_64_bit,  decoder, fields) ||
+      !DecodeUInteger("QuotaPeakPagedPoolUsage", is_64_bit,  decoder, fields) ||
       !DecodeUInteger("QuotaPeakNonPagedPoolUsage", is_64_bit, decoder,
                       fields) ||
       !DecodeUInteger("VirtualSize", is_64_bit, decoder, fields) ||
@@ -1548,7 +1570,6 @@ bool DecodeRegistryGenericPayload(Decoder* decoder,
 
   // Set the operation name.
   switch (opcode) {
-
     case kRegistryCreateOpcode:
       *operation = "Create";
       break;
@@ -1755,6 +1776,433 @@ bool DecodeRegistryPayload(Decoder* decoder,
 
     case kRegistryConfigOpcode:
       return DecodeRegistryConfigPayload(
+          decoder, version, opcode, is_64_bit, operation, fields);
+
+    default:
+      return false;
+  }
+}
+
+bool DecodeFileIOFileNamePayload(Decoder* decoder,
+                                 unsigned char version,
+                                 unsigned char opcode,
+                                 bool is_64_bit,
+                                 std::string* operation,
+                                 StructValue* fields) {
+  DCHECK(decoder != NULL);
+  DCHECK(operation != NULL);
+  DCHECK(fields != NULL);
+
+  if (version != 2)
+    return false;
+
+  // Set the operation name.
+  switch (opcode) {
+    case kFileIOFileCreateOpcode:
+      *operation = "FileCreate";
+      break;
+    case kFileIOFileDeleteOpcode:
+      *operation = "FileDelete";
+      break;
+    case kFileIOFileRundownOpcode:
+      *operation = "FileRundown";
+      break;
+    default:
+      return false;
+  }
+
+  // Decode the payload.
+  if (!DecodeUInteger("FileObject", is_64_bit, decoder, fields) ||
+      !DecodeW16String("FileName", decoder, fields)) {
+    return false;
+  }
+
+  return true;
+}
+
+bool DecodeFileIOCreatePayload(Decoder* decoder,
+                               unsigned char version,
+                               unsigned char opcode,
+                               bool is_64_bit,
+                               std::string* operation,
+                               StructValue* fields) {
+  DCHECK(decoder != NULL);
+  DCHECK(opcode == kFileIOCreateOpcode);
+  DCHECK(operation != NULL);
+  DCHECK(fields != NULL);
+
+  if (version < 2 || version > 3)
+    return false;
+
+  // Set the operation name.
+  *operation = "Create";
+
+  // Decode the payload.
+  if (!DecodeUInteger("IrpPtr", is_64_bit, decoder, fields))
+    return false;
+
+  if (version == 2 && (
+      !Decode<UIntValue>("TTID", decoder, fields) ||
+      !DecodeUInteger("FileObject", is_64_bit, decoder, fields))) {
+    return false;
+  }
+
+  if (version == 3 && (
+      !DecodeUInteger("FileObject", is_64_bit, decoder, fields) ||
+      !Decode<UIntValue>("TTID", decoder, fields))) {
+    return false;
+  }
+
+  if (!Decode<UIntValue>("CreateOptions", decoder, fields) ||
+      !Decode<UIntValue>("FileAttributes", decoder, fields) ||
+      !Decode<UIntValue>("ShareAccess", decoder, fields) ||
+      !DecodeW16String("OpenPath", decoder, fields)) {
+    return false;
+  }
+
+  return true;
+}
+
+bool DecodeFileIOSimpleOpPayload(Decoder* decoder,
+                                 unsigned char version,
+                                 unsigned char opcode,
+                                 bool is_64_bit,
+                                 std::string* operation,
+                                 StructValue* fields) {
+  DCHECK(decoder != NULL);
+  DCHECK(operation != NULL);
+  DCHECK(fields != NULL);
+
+  if (version < 2 || version > 3)
+    return false;
+
+  // Set the operation name.
+  switch (opcode) {
+    case kFileIOCleanupOpcode:
+      *operation = "Cleanup";
+      break;
+    case kFileIOCloseOpcode:
+      *operation = "Close";
+      break;
+    case kFileIOFlushOpcode:
+      *operation = "Flush";
+      break;
+    default:
+      return false;
+  }
+
+  // Decode the payload.
+  if (!DecodeUInteger("IrpPtr", is_64_bit, decoder, fields))
+    return false;
+
+  if (version == 2 && (
+      !Decode<UIntValue>("TTID", decoder, fields) ||
+      !DecodeUInteger("FileObject", is_64_bit, decoder, fields) ||
+      !DecodeUInteger("FileKey", is_64_bit, decoder, fields))) {
+    return false;
+  }
+
+  if (version == 3 && (
+      !DecodeUInteger("FileObject", is_64_bit, decoder, fields) ||
+      !DecodeUInteger("FileKey", is_64_bit, decoder, fields) ||
+      !Decode<UIntValue>("TTID", decoder, fields))) {
+    return false;
+  }
+
+  return true;
+}
+
+bool DecodeFileIOReadWritePayload(Decoder* decoder,
+                                  unsigned char version,
+                                  unsigned char opcode,
+                                  bool is_64_bit,
+                                  std::string* operation,
+                                  StructValue* fields) {
+  DCHECK(decoder != NULL);
+  DCHECK(operation != NULL);
+  DCHECK(fields != NULL);
+
+  if (version < 2 || version > 3)
+    return false;
+
+  // Set the operation name.
+  switch (opcode) {
+    case kFileIOReadOpcode:
+      *operation = "Read";
+      break;
+    case kFileIOWriteOpcode:
+      *operation = "Write";
+      break;
+    default:
+      return false;
+  }
+
+  // Decode the payload.
+  if (!Decode<ULongValue>("Offset", decoder, fields) ||
+      !DecodeUInteger("IrpPtr", is_64_bit, decoder, fields)) {
+    return false;
+  }
+  
+  if (version == 2 &&
+      !Decode<UIntValue>("TTID", decoder, fields)) {
+    return false;
+  }
+  
+  if (!DecodeUInteger("FileObject", is_64_bit, decoder, fields) ||
+      !DecodeUInteger("FileKey", is_64_bit, decoder, fields)) {
+    return false;
+  }
+  
+  if (version == 3 &&
+      !Decode<UIntValue>("TTID", decoder, fields)) {
+    return false;
+  }
+  
+  if (!Decode<UIntValue>("IoSize", decoder, fields) ||
+      !Decode<UIntValue>("IoFlags", decoder, fields)) {
+    return false;
+  }
+
+  // Padding at the end of 64 bit events.
+  if (is_64_bit && !decoder->Skip(4))
+    return false;
+
+  return true;
+}
+
+bool DecodeFileIOPathPayload(Decoder* decoder,
+                             unsigned char version,
+                             unsigned char opcode,
+                             bool is_64_bit,
+                             std::string* operation,
+                             StructValue* fields) {
+  DCHECK(decoder != NULL);
+  DCHECK(operation != NULL);
+  DCHECK(fields != NULL);
+
+  if (!is_64_bit || version != 3)
+    return false;
+
+  // Set the operation name.
+  switch (opcode) {
+    case kFileIODletePathOpcode:
+      *operation = "DeletePath";
+      break;
+    case kFileIORenamePathOpcode:
+      *operation = "RenamePath";
+      break;
+    default:
+      return false;
+  }
+
+  // Decode the payload.
+  if (!Decode<ULongValue>("IrpPtr", decoder, fields) ||
+      !Decode<ULongValue>("FileObject", decoder, fields) ||
+      !Decode<ULongValue>("FileKey", decoder, fields) ||
+      !Decode<ULongValue>("ExtraInfo", decoder, fields) ||
+      !Decode<UIntValue>("TTID", decoder, fields) ||
+      !Decode<UIntValue>("InfoClass", decoder, fields) ||
+      !DecodeW16String("FileName", decoder, fields)) {
+    return false;
+  }
+
+  return true;
+}
+
+bool DecodeFileIOInfoPayload(Decoder* decoder,
+                             unsigned char version,
+                             unsigned char opcode,
+                             bool is_64_bit,
+                             std::string* operation,
+                             StructValue* fields) {
+  DCHECK(decoder != NULL);
+  DCHECK(operation != NULL);
+  DCHECK(fields != NULL);
+
+  if (version < 2 && version > 3)
+    return false;
+
+  // Set the operation name.
+  switch (opcode) {
+    case kFileIOSetInfoOpcode:
+      *operation = "SetInfo";
+      break;
+    case kFileIODeleteOpcode:
+      *operation = "Delete";
+      break;
+    case kFileIORenameOpcode:
+      *operation = "Rename";
+      break;
+    case kFileIOQueryInfoOpcode:
+      *operation = "QueryInfo";
+      break;
+    case kFileIOFSControlOpcode:
+      *operation = "FSControl";
+      break;
+    default:
+      return false;
+  }
+
+  // Decode the payload.
+  if (!DecodeUInteger("IrpPtr", is_64_bit, decoder, fields))
+    return false;
+  
+  if (version == 2 &&
+      !Decode<UIntValue>("TTID", decoder, fields)) {
+    return false;
+  }
+  
+
+  if (!DecodeUInteger("FileObject", is_64_bit, decoder, fields) ||
+      !DecodeUInteger("FileKey", is_64_bit, decoder, fields) ||
+      !DecodeUInteger("ExtraInfo", is_64_bit, decoder, fields)) {
+    return false;
+  }
+  
+  if (version == 3 &&
+      !Decode<UIntValue>("TTID", decoder, fields)) {
+    return false;
+  }
+  
+  if (!Decode<UIntValue>("InfoClass", decoder, fields))
+    return false;
+
+  return true;
+}
+
+bool DecodeFileIODirPayload(Decoder* decoder,
+                            unsigned char version,
+                            unsigned char opcode,
+                            bool is_64_bit,
+                            std::string* operation,
+                            StructValue* fields) {
+  DCHECK(decoder != NULL);
+  DCHECK(operation != NULL);
+  DCHECK(fields != NULL);
+
+  if (version < 2 || version > 3)
+    return false;
+
+  // Set the operation name.
+  switch (opcode) {
+    case kFileIODirEnumOpcode:
+      *operation = "DirEnum";
+      break;
+    case kFileIODirNotifyOpcode:
+      *operation = "DirNotify";
+      break;
+    default:
+      return false;
+  }
+
+  // Decode the payload.
+  if (!DecodeUInteger("IrpPtr", is_64_bit, decoder, fields))
+    return false;
+  
+  if (version == 2 &&
+      !Decode<UIntValue>("TTID", decoder, fields)) {
+    return false;
+  }
+
+  if (!DecodeUInteger("FileObject", is_64_bit, decoder, fields) ||
+      !DecodeUInteger("FileKey", is_64_bit, decoder, fields)) {
+    return false;
+  }
+
+  if (version == 3 &&
+      !Decode<UIntValue>("TTID", decoder, fields)) {
+    return false;
+  }
+  
+  if (!Decode<UIntValue>("Length", decoder, fields) ||
+      !Decode<UIntValue>("InfoClass", decoder, fields) ||
+      !Decode<UIntValue>("FileIndex", decoder, fields) ||
+      !DecodeW16String("FileName", decoder, fields)) {
+    return false;
+  }
+
+  return true;
+}
+
+bool DecodeFileIOOperationEndPayload(Decoder* decoder,
+                                     unsigned char version,
+                                     unsigned char opcode,
+                                     bool is_64_bit,
+                                     std::string* operation,
+                                     StructValue* fields) {
+  DCHECK(decoder != NULL);
+  DCHECK(opcode == kFileIOOperationEndOpcode);
+  DCHECK(operation != NULL);
+  DCHECK(fields != NULL);
+
+  if (version < 2 || version > 3)
+    return false;
+
+  // Set the operation name.
+  *operation = "OperationEnd";
+
+  // Decode the payload.
+  if (!DecodeUInteger("IrpPtr", is_64_bit, decoder, fields) ||
+      !DecodeUInteger("ExtraInfo", is_64_bit, decoder, fields) ||
+      !Decode<UIntValue>("NtStatus", decoder, fields)) {
+    return false;
+  }
+
+  return true;
+}
+
+bool DecodeFileIOPayload(Decoder* decoder,
+                         unsigned char version,
+                         unsigned char opcode,
+                         bool is_64_bit,
+                         std::string* operation,
+                         StructValue* fields) {
+  DCHECK(decoder != NULL);
+  DCHECK(operation != NULL);
+  DCHECK(fields != NULL);
+
+  switch (opcode) {
+    case kFileIOFileCreateOpcode:
+    case kFileIOFileDeleteOpcode:
+    case kFileIOFileRundownOpcode:
+      return DecodeFileIOFileNamePayload(
+          decoder, version, opcode, is_64_bit, operation, fields);
+
+    case kFileIOCreateOpcode:
+      return DecodeFileIOCreatePayload(
+          decoder, version, opcode, is_64_bit, operation, fields);
+
+    case kFileIOCleanupOpcode:
+    case kFileIOCloseOpcode:
+    case kFileIOFlushOpcode:
+      return DecodeFileIOSimpleOpPayload(
+          decoder, version, opcode, is_64_bit, operation, fields);
+
+    case kFileIOReadOpcode:
+    case kFileIOWriteOpcode:
+      return DecodeFileIOReadWritePayload(
+          decoder, version, opcode, is_64_bit, operation, fields);
+
+    case kFileIODletePathOpcode:
+    case kFileIORenamePathOpcode:
+      return DecodeFileIOPathPayload(
+          decoder, version, opcode, is_64_bit, operation, fields);
+
+    case kFileIOSetInfoOpcode:
+    case kFileIODeleteOpcode:
+    case kFileIORenameOpcode:
+    case kFileIOQueryInfoOpcode:
+    case kFileIOFSControlOpcode:
+      return DecodeFileIOInfoPayload(
+          decoder, version, opcode, is_64_bit, operation, fields);
+
+    case kFileIODirEnumOpcode:
+    case kFileIODirNotifyOpcode:
+      return DecodeFileIODirPayload(
+          decoder, version, opcode, is_64_bit, operation, fields);
+
+    case kFileIOOperationEndOpcode:
+      return DecodeFileIOOperationEndPayload(
           decoder, version, opcode, is_64_bit, operation, fields);
 
     default:
@@ -2016,6 +2464,14 @@ bool DecodeRawETWKernelPayload(const std::string& provider_id,
       *category = "Registry";
     } else {
       LOG(WARNING) << "Error while decoding Registry payload.";
+      return false;
+    }
+  } else if (provider_id == kFileIOProviderId) {
+    if (DecodeFileIOPayload(&decoder, version, opcode, is_64_bit,
+                            operation, fields.get())) {
+      *category = "FileIO";
+    } else {
+      LOG(WARNING) << "Error while decoding FileIO payload.";
       return false;
     }
   } else if (provider_id == kStackWalkProviderId) {
