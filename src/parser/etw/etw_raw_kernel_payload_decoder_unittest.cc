@@ -1711,6 +1711,29 @@ const unsigned char kFileIOCreatePayload32bitsV2[] = {
     0x61, 0x00, 0x6B, 0x00, 0x65, 0x00, 0x00, 0x00
     };
 
+const unsigned char kFileIOCreatePayloadV2[] = {
+    0x60, 0xEC, 0x64, 0x02, 0x80, 0xFA, 0xFF, 0xFF,
+    0x38, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0xB0, 0xE4, 0x17, 0x04, 0x80, 0xFA, 0xFF, 0xFF,
+    0x60, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00,
+    0x01, 0x00, 0x00, 0x00, 0x41, 0x00, 0x6E, 0x00,
+    0x6F, 0x00, 0x6E, 0x00, 0x79, 0x00, 0x6D, 0x00,
+    0x69, 0x00, 0x7A, 0x00, 0x65, 0x00, 0x64, 0x00,
+    0x20, 0x00, 0x73, 0x00, 0x74, 0x00, 0x72, 0x00,
+    0x69, 0x00, 0x6E, 0x00, 0x67, 0x00, 0x2E, 0x00,
+    0x20, 0x00, 0x44, 0x00, 0x75, 0x00, 0x6D, 0x00,
+    0x6D, 0x00, 0x79, 0x00, 0x20, 0x00, 0x63, 0x00,
+    0x6F, 0x00, 0x6E, 0x00, 0x74, 0x00, 0x65, 0x00,
+    0x6E, 0x00, 0x74, 0x00, 0x2E, 0x00, 0x20, 0x00,
+    0x46, 0x00, 0x61, 0x00, 0x6C, 0x00, 0x73, 0x00,
+    0x65, 0x00, 0x20, 0x00, 0x76, 0x00, 0x61, 0x00,
+    0x6C, 0x00, 0x75, 0x00, 0x65, 0x00, 0x2E, 0x00,
+    0x20, 0x00, 0x46, 0x00, 0x61, 0x00, 0x6B, 0x00,
+    0x65, 0x00, 0x20, 0x00, 0x63, 0x00, 0x68, 0x00,
+    0x61, 0x00, 0x72, 0x00, 0x61, 0x00, 0x63, 0x00,
+    0x74, 0x00, 0x65, 0x00, 0x72, 0x00, 0x73, 0x00,
+    0x00, 0x00 };
+
 const unsigned char kFileIOCreatePayloadV3[] = {
     0x98, 0x19, 0x7E, 0x07, 0x00, 0xE0, 0xFF, 0xFF,
     0x20, 0x1F, 0xFB, 0x04, 0x00, 0xE0, 0xFF, 0xFF,
@@ -1737,6 +1760,13 @@ const unsigned char kFileIOCreatePayloadV3[] = {
     0x65, 0x00, 0x64, 0x00, 0x20, 0x00, 0x73, 0x00,
     0x74, 0x00, 0x00, 0x00 };
 
+const unsigned char kFileIOCleanupPayloadV2[] = {
+    0x60, 0x0E, 0x91, 0x01, 0x80, 0xFA, 0xFF, 0xFF,
+    0x1C, 0x0B, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x50, 0x09, 0x12, 0x04, 0x80, 0xFA, 0xFF, 0xFF,
+    0xA0, 0x28, 0x5F, 0x01, 0xA0, 0xF8, 0xFF, 0xFF
+    };
+
 const unsigned char kFileIOCleanupPayload32bitsV2[] = {
     0x40, 0xCE, 0xE3, 0x84, 0x34, 0x0A, 0x00, 0x00,
     0x98, 0x41, 0xD9, 0x84, 0x20, 0x25, 0x8E, 0xB1
@@ -1748,6 +1778,13 @@ const unsigned char kFileIOCleanupPayloadV3[] = {
     0x20, 0x43, 0x08, 0x02, 0x00, 0xC0, 0xFF, 0xFF,
     0x98, 0x0D, 0x00, 0x00 };
 
+const unsigned char kFileIOClosePayloadV2[] = {
+    0x60, 0x0E, 0x91, 0x01, 0x80, 0xFA, 0xFF, 0xFF,
+    0x1C, 0x0B, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x50, 0x09, 0x12, 0x04, 0x80, 0xFA, 0xFF, 0xFF,
+    0xA0, 0x28, 0x5F, 0x01, 0xA0, 0xF8, 0xFF, 0xFF
+    };
+
 const unsigned char kFileIOClosePayload32bitsV2[] = {
     0x40, 0xCE, 0xE3, 0x84, 0x34, 0x0A, 0x00, 0x00,
     0x98, 0x41, 0xD9, 0x84, 0x20, 0x25, 0x8E, 0xB1
@@ -1758,6 +1795,15 @@ const unsigned char kFileIOClosePayloadV3[] = {
     0x10, 0xEC, 0xCB, 0x07, 0x00, 0xE0, 0xFF, 0xFF,
     0x20, 0x43, 0x08, 0x02, 0x00, 0xC0, 0xFF, 0xFF,
     0x98, 0x0D, 0x00, 0x00 };
+
+const unsigned char kFileIOReadPayloadV2[] = {
+    0x02, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0xB0, 0x28, 0x15, 0x02, 0x80, 0xFA, 0xFF, 0xFF,
+    0xFC, 0x0D, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x50, 0x09, 0x12, 0x04, 0x80, 0xFA, 0xFF, 0xFF,
+    0x40, 0xA1, 0x31, 0x06, 0xA0, 0xF8, 0xFF, 0xFF,
+    0xFF, 0x1F, 0x00, 0x00, 0x00, 0x09, 0x06, 0x00
+    };
 
 const unsigned char kFileIOReadPayload32bitsV2[] = {
     0x00, 0x27, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -1773,6 +1819,15 @@ const unsigned char kFileIOReadPayloadV3[] = {
     0x30, 0xDC, 0x6E, 0x18, 0x00, 0xC0, 0xFF, 0xFF,
     0xC0, 0x19, 0x00, 0x00, 0xFF, 0x1F, 0x00, 0x00,
     0x00, 0x09, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00
+    };
+
+const unsigned char kFileIOWritePayloadV2[] = {
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x60, 0x0E, 0x91, 0x01, 0x80, 0xFA, 0xFF, 0xFF,
+    0x38, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0xB0, 0xE4, 0x17, 0x04, 0x80, 0xFA, 0xFF, 0xFF,
+    0x40, 0xF1, 0xAE, 0x06, 0xA0, 0xF8, 0xFF, 0xFF,
+    0x42, 0x0D, 0x05, 0x00, 0x00, 0x0A, 0x06, 0x00
     };
 
 const unsigned char kFileIOWritePayload32bitsV2[] = {
@@ -1791,6 +1846,14 @@ const unsigned char kFileIOWritePayloadV3[] = {
     0x00, 0x0A, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
+const unsigned char kFileIOSetInfoPayloadV2[] = {
+    0x60, 0x0E, 0x91, 0x01, 0x80, 0xFA, 0xFF, 0xFF,
+    0x44, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x70, 0xD0, 0x9C, 0x02, 0x80, 0xFA, 0xFF, 0xFF,
+    0x70, 0x96, 0x13, 0x00, 0xA0, 0xF8, 0xFF, 0xFF,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x04, 0x00, 0x00, 0x00 };
+
 const unsigned char kFileIOSetInfoPayload32bitsV2[] = {
     0x38, 0x15, 0xE0, 0x84, 0xCC, 0x02, 0x00, 0x00,
     0x78, 0x4D, 0xD4, 0x85, 0x78, 0xDD, 0xBF, 0x8A,
@@ -1804,6 +1867,14 @@ const unsigned char kFileIOSetInfoPayloadV3[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0xAC, 0x06, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00
     };
+
+const unsigned char kFileIODeletePayloadV2[] = {
+    0x90, 0x24, 0x99, 0x03, 0x80, 0xFA, 0xFF, 0xFF,
+    0xDC, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x10, 0x36, 0x19, 0x02, 0x80, 0xFA, 0xFF, 0xFF,
+    0x40, 0x35, 0x35, 0x06, 0xA0, 0xF8, 0xFF, 0xFF,
+    0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x0D, 0x00, 0x00, 0x00 };
 
 const unsigned char kFileIODeletePayload32bitsV2[] = {
     0x38, 0x15, 0xE0, 0x84, 0x6C, 0x0B, 0x00, 0x00,
@@ -1819,6 +1890,14 @@ const unsigned char kFileIODeletePayloadV3[] = {
     0x0C, 0x07, 0x00, 0x00, 0x0D, 0x00, 0x00, 0x00
     };
 
+const unsigned char kFileIORenamePayloadV2[] = {
+    0x60, 0xEC, 0x64, 0x02, 0x80, 0xFA, 0xFF, 0xFF,
+    0x94, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x70, 0x70, 0xEE, 0x02, 0x80, 0xFA, 0xFF, 0xFF,
+    0x70, 0xCC, 0xEB, 0x06, 0xA0, 0xF8, 0xFF, 0xFF,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x0A, 0x00, 0x00, 0x00 };
+
 const unsigned char kFileIORenamePayload32bitsV2[] = {
     0x10, 0xBA, 0xEF, 0x84, 0x14, 0x0C, 0x00, 0x00,
     0x38, 0xE9, 0x7C, 0x87, 0x20, 0x35, 0x00, 0x9C,
@@ -1831,6 +1910,16 @@ const unsigned char kFileIORenamePayloadV3[] = {
     0xA0, 0xE4, 0x81, 0x13, 0x00, 0xC0, 0xFF, 0xFF,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x14, 0x1E, 0x00, 0x00, 0x0A, 0x00, 0x00, 0x00
+    };
+
+const unsigned char kFileIODirEnumPayloadV2[] = {
+    0xC0, 0xB0, 0x06, 0x02, 0x80, 0xFA, 0xFF, 0xFF,
+    0x40, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0xD0, 0x39, 0x20, 0x04, 0x80, 0xFA, 0xFF, 0xFF,
+    0x40, 0xF1, 0x1C, 0x00, 0xA0, 0xF8, 0xFF, 0xFF,
+    0x78, 0x02, 0x00, 0x00, 0x25, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x41, 0x00, 0x6E, 0x00,
+    0x6F, 0x00, 0x6E, 0x00, 0x79, 0x00, 0x00, 0x00
     };
 
 const unsigned char kFileIODirEnumPayload32bitsV2[] = {
@@ -1857,6 +1946,13 @@ const unsigned char kFileIODirEnumPayloadV3[] = {
     0x41, 0x00, 0x6E, 0x00, 0x6F, 0x00, 0x6E, 0x00,
     0x79, 0x00, 0x00, 0x00 };
 
+const unsigned char kFileIOFlushPayloadV2[] = {
+    0x60, 0x0E, 0x91, 0x01, 0x80, 0xFA, 0xFF, 0xFF,
+    0x30, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x30, 0xA4, 0x8C, 0x01, 0x80, 0xFA, 0xFF, 0xFF,
+    0x10, 0xFB, 0x92, 0x00, 0xA0, 0xF8, 0xFF, 0xFF
+    };
+
 const unsigned char kFileIOFlushPayload32bitsV2[] = {
     0x08, 0x4C, 0xCC, 0x86, 0x28, 0x0B, 0x00, 0x00,
     0x80, 0xE6, 0xDB, 0x84, 0x78, 0xBD, 0x6A, 0xA3
@@ -1867,6 +1963,14 @@ const unsigned char kFileIOFlushPayloadV3[] = {
     0x60, 0x66, 0xA7, 0x00, 0x00, 0xE0, 0xFF, 0xFF,
     0x40, 0x91, 0x77, 0x1C, 0x00, 0xC0, 0xFF, 0xFF,
     0x6C, 0x0D, 0x00, 0x00 };
+
+const unsigned char kFileIOQueryInfoPayloadV2[] = {
+    0x60, 0xEC, 0x64, 0x02, 0x80, 0xFA, 0xFF, 0xFF,
+    0x38, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0xB0, 0xE4, 0x17, 0x04, 0x80, 0xFA, 0xFF, 0xFF,
+    0x40, 0xF1, 0xAE, 0x06, 0xA0, 0xF8, 0xFF, 0xFF,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x05, 0x00, 0x00, 0x00 };
 
 const unsigned char kFileIOQueryInfoPayload32bitsV2[] = {
     0x40, 0xCE, 0xE3, 0x84, 0x34, 0x0A, 0x00, 0x00,
@@ -1881,6 +1985,14 @@ const unsigned char kFileIOQueryInfoPayloadV3[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x98, 0x0D, 0x00, 0x00, 0x09, 0x00, 0x00, 0x00
     };
+
+const unsigned char kFileIOFSControlPayloadV2[] = {
+    0xC0, 0xB0, 0x06, 0x02, 0x80, 0xFA, 0xFF, 0xFF,
+    0x64, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x70, 0x50, 0xC2, 0x03, 0x80, 0xFA, 0xFF, 0xFF,
+    0x10, 0xD0, 0x8E, 0x02, 0x80, 0xFA, 0xFF, 0xFF,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0xF4, 0x00, 0x09, 0x00 };
 
 const unsigned char kFileIOFSControlPayload32bitsV2[] = {
     0x40, 0xCE, 0xE3, 0x84, 0xE8, 0x0E, 0x00, 0x00,
@@ -1904,6 +2016,14 @@ const unsigned char kFileIOOperationEndPayloadV3[] = {
     0x38, 0x16, 0x33, 0x06, 0x00, 0xE0, 0xFF, 0xFF,
     0x3A, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00 };
+
+const unsigned char kFileIODirNotifyPayloadV2[] = {
+    0x60, 0x47, 0x4C, 0x02, 0x80, 0xFA, 0xFF, 0xFF,
+    0x40, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x20, 0xAF, 0x39, 0x02, 0x80, 0xFA, 0xFF, 0xFF,
+    0x90, 0x9B, 0x5D, 0x06, 0xA0, 0xF8, 0xFF, 0xFF,
+    0x00, 0x08, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
 const unsigned char kFileIODirNotifyPayload32bitsV2[] = {
     0x20, 0x66, 0xE7, 0x84, 0x98, 0x15, 0x00, 0x00,
@@ -5318,6 +5438,33 @@ TEST(EtwRawDecoderTest, FileIOFileRundownV2) {
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
+TEST(EtwRawDecoderTest, FileIOCreateV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kFileIOProviderId,
+          kVersion2, kFileIOCreateOpcode, k64bit,
+          reinterpret_cast<const char*>(&kFileIOCreatePayloadV2[0]),
+          sizeof(kFileIOCreatePayloadV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<ULongValue>("IrpPtr", 18446738026435767392ULL);
+  expected->AddField<ULongValue>("TTID", 1592ULL);
+  expected->AddField<ULongValue>("FileObject", 18446738026464273584ULL);
+  expected->AddField<UIntValue>("CreateOptions", 16777312U);
+  expected->AddField<UIntValue>("FileAttributes", 0U);
+  expected->AddField<UIntValue>("ShareAccess", 1U);
+  expected->AddField<WStringValue>(
+      "OpenPath",
+      L"Anonymized string. Dummy content. False value. Fake characters");
+
+  EXPECT_STREQ("FileIO", category.c_str());
+  EXPECT_STREQ("Create", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
 TEST(EtwRawDecoderTest, FileIOCreate32bitsV2) {
   std::string operation;
   std::string category;
@@ -5373,6 +5520,28 @@ TEST(EtwRawDecoderTest, FileIOCreateV3) {
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
+TEST(EtwRawDecoderTest, FileIOCleanupV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kFileIOProviderId,
+          kVersion2, kFileIOCleanupOpcode, k64bit,
+          reinterpret_cast<const char*>(&kFileIOCleanupPayloadV2[0]),
+          sizeof(kFileIOCleanupPayloadV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<ULongValue>("IrpPtr", 18446738026421882464ULL);
+  expected->AddField<ULongValue>("TTID", 2844ULL);
+  expected->AddField<ULongValue>("FileObject", 18446738026463889744ULL);
+  expected->AddField<ULongValue>("FileKey", 18446735964834310304ULL);
+
+  EXPECT_STREQ("FileIO", category.c_str());
+  EXPECT_STREQ("Cleanup", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
 TEST(EtwRawDecoderTest, FileIOCleanup32bitsV2) {
   std::string operation;
   std::string category;
@@ -5417,6 +5586,28 @@ TEST(EtwRawDecoderTest, FileIOCleanupV3) {
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
+TEST(EtwRawDecoderTest, FileIOCloseV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kFileIOProviderId,
+          kVersion2, kFileIOCloseOpcode, k64bit,
+          reinterpret_cast<const char*>(&kFileIOClosePayloadV2[0]),
+          sizeof(kFileIOClosePayloadV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<ULongValue>("IrpPtr", 18446738026421882464ULL);
+  expected->AddField<ULongValue>("TTID", 2844ULL);
+  expected->AddField<ULongValue>("FileObject", 18446738026463889744ULL);
+  expected->AddField<ULongValue>("FileKey", 18446735964834310304ULL);
+
+  EXPECT_STREQ("FileIO", category.c_str());
+  EXPECT_STREQ("Close", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
 TEST(EtwRawDecoderTest, FileIOClose32bitsV2) {
   std::string operation;
   std::string category;
@@ -5458,6 +5649,31 @@ TEST(EtwRawDecoderTest, FileIOCloseV3) {
 
   EXPECT_STREQ("FileIO", category.c_str());
   EXPECT_STREQ("Close", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, FileIOReadV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kFileIOProviderId,
+          kVersion2, kFileIOReadOpcode, k64bit,
+          reinterpret_cast<const char*>(&kFileIOReadPayloadV2[0]),
+          sizeof(kFileIOReadPayloadV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<ULongValue>("Offset", 258ULL);
+  expected->AddField<ULongValue>("IrpPtr", 18446738026430539952ULL);
+  expected->AddField<ULongValue>("TTID", 3580ULL);
+  expected->AddField<ULongValue>("FileObject", 18446738026463889744ULL);
+  expected->AddField<ULongValue>("FileKey", 18446735964915212608ULL);
+  expected->AddField<UIntValue>("IoSize", 8191U);
+  expected->AddField<UIntValue>("IoFlags", 395520U);
+
+  EXPECT_STREQ("FileIO", category.c_str());
+  EXPECT_STREQ("Read", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
@@ -5511,6 +5727,31 @@ TEST(EtwRawDecoderTest, FileIOReadV3) {
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
+TEST(EtwRawDecoderTest, FileIOWriteV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kFileIOProviderId,
+          kVersion2, kFileIOWriteOpcode, k64bit,
+          reinterpret_cast<const char*>(&kFileIOWritePayloadV2[0]),
+          sizeof(kFileIOWritePayloadV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<ULongValue>("Offset", 0ULL);
+  expected->AddField<ULongValue>("IrpPtr", 18446738026421882464ULL);
+  expected->AddField<ULongValue>("TTID", 1592ULL);
+  expected->AddField<ULongValue>("FileObject", 18446738026464273584ULL);
+  expected->AddField<ULongValue>("FileKey", 18446735964923425088ULL);
+  expected->AddField<UIntValue>("IoSize", 331074U);
+  expected->AddField<UIntValue>("IoFlags", 395776U);
+
+  EXPECT_STREQ("FileIO", category.c_str());
+  EXPECT_STREQ("Write", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
 TEST(EtwRawDecoderTest, FileIOWrite32bitsV2) {
   std::string operation;
   std::string category;
@@ -5558,6 +5799,30 @@ TEST(EtwRawDecoderTest, FileIOWriteV3) {
 
   EXPECT_STREQ("FileIO", category.c_str());
   EXPECT_STREQ("Write", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, FileIOSetInfoV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kFileIOProviderId,
+          kVersion2, kFileIOSetInfoOpcode, k64bit,
+          reinterpret_cast<const char*>(&kFileIOSetInfoPayloadV2[0]),
+          sizeof(kFileIOSetInfoPayloadV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<ULongValue>("IrpPtr", 18446738026421882464ULL);
+  expected->AddField<ULongValue>("TTID", 4676ULL);
+  expected->AddField<ULongValue>("FileObject", 18446738026439430256ULL);
+  expected->AddField<ULongValue>("FileKey", 18446735964812580464ULL);
+  expected->AddField<ULongValue>("ExtraInfo", 0ULL);
+  expected->AddField<UIntValue>("InfoClass", 4U);
+
+  EXPECT_STREQ("FileIO", category.c_str());
+  EXPECT_STREQ("SetInfo", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
@@ -5609,6 +5874,30 @@ TEST(EtwRawDecoderTest, FileIOSetInfoV3) {
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
+TEST(EtwRawDecoderTest, FileIODeleteV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kFileIOProviderId,
+          kVersion2, kFileIODeleteOpcode, k64bit,
+          reinterpret_cast<const char*>(&kFileIODeletePayloadV2[0]),
+          sizeof(kFileIODeletePayloadV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<ULongValue>("IrpPtr", 18446738026455966864ULL);
+  expected->AddField<ULongValue>("TTID", 2524ULL);
+  expected->AddField<ULongValue>("FileObject", 18446738026430805520ULL);
+  expected->AddField<ULongValue>("FileKey", 18446735964915447104ULL);
+  expected->AddField<ULongValue>("ExtraInfo", 1ULL);
+  expected->AddField<UIntValue>("InfoClass", 13U);
+
+  EXPECT_STREQ("FileIO", category.c_str());
+  EXPECT_STREQ("Delete", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
 TEST(EtwRawDecoderTest, FileIODelete32bitsV2) {
   std::string operation;
   std::string category;
@@ -5657,6 +5946,30 @@ TEST(EtwRawDecoderTest, FileIODeleteV3) {
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
+TEST(EtwRawDecoderTest, FileIORenameV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kFileIOProviderId,
+          kVersion2, kFileIORenameOpcode, k64bit,
+          reinterpret_cast<const char*>(&kFileIORenamePayloadV2[0]),
+          sizeof(kFileIORenamePayloadV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<ULongValue>("IrpPtr", 18446738026435767392ULL);
+  expected->AddField<ULongValue>("TTID", 404ULL);
+  expected->AddField<ULongValue>("FileObject", 18446738026444779632ULL);
+  expected->AddField<ULongValue>("FileKey", 18446735964927413360ULL);
+  expected->AddField<ULongValue>("ExtraInfo", 0ULL);
+  expected->AddField<UIntValue>("InfoClass", 10U);
+
+  EXPECT_STREQ("FileIO", category.c_str());
+  EXPECT_STREQ("Rename", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
 TEST(EtwRawDecoderTest, FileIORename32bitsV2) {
   std::string operation;
   std::string category;
@@ -5702,6 +6015,32 @@ TEST(EtwRawDecoderTest, FileIORenameV3) {
 
   EXPECT_STREQ("FileIO", category.c_str());
   EXPECT_STREQ("Rename", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, FileIODirEnumV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kFileIOProviderId,
+          kVersion2, kFileIODirEnumOpcode, k64bit,
+          reinterpret_cast<const char*>(&kFileIODirEnumPayloadV2[0]),
+          sizeof(kFileIODirEnumPayloadV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<ULongValue>("IrpPtr", 18446738026429591744ULL);
+  expected->AddField<ULongValue>("TTID", 2112ULL);
+  expected->AddField<ULongValue>("FileObject", 18446738026464819664ULL);
+  expected->AddField<ULongValue>("FileKey", 18446735964813193536ULL);
+  expected->AddField<UIntValue>("Length", 632U);
+  expected->AddField<UIntValue>("InfoClass", 37U);
+  expected->AddField<UIntValue>("FileIndex", 0U);
+  expected->AddField<WStringValue>("FileName", L"Anony");
+
+  EXPECT_STREQ("FileIO", category.c_str());
+  EXPECT_STREQ("DirEnum", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
@@ -5759,6 +6098,28 @@ TEST(EtwRawDecoderTest, FileIODirEnumV3) {
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
+TEST(EtwRawDecoderTest, FileIOFlushV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kFileIOProviderId,
+          kVersion2, kFileIOFlushOpcode, k64bit,
+          reinterpret_cast<const char*>(&kFileIOFlushPayloadV2[0]),
+          sizeof(kFileIOFlushPayloadV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<ULongValue>("IrpPtr", 18446738026421882464ULL);
+  expected->AddField<ULongValue>("TTID", 48ULL);
+  expected->AddField<ULongValue>("FileObject", 18446738026421593136ULL);
+  expected->AddField<ULongValue>("FileKey", 18446735964820929296ULL);
+
+  EXPECT_STREQ("FileIO", category.c_str());
+  EXPECT_STREQ("Flush", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
 TEST(EtwRawDecoderTest, FileIOFlush32bitsV2) {
   std::string operation;
   std::string category;
@@ -5800,6 +6161,30 @@ TEST(EtwRawDecoderTest, FileIOFlushV3) {
 
   EXPECT_STREQ("FileIO", category.c_str());
   EXPECT_STREQ("Flush", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, FileIOQueryInfoV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kFileIOProviderId,
+          kVersion2, kFileIOQueryInfoOpcode, k64bit,
+          reinterpret_cast<const char*>(&kFileIOQueryInfoPayloadV2[0]),
+          sizeof(kFileIOQueryInfoPayloadV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<ULongValue>("IrpPtr", 18446738026435767392ULL);
+  expected->AddField<ULongValue>("TTID", 1592ULL);
+  expected->AddField<ULongValue>("FileObject", 18446738026464273584ULL);
+  expected->AddField<ULongValue>("FileKey", 18446735964923425088ULL);
+  expected->AddField<ULongValue>("ExtraInfo", 0ULL);
+  expected->AddField<UIntValue>("InfoClass", 5U);
+
+  EXPECT_STREQ("FileIO", category.c_str());
+  EXPECT_STREQ("QueryInfo", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
@@ -5848,6 +6233,30 @@ TEST(EtwRawDecoderTest, FileIOQueryInfoV3) {
 
   EXPECT_STREQ("FileIO", category.c_str());
   EXPECT_STREQ("QueryInfo", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, FileIOFSControlV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kFileIOProviderId,
+          kVersion2, kFileIOFSControlOpcode, k64bit,
+          reinterpret_cast<const char*>(&kFileIOFSControlPayloadV2[0]),
+          sizeof(kFileIOFSControlPayloadV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<ULongValue>("IrpPtr", 18446738026429591744ULL);
+  expected->AddField<ULongValue>("TTID", 2404ULL);
+  expected->AddField<ULongValue>("FileObject", 18446738026458665072ULL);
+  expected->AddField<ULongValue>("FileKey", 18446738026438512656ULL);
+  expected->AddField<ULongValue>("ExtraInfo", 0ULL);
+  expected->AddField<UIntValue>("InfoClass", 590068U);
+
+  EXPECT_STREQ("FileIO", category.c_str());
+  EXPECT_STREQ("FSControl", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 
@@ -5938,6 +6347,32 @@ TEST(EtwRawDecoderTest, FileIOOperationEndV3) {
 
   EXPECT_STREQ("FileIO", category.c_str());
   EXPECT_STREQ("OperationEnd", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, FileIODirNotifyV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kFileIOProviderId,
+          kVersion2, kFileIODirNotifyOpcode, k64bit,
+          reinterpret_cast<const char*>(&kFileIODirNotifyPayloadV2[0]),
+          sizeof(kFileIODirNotifyPayloadV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<ULongValue>("IrpPtr", 18446738026434152288ULL);
+  expected->AddField<ULongValue>("TTID", 2112ULL);
+  expected->AddField<ULongValue>("FileObject", 18446738026432933664ULL);
+  expected->AddField<ULongValue>("FileKey", 18446735964918094736ULL);
+  expected->AddField<UIntValue>("Length", 2048U);
+  expected->AddField<UIntValue>("InfoClass", 2U);
+  expected->AddField<UIntValue>("FileIndex", 0U);
+  expected->AddField<WStringValue>("FileName", L"");
+
+  EXPECT_STREQ("FileIO", category.c_str());
+  EXPECT_STREQ("DirNotify", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 

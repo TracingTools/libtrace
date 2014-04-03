@@ -1851,7 +1851,7 @@ bool DecodeFileIOCreatePayload(Decoder* decoder,
     return false;
 
   if (version == 2 && (
-      !Decode<UIntValue>("TTID", decoder, fields) ||
+      !DecodeUInteger("TTID", is_64_bit, decoder, fields) ||
       !DecodeUInteger("FileObject", is_64_bit, decoder, fields))) {
     return false;
   }
@@ -1905,7 +1905,7 @@ bool DecodeFileIOSimpleOpPayload(Decoder* decoder,
     return false;
 
   if (version == 2 && (
-      !Decode<UIntValue>("TTID", decoder, fields) ||
+      !DecodeUInteger("TTID", is_64_bit, decoder, fields) ||
       !DecodeUInteger("FileObject", is_64_bit, decoder, fields) ||
       !DecodeUInteger("FileKey", is_64_bit, decoder, fields))) {
     return false;
@@ -1953,7 +1953,7 @@ bool DecodeFileIOReadWritePayload(Decoder* decoder,
   }
   
   if (version == 2 &&
-      !Decode<UIntValue>("TTID", decoder, fields)) {
+      !DecodeUInteger("TTID", is_64_bit, decoder, fields)) {
     return false;
   }
   
@@ -1973,7 +1973,7 @@ bool DecodeFileIOReadWritePayload(Decoder* decoder,
   }
 
   // Padding at the end of 64 bit events.
-  if (is_64_bit && !decoder->Skip(4))
+  if (is_64_bit && version == 3 && !decoder->Skip(4))
     return false;
 
   return true;
@@ -2057,7 +2057,7 @@ bool DecodeFileIOInfoPayload(Decoder* decoder,
     return false;
   
   if (version == 2 &&
-      !Decode<UIntValue>("TTID", decoder, fields)) {
+      !DecodeUInteger("TTID", is_64_bit, decoder, fields)) {
     return false;
   }
   
@@ -2109,7 +2109,7 @@ bool DecodeFileIODirPayload(Decoder* decoder,
     return false;
   
   if (version == 2 &&
-      !Decode<UIntValue>("TTID", decoder, fields)) {
+      !DecodeUInteger("TTID", is_64_bit, decoder, fields)) {
     return false;
   }
 
