@@ -173,6 +173,15 @@ const unsigned char kFileIOUnknown78Opcode = 78;
 const unsigned char kFileIODletePathOpcode = 79;
 const unsigned char kFileIORenamePathOpcode = 80;
 
+// Constants for DiskIO events.
+const std::string kDiskIOProviderId = "3D6FA8D4-FE05-11D0-9DDA-00C04FD7BA7C";
+const unsigned char kDiskIOReadOpcode = 10;
+const unsigned char kDiskIOWriteOpcode = 11;
+const unsigned char kDiskIOReadInitOpcode = 12;
+const unsigned char kDiskIOWriteInitOpcode = 13;
+const unsigned char kDiskIOFlushBuffersOpcode = 14;
+const unsigned char kDiskIOFlushInitOpcode = 15;
+
 // Constants for StackWalk events.
 const std::string kStackWalkProviderId = "DEF2FE46-7BD6-4B80-BD94-F57FE20D0CE3";
 const unsigned char kStackWalkStackOpcode = 32;
@@ -1975,6 +1984,77 @@ const unsigned char kFileIORenamePathPayloadV3[] = {
     0x65, 0x00, 0x64, 0x00, 0x20, 0x00, 0x73, 0x00,
     0x74, 0x00, 0x72, 0x00, 0x00, 0x00 };
 
+const unsigned char kDiskIOReadPayloadV2[] = {
+    0x00, 0x00, 0x00, 0x00, 0x43, 0x00, 0x06, 0x00,
+    0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0xC0, 0xA4, 0x43, 0x00, 0x00, 0x00, 0x00,
+    0x70, 0x9C, 0x22, 0x08, 0xA0, 0xF8, 0xFF, 0xFF,
+    0x10, 0x15, 0x45, 0x02, 0x80, 0xFA, 0xFF, 0xFF,
+    0xA0, 0x7A, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00
+    };
+
+const unsigned char kDiskIOReadPayloadV3[] = {
+    0x01, 0x00, 0x00, 0x00, 0x43, 0x00, 0x06, 0x00,
+    0x00, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x10, 0xD6, 0xAC, 0x01, 0x00, 0x00,
+    0x40, 0x78, 0x47, 0x06, 0x00, 0xE0, 0xFF, 0xFF,
+    0x10, 0x4B, 0xE1, 0x05, 0x00, 0xE0, 0xFF, 0xFF,
+    0xAD, 0x8E, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x90, 0x1B, 0x00, 0x00 };
+
+const unsigned char kDiskIOWritePayloadV2[] = {
+    0x00, 0x00, 0x00, 0x00, 0x43, 0x00, 0x06, 0x00,
+    0x00, 0x32, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x7F, 0x06, 0x00, 0x00, 0x00, 0x00,
+    0x50, 0xF7, 0xED, 0x02, 0xA0, 0xF8, 0xFF, 0xFF,
+    0x60, 0xCB, 0x4E, 0x02, 0x80, 0xFA, 0xFF, 0xFF,
+    0xC9, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+    };
+
+const unsigned char kDiskIOWritePayloadV3[] = {
+    0x00, 0x00, 0x00, 0x00, 0x43, 0x00, 0x06, 0x00,
+    0x00, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x60, 0x9C, 0xF5, 0x00, 0x00, 0x00, 0x00,
+    0xF0, 0x4B, 0xA3, 0x02, 0x00, 0xE0, 0xFF, 0xFF,
+    0x10, 0xF0, 0x71, 0x07, 0x00, 0xE0, 0xFF, 0xFF,
+    0xAD, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0xF0, 0x1A, 0x00, 0x00 };
+
+const unsigned char kDiskIOReadInitPayloadV2[] = {
+    0x10, 0x15, 0x45, 0x02, 0x80, 0xFA, 0xFF, 0xFF
+    };
+
+const unsigned char kDiskIOReadInitPayloadV3[] = {
+    0x10, 0x4B, 0xE1, 0x05, 0x00, 0xE0, 0xFF, 0xFF,
+    0x90, 0x1B, 0x00, 0x00 };
+
+const unsigned char kDiskIOWriteInitPayloadV2[] = {
+    0x60, 0xCB, 0x4E, 0x02, 0x80, 0xFA, 0xFF, 0xFF
+    };
+
+const unsigned char kDiskIOWriteInitPayloadV3[] = {
+    0x10, 0xF0, 0x71, 0x07, 0x00, 0xE0, 0xFF, 0xFF,
+    0xF0, 0x1A, 0x00, 0x00 };
+
+const unsigned char kDiskIOFlushBuffersPayloadV2[] = {
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x06, 0x00,
+    0xB6, 0xB0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x80, 0x68, 0x3A, 0x02, 0x80, 0xFA, 0xFF, 0xFF
+    };
+
+const unsigned char kDiskIOFlushBuffersPayloadV3[] = {
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x06, 0x00,
+    0x59, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x50, 0x97, 0x55, 0x07, 0x00, 0xE0, 0xFF, 0xFF,
+    0xF0, 0x1A, 0x00, 0x00 };
+
+const unsigned char kDiskIOFlushInitPayloadV2[] = {
+    0x80, 0x68, 0x3A, 0x02, 0x80, 0xFA, 0xFF, 0xFF
+    };
+
+const unsigned char kDiskIOFlushInitPayloadV3[] = {
+    0x50, 0x97, 0x55, 0x07, 0x00, 0xE0, 0xFF, 0xFF,
+    0xF0, 0x1A, 0x00, 0x00 };
 
 const unsigned char kStackWalkStackPayloadV2[] = {
     0xBC, 0x6E, 0x9D, 0x03, 0x17, 0x01, 0x00, 0x00,
@@ -5966,6 +6046,274 @@ TEST(EtwRawDecoderTest, FileIORenamePathV3) {
 
   EXPECT_STREQ("FileIO", category.c_str());
   EXPECT_STREQ("RenamePath", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, DiskIOReadV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kDiskIOProviderId,
+          kVersion2, kDiskIOReadOpcode, k64bit,
+          reinterpret_cast<const char*>(&kDiskIOReadPayloadV2[0]),
+          sizeof(kDiskIOReadPayloadV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<UIntValue>("DiskNumber", 0U);
+  expected->AddField<UIntValue>("IrpFlags", 393283U);
+  expected->AddField<UIntValue>("TransferSize", 32768U);
+  expected->AddField<UIntValue>("Reserved", 0U);
+  expected->AddField<ULongValue>("ByteOffset", 1134870528ULL);
+  expected->AddField<ULongValue>("FileObject", 18446735964947782768ULL);
+  expected->AddField<ULongValue>("Irp", 18446738026433680656ULL);
+  expected->AddField<ULongValue>("HighResResponseTime", 96928ULL);
+
+  EXPECT_STREQ("DiskIO", category.c_str());
+  EXPECT_STREQ("Read", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, DiskIOReadV3) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kDiskIOProviderId,
+          kVersion3, kDiskIOReadOpcode, k64bit,
+          reinterpret_cast<const char*>(&kDiskIOReadPayloadV3[0]),
+          sizeof(kDiskIOReadPayloadV3),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<UIntValue>("DiskNumber", 1U);
+  expected->AddField<UIntValue>("IrpFlags", 393283U);
+  expected->AddField<UIntValue>("TransferSize", 4096U);
+  expected->AddField<UIntValue>("Reserved", 0U);
+  expected->AddField<ULongValue>("ByteOffset", 1841837375488ULL);
+  expected->AddField<ULongValue>("FileObject", 18446708889442809920ULL);
+  expected->AddField<ULongValue>("Irp", 18446708889436113680ULL);
+  expected->AddField<ULongValue>("HighResResponseTime", 36525ULL);
+  expected->AddField<UIntValue>("IssuingThreadId", 7056U);
+
+  EXPECT_STREQ("DiskIO", category.c_str());
+  EXPECT_STREQ("Read", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, DiskIOWriteV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kDiskIOProviderId,
+          kVersion2, kDiskIOWriteOpcode, k64bit,
+          reinterpret_cast<const char*>(&kDiskIOWritePayloadV2[0]),
+          sizeof(kDiskIOWritePayloadV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<UIntValue>("DiskNumber", 0U);
+  expected->AddField<UIntValue>("IrpFlags", 393283U);
+  expected->AddField<UIntValue>("TransferSize", 12800U);
+  expected->AddField<UIntValue>("Reserved", 0U);
+  expected->AddField<ULongValue>("ByteOffset", 108986368ULL);
+  expected->AddField<ULongValue>("FileObject", 18446735964860446544ULL);
+  expected->AddField<ULongValue>("Irp", 18446738026434317152ULL);
+  expected->AddField<ULongValue>("HighResResponseTime", 969ULL);
+
+  EXPECT_STREQ("DiskIO", category.c_str());
+  EXPECT_STREQ("Write", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, DiskIOWriteV3) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kDiskIOProviderId,
+          kVersion3, kDiskIOWriteOpcode, k64bit,
+          reinterpret_cast<const char*>(&kDiskIOWritePayloadV3[0]),
+          sizeof(kDiskIOWritePayloadV3),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<UIntValue>("DiskNumber", 0U);
+  expected->AddField<UIntValue>("IrpFlags", 393283U);
+  expected->AddField<UIntValue>("TransferSize", 8192U);
+  expected->AddField<UIntValue>("Reserved", 0U);
+  expected->AddField<ULongValue>("ByteOffset", 4120666112ULL);
+  expected->AddField<ULongValue>("FileObject", 18446708889381719024ULL);
+  expected->AddField<ULongValue>("Irp", 18446708889462370320ULL);
+  expected->AddField<ULongValue>("HighResResponseTime", 429ULL);
+  expected->AddField<UIntValue>("IssuingThreadId", 6896U);
+
+  EXPECT_STREQ("DiskIO", category.c_str());
+  EXPECT_STREQ("Write", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, DiskIOReadInitV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kDiskIOProviderId,
+          kVersion2, kDiskIOReadInitOpcode, k64bit,
+          reinterpret_cast<const char*>(&kDiskIOReadInitPayloadV2[0]),
+          sizeof(kDiskIOReadInitPayloadV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<ULongValue>("Irp", 18446738026433680656ULL);
+
+  EXPECT_STREQ("DiskIO", category.c_str());
+  EXPECT_STREQ("ReadInit", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, DiskIOReadInitV3) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kDiskIOProviderId,
+          kVersion3, kDiskIOReadInitOpcode, k64bit,
+          reinterpret_cast<const char*>(&kDiskIOReadInitPayloadV3[0]),
+          sizeof(kDiskIOReadInitPayloadV3),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<ULongValue>("Irp", 18446708889436113680ULL);
+  expected->AddField<UIntValue>("IssuingThreadId", 7056U);
+
+  EXPECT_STREQ("DiskIO", category.c_str());
+  EXPECT_STREQ("ReadInit", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, DiskIOWriteInitV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kDiskIOProviderId,
+          kVersion2, kDiskIOWriteInitOpcode, k64bit,
+          reinterpret_cast<const char*>(&kDiskIOWriteInitPayloadV2[0]),
+          sizeof(kDiskIOWriteInitPayloadV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<ULongValue>("Irp", 18446738026434317152ULL);
+
+  EXPECT_STREQ("DiskIO", category.c_str());
+  EXPECT_STREQ("WriteInit", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, DiskIOWriteInitV3) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kDiskIOProviderId,
+          kVersion3, kDiskIOWriteInitOpcode, k64bit,
+          reinterpret_cast<const char*>(&kDiskIOWriteInitPayloadV3[0]),
+          sizeof(kDiskIOWriteInitPayloadV3),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<ULongValue>("Irp", 18446708889462370320ULL);
+  expected->AddField<UIntValue>("IssuingThreadId", 6896U);
+
+  EXPECT_STREQ("DiskIO", category.c_str());
+  EXPECT_STREQ("WriteInit", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, DiskIOFlushBuffersV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kDiskIOProviderId,
+          kVersion2, kDiskIOFlushBuffersOpcode, k64bit,
+          reinterpret_cast<const char*>(&kDiskIOFlushBuffersPayloadV2[0]),
+          sizeof(kDiskIOFlushBuffersPayloadV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<UIntValue>("DiskNumber", 0U);
+  expected->AddField<UIntValue>("IrpFlags", 393216U);
+  expected->AddField<ULongValue>("HighResResponseTime", 45238ULL);
+  expected->AddField<ULongValue>("Irp", 18446738026432981120ULL);
+
+  EXPECT_STREQ("DiskIO", category.c_str());
+  EXPECT_STREQ("FlushBuffers", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, DiskIOFlushBuffersV3) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kDiskIOProviderId,
+          kVersion3, kDiskIOFlushBuffersOpcode, k64bit,
+          reinterpret_cast<const char*>(&kDiskIOFlushBuffersPayloadV3[0]),
+          sizeof(kDiskIOFlushBuffersPayloadV3),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<UIntValue>("DiskNumber", 0U);
+  expected->AddField<UIntValue>("IrpFlags", 393216U);
+  expected->AddField<ULongValue>("HighResResponseTime", 1881ULL);
+  expected->AddField<ULongValue>("Irp", 18446708889460512592ULL);
+  expected->AddField<UIntValue>("IssuingThreadId", 6896U);
+
+  EXPECT_STREQ("DiskIO", category.c_str());
+  EXPECT_STREQ("FlushBuffers", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, DiskIOFlushInitV2) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kDiskIOProviderId,
+          kVersion2, kDiskIOFlushInitOpcode, k64bit,
+          reinterpret_cast<const char*>(&kDiskIOFlushInitPayloadV2[0]),
+          sizeof(kDiskIOFlushInitPayloadV2),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<ULongValue>("Irp", 18446738026432981120ULL);
+
+  EXPECT_STREQ("DiskIO", category.c_str());
+  EXPECT_STREQ("FlushInit", operation.c_str());
+  EXPECT_TRUE(expected->Equals(fields.get()));
+}
+
+TEST(EtwRawDecoderTest, DiskIOFlushInitV3) {
+  std::string operation;
+  std::string category;
+  scoped_ptr<Value> fields;
+  EXPECT_TRUE(
+      DecodeRawETWKernelPayload(kDiskIOProviderId,
+          kVersion3, kDiskIOFlushInitOpcode, k64bit,
+          reinterpret_cast<const char*>(&kDiskIOFlushInitPayloadV3[0]),
+          sizeof(kDiskIOFlushInitPayloadV3),
+          &operation, &category, &fields));
+
+  scoped_ptr<StructValue> expected(new StructValue());
+  expected->AddField<ULongValue>("Irp", 18446708889460512592ULL);
+  expected->AddField<UIntValue>("IssuingThreadId", 6896U);
+
+  EXPECT_STREQ("DiskIO", category.c_str());
+  EXPECT_STREQ("FlushInit", operation.c_str());
   EXPECT_TRUE(expected->Equals(fields.get()));
 }
 

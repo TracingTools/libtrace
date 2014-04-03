@@ -197,6 +197,15 @@ const unsigned char kFileIOUnknown78Opcode = 78;
 const unsigned char kFileIODletePathOpcode = 79;
 const unsigned char kFileIORenamePathOpcode = 80;
 
+// Constants for DiskIO events.
+const std::string kDiskIOProviderId = "3D6FA8D4-FE05-11D0-9DDA-00C04FD7BA7C";
+const unsigned char kDiskIOReadOpcode = 10;
+const unsigned char kDiskIOWriteOpcode = 11;
+const unsigned char kDiskIOReadInitOpcode = 12;
+const unsigned char kDiskIOWriteInitOpcode = 13;
+const unsigned char kDiskIOFlushBuffersOpcode = 14;
+const unsigned char kDiskIOFlushInitOpcode = 15;
+
 // Constants for StackWalk events.
 const std::string kStackWalkProviderId = "DEF2FE46-7BD6-4B80-BD94-F57FE20D0CE3";
 const unsigned char kStackWalkStackOpcode = 32;
@@ -2210,6 +2219,155 @@ bool DecodeFileIOPayload(Decoder* decoder,
   }
 }
 
+bool DecodeDiskIOReadWritePayload(Decoder* decoder,
+                                  unsigned char version,
+                                  unsigned char opcode,
+                                  bool is_64_bit,
+                                  std::string* operation,
+                                  StructValue* fields) {
+  DCHECK(decoder != NULL);
+  DCHECK(operation != NULL);
+  DCHECK(fields != NULL);
+
+  if (!is_64_bit || version < 2 || version > 3)
+    return false;
+
+  // Set the operation name.
+  switch (opcode) {
+    case kDiskIOReadOpcode:
+      *operation = "Read";
+      break;
+    case kDiskIOWriteOpcode:
+      *operation = "Write";
+      break;
+    default:
+      return false;
+  }
+
+  // Decode the payload.
+  if (!Decode<UIntValue>("DiskNumber", decoder, fields) ||
+      !Decode<UIntValue>("IrpFlags", decoder, fields) ||
+      !Decode<UIntValue>("TransferSize", decoder, fields) ||
+      !Decode<UIntValue>("Reserved", decoder, fields) ||
+      !Decode<ULongValue>("ByteOffset", decoder, fields) ||
+      !Decode<ULongValue>("FileObject", decoder, fields) ||
+      !Decode<ULongValue>("Irp", decoder, fields) ||
+      !Decode<ULongValue>("HighResResponseTime", decoder, fields)) {
+    return false;
+  }
+
+  if (version == 3 &&
+      !Decode<UIntValue>("IssuingThreadId", decoder, fields)) {
+    return false;
+  }
+
+  return true;
+}
+
+bool DecodeDiskIOInitPayload(Decoder* decoder,
+                             unsigned char version,
+                             unsigned char opcode,
+                             bool is_64_bit,
+                             std::string* operation,
+                             StructValue* fields) {
+  DCHECK(decoder != NULL);
+  DCHECK(operation != NULL);
+  DCHECK(fields != NULL);
+
+  if (!is_64_bit || version < 2 || version > 3)
+    return false;
+
+  // Set the operation name.
+  switch (opcode) {
+    case kDiskIOReadInitOpcode:
+      *operation = "ReadInit";
+      break;
+    case kDiskIOWriteInitOpcode:
+      *operation = "WriteInit";
+      break;
+    case kDiskIOFlushInitOpcode:
+      *operation = "FlushInit";
+      break;
+    default:
+      return false;
+  }
+
+  // Decode the payload.
+  if (!Decode<ULongValue>("Irp", decoder, fields))
+    return false;
+
+  if (version == 3 &&
+      !Decode<UIntValue>("IssuingThreadId", decoder, fields)) {
+    return false;
+  }
+
+  return true;
+}
+
+bool DecodeDiskIOFlushBuffersPayload(Decoder* decoder,
+                                     unsigned char version,
+                                     unsigned char opcode,
+                                     bool is_64_bit,
+                                     std::string* operation,
+                                     StructValue* fields) {
+  DCHECK(decoder != NULL);
+  DCHECK(opcode == kDiskIOFlushBuffersOpcode);
+  DCHECK(operation != NULL);
+  DCHECK(fields != NULL);
+
+  if (!is_64_bit || version < 2 || version > 3)
+    return false;
+
+  // Set the operation name.
+  *operation = "FlushBuffers";
+
+  // Decode the payload.
+  if (!Decode<UIntValue>("DiskNumber", decoder, fields) ||
+      !Decode<UIntValue>("IrpFlags", decoder, fields) ||
+      !Decode<ULongValue>("HighResResponseTime", decoder, fields) ||
+      !Decode<ULongValue>("Irp", decoder, fields)) {
+    return false;
+  }
+
+  if (version == 3 &&
+      !Decode<UIntValue>("IssuingThreadId", decoder, fields)) {
+    return false;
+  }
+
+  return true;
+}
+
+bool DecodeDiskIOPayload(Decoder* decoder,
+                         unsigned char version,
+                         unsigned char opcode,
+                         bool is_64_bit,
+                         std::string* operation,
+                         StructValue* fields) {
+  DCHECK(decoder != NULL);
+  DCHECK(operation != NULL);
+  DCHECK(fields != NULL);
+
+  switch (opcode) {
+    case kDiskIOReadOpcode:
+    case kDiskIOWriteOpcode:
+      return DecodeDiskIOReadWritePayload(
+          decoder, version, opcode, is_64_bit, operation, fields);
+
+    case kDiskIOReadInitOpcode:
+    case kDiskIOWriteInitOpcode:
+    case kDiskIOFlushInitOpcode:
+      return DecodeDiskIOInitPayload(
+          decoder, version, opcode, is_64_bit, operation, fields);
+
+    case kDiskIOFlushBuffersOpcode:
+      return DecodeDiskIOFlushBuffersPayload(
+          decoder, version, opcode, is_64_bit, operation, fields);
+
+    default:
+      return false;
+  }
+}
+
 bool DecodeStackWalkPayload(Decoder* decoder,
                             unsigned char version,
                             unsigned char opcode,
@@ -2472,6 +2630,14 @@ bool DecodeRawETWKernelPayload(const std::string& provider_id,
       *category = "FileIO";
     } else {
       LOG(WARNING) << "Error while decoding FileIO payload.";
+      return false;
+    }
+  } else if (provider_id == kDiskIOProviderId) {
+    if (DecodeDiskIOPayload(&decoder, version, opcode, is_64_bit,
+                            operation, fields.get())) {
+      *category = "DiskIO";
+    } else {
+      LOG(WARNING) << "Error while decoding DiskIO payload.";
       return false;
     }
   } else if (provider_id == kStackWalkProviderId) {
